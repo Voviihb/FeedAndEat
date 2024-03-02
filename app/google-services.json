@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317095691280",
+    "project_id": "feedandeat-2024",
+    "storage_bucket": "feedandeat-2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317095691280:android:5e499dfe1a608433f0f695",
+        "android_client_info": {
+          "package_name": "com.vk_edu.feed_and_eat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjtxjsM3aNQQTHNKiOgpXkKiotWPztpN0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
