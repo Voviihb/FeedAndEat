@@ -11,4 +11,8 @@
     <string name="email_logo">Email logo</string>
     <string name="feed_and_eat_logo">Feed and eat logo</string>
     <string name="lock_logo">Lock logo</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="enter_nickname">Введите имя пользователя</string>
+    <string name="person_logo">Person logo</string>
+    <string name="repeat_password">Повторите пароль</string>
 </resources>
