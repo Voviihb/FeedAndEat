@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">FeedAndEat</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="hide_password">Спрятать пароль</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="log_in">Вход</string>
+    <string name="or_login">Или</string>
+    <string name="enter_no_login">Войти без авторизации</string>
+    <string name="sign_up_text">Регистрация</string>
+    <string name="enter_e_mail">Введите E-Mail</string>
+    <string name="email_logo">Email logo</string>
+    <string name="feed_and_eat_logo">Feed and eat logo</string>
+    <string name="lock_logo">Lock logo</string>
 </resources>
