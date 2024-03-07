@@ -52,13 +52,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun LoginScreen() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val viewModel: LoginScreenViewModel = viewModel()
+    val loginForm by viewModel.loginFormState
+    val loading by viewModel.loading
+    val errorMsg by viewModel.errorMessage
 
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -130,11 +133,17 @@ fun LoginScreen() {
 
                 ) {
                     TextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = loginForm.email,
+                        onValueChange = {
+                            viewModel.emailChanged(it)
+                            viewModel.clearError()
+                        },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusRequester.requestFocus() }
                         ),
                         label = { Text(text = stringResource(R.string.enter_e_mail)) },
                         leadingIcon = {
@@ -143,6 +152,7 @@ fun LoginScreen() {
                                 contentDescription = stringResource(R.string.email_logo)
                             )
                         },
+                        isError = errorMsg != null,
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
@@ -174,9 +184,13 @@ fun LoginScreen() {
 
                 ) {
                     TextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        value = loginForm.password,
+                        onValueChange = {
+                            viewModel.passwordChanged(it)
+                            viewModel.clearError()
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None
+                        else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
@@ -191,6 +205,18 @@ fun LoginScreen() {
                                 contentDescription = stringResource(R.string.lock_logo)
                             )
                         },
+                        isError = errorMsg != null,
+                        /* TODO reset password and show error*/
+//                        supportingText = {
+//                            if (errorMsg != null) {
+//                                Text(
+//                                    modifier = Modifier.fillMaxWidth(),
+//                                    text = errorMsg!!,
+//                                    color = Color.Red
+//                                )
+//                                viewModel.passwordChanged("")
+//                            }
+//                        },
                         trailingIcon = {
                             val image =
                                 if (passwordVisible) painterResource(id = R.drawable.hide_password_icon)
@@ -300,8 +326,6 @@ fun LoginScreen() {
         }
     }
 }
-
-
 
 
 @Composable

@@ -15,4 +15,5 @@
     <string name="enter_nickname">Введите имя пользователя</string>
     <string name="person_logo">Person logo</string>
     <string name="repeat_password">Повторите пароль</string>
+    <string name="error_icon">Error icon</string>
 </resources>
