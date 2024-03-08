@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -181,6 +182,7 @@ fun LoginScreen() {
                             colorResource(id = R.color.purple_fae),
                             shape = RoundedCornerShape(roundValue)
                         )
+                        .background(Color.White)
 
                 ) {
                     TextField(
@@ -206,17 +208,26 @@ fun LoginScreen() {
                             )
                         },
                         isError = errorMsg != null,
-                        /* TODO reset password and show error*/
-//                        supportingText = {
-//                            if (errorMsg != null) {
-//                                Text(
-//                                    modifier = Modifier.fillMaxWidth(),
-//                                    text = errorMsg!!,
-//                                    color = Color.Red
-//                                )
-//                                viewModel.passwordChanged("")
-//                            }
-//                        },
+                        supportingText = {
+                            if (errorMsg != null) {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 4.dp),
+                                    text = errorMsg!!,
+                                    color = Color.Red
+                                )
+                                viewModel.passwordChanged("")
+                            } else {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 4.dp),
+                                    text = stringResource(R.string.press_button_login),
+                                    color = Color.Gray
+                                )
+                            }
+                        },
                         trailingIcon = {
                             val image =
                                 if (passwordVisible) painterResource(id = R.drawable.hide_password_icon)
@@ -242,10 +253,9 @@ fun LoginScreen() {
                             unfocusedContainerColor = Color.White,
                             focusedContainerColor = Color.White,
                             errorContainerColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent,
+                            focusedIndicatorColor = colorResource(id = R.color.purple_fae),
+                            unfocusedIndicatorColor = colorResource(id = R.color.purple_fae),
+                            disabledIndicatorColor = colorResource(id = R.color.purple_fae),
                             focusedTextColor = Color.Gray,
                             unfocusedTextColor = Color.Gray,
                             disabledTextColor = Color.Gray,
@@ -508,6 +518,23 @@ fun RegisterScreen() {
                                 contentDescription = stringResource(R.string.lock_logo)
                             )
                         },
+                        trailingIcon = {
+                            val image =
+                                if (passwordVisible) painterResource(id = R.drawable.hide_password_icon)
+                                else painterResource(id = R.drawable.show_password_icon)
+
+                            val description =
+                                if (passwordVisible) stringResource(R.string.hide_password) else stringResource(
+                                    R.string.show_password
+                                )
+
+                            IconButton(
+                                onClick = { passwordVisible = !passwordVisible },
+                                modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(image, description)
+                            }
+                        },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
@@ -536,6 +563,7 @@ fun RegisterScreen() {
                             colorResource(id = R.color.purple_fae),
                             shape = RoundedCornerShape(roundValue)
                         )
+                        .background(Color.White)
 
                 ) {
                     TextField(
@@ -573,6 +601,27 @@ fun RegisterScreen() {
                                 Icon(image, description)
                             }
                         },
+                        /*TODO*/
+//                        supportingText = {
+//                            if (errorMsg != null) {
+//                                Text(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .padding(bottom = 4.dp),
+//                                    text = errorMsg!!,
+//                                    color = Color.Red
+//                                )
+//                                viewModel.passwordChanged("")
+//                            } else {
+//                                Text(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .padding(bottom = 4.dp),
+//                                    text = stringResource(R.string.press_button_login),
+//                                    color = Color.Gray
+//                                )
+//                            }
+//                        },
                         singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -581,10 +630,9 @@ fun RegisterScreen() {
                             unfocusedContainerColor = Color.White,
                             focusedContainerColor = Color.White,
                             errorContainerColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent,
+                            focusedIndicatorColor = colorResource(id = R.color.purple_fae),
+                            unfocusedIndicatorColor = colorResource(id = R.color.purple_fae),
+                            disabledIndicatorColor = colorResource(id = R.color.purple_fae),
                             focusedTextColor = Color.Gray,
                             unfocusedTextColor = Color.Gray,
                             disabledTextColor = Color.Gray,

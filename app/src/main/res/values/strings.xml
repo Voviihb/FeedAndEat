@@ -16,4 +16,5 @@
     <string name="person_logo">Person logo</string>
     <string name="repeat_password">Повторите пароль</string>
     <string name="error_icon">Error icon</string>
+    <string name="press_button_login">После ввода, нажмите кнопку \'Войти\'</string>
 </resources>

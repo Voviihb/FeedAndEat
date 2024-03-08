@@ -12,7 +12,7 @@ class LoginScreenViewModel : ViewModel() {
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
-    private val _errorMessage = mutableStateOf<String?>(":")
+    private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
 
