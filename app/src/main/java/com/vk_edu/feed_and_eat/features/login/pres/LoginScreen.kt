@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -24,13 +25,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -341,10 +342,11 @@ fun LoginScreen() {
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun RegisterScreen() {
-    var email by remember { mutableStateOf("") }
-    var nickname by remember { mutableStateOf("") }
-    var password1 by remember { mutableStateOf("") }
-    var password2 by remember { mutableStateOf("") }
+    val viewModel: RegisterScreenViewModel = viewModel()
+    val registerForm by viewModel.registerFormState
+    val loading by viewModel.loading
+    val errorMsg by viewModel.errorMessage
+    val signUpState by viewModel.signUpState
 
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -416,8 +418,11 @@ fun RegisterScreen() {
 
                 ) {
                     TextField(
-                        value = email,
-                        onValueChange = { email = it },
+                        value = registerForm.email,
+                        onValueChange = {
+                            viewModel.emailChanged(it)
+                            viewModel.clearError()
+                        },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
@@ -460,8 +465,11 @@ fun RegisterScreen() {
 
                 ) {
                     TextField(
-                        value = nickname,
-                        onValueChange = { nickname = it },
+                        value = registerForm.login,
+                        onValueChange = {
+                            viewModel.loginChanged(it)
+                            viewModel.clearError()
+                        },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
@@ -504,8 +512,11 @@ fun RegisterScreen() {
 
                 ) {
                     TextField(
-                        value = password1,
-                        onValueChange = { password1 = it },
+                        value = registerForm.password1,
+                        onValueChange = {
+                            viewModel.password1Changed(it)
+                            viewModel.clearError()
+                        },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
@@ -567,8 +578,11 @@ fun RegisterScreen() {
 
                 ) {
                     TextField(
-                        value = password2,
-                        onValueChange = { password2 = it },
+                        value = registerForm.password2,
+                        onValueChange = {
+                            viewModel.password2Changed(it)
+                            viewModel.clearError()
+                        },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
@@ -602,26 +616,27 @@ fun RegisterScreen() {
                             }
                         },
                         /*TODO*/
-//                        supportingText = {
-//                            if (errorMsg != null) {
-//                                Text(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .padding(bottom = 4.dp),
-//                                    text = errorMsg!!,
-//                                    color = Color.Red
-//                                )
-//                                viewModel.passwordChanged("")
-//                            } else {
-//                                Text(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .padding(bottom = 4.dp),
-//                                    text = stringResource(R.string.press_button_login),
-//                                    color = Color.Gray
-//                                )
-//                            }
-//                        },
+                        supportingText = {
+                            if (errorMsg != null) {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 4.dp),
+                                    text = errorMsg!!,
+                                    color = Color.Red
+                                )
+                                viewModel.password1Changed("")
+                                viewModel.password2Changed("")
+                            } else {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 4.dp),
+                                    text = stringResource(R.string.press_button_login),
+                                    color = Color.Gray
+                                )
+                            }
+                        },
                         singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -642,7 +657,9 @@ fun RegisterScreen() {
 
                 /* Sign up button */
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        viewModel.registerUserWithEmail()
+                    },
                     shape = RoundedCornerShape(roundValue),
                     colors = ButtonColors(
                         containerColor = colorResource(id = R.color.purple_fae),
@@ -658,9 +675,23 @@ fun RegisterScreen() {
                             shape = RoundedCornerShape(roundValue)
                         )
                 ) {
-                    Text(text = stringResource(R.string.sign_up), fontSize = 24.sp)
-                }
+                    Column(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = stringResource(R.string.sign_up), fontSize = 24.sp)
+                        if (loading) {
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .height(2.dp)
+                                    .fillMaxWidth(),
+                            )
+                        }
+                    }
 
+                }
             }
         }
 
