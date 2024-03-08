@@ -26,8 +26,10 @@ class RegisterScreenViewModel : ViewModel() {
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
-    private val auth: FirebaseAuth = Firebase.auth
-    private val authRepo = AuthRepoImpl(auth)
+    private val _auth: FirebaseAuth = Firebase.auth
+    private val _authRepo = AuthRepoImpl(_auth)
+
+    val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
     private val _signUpState = mutableStateOf(false)
     val signUpState: State<Boolean> = _signUpState
@@ -36,7 +38,7 @@ class RegisterScreenViewModel : ViewModel() {
         viewModelScope.launch {
             if (_registerFormState.value.password1 == _registerFormState.value.password2) {
                 try {
-                    authRepo.firebaseSignUp(
+                    _authRepo.firebaseSignUp(
                         _registerFormState.value.email,
                         _registerFormState.value.password1
                     ).collect { response ->
@@ -55,8 +57,8 @@ class RegisterScreenViewModel : ViewModel() {
             } else {
                 onError(PASSWORD_DIFFERS)
             }
-
         }
+        _loading.value = false
     }
 
     private fun onError(message: String) {

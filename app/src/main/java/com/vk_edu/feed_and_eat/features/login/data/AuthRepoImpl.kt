@@ -39,13 +39,34 @@ class AuthRepoImpl @Inject constructor(
             }
         }
 
-    override suspend fun signOut(): Flow<Response<Boolean>> = flow {
+    override suspend fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>> =
+        flow {
+            try {
+                emit(Response.Loading)
+                auth.signInWithEmailAndPassword(email, password).await()
+                emit(Response.Success(true))
+            } catch (e: Exception) {
+                emit(Response.Failure(e))
+            }
+        }
+
+    override suspend fun signOutAnonymous(): Flow<Response<Boolean>> = flow {
         try {
             emit(Response.Loading)
             auth.currentUser?.apply {
                 delete().await()
                 emit(Response.Success(true))
             }
+        } catch (e: Exception) {
+            emit(Response.Failure(e))
+        }
+    }
+
+    override suspend fun signOut(): Flow<Response<Boolean>> = flow {
+        try {
+            emit(Response.Loading)
+            auth.signOut()
+            emit(Response.Success(true))
         } catch (e: Exception) {
             emit(Response.Failure(e))
         }

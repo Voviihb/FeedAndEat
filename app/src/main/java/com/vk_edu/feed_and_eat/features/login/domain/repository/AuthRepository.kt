@@ -10,6 +10,10 @@ interface AuthRepository {
 
     suspend fun firebaseSignUp(email: String, password: String): Flow<Response<Boolean>>
 
+    suspend fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>>
+
+    suspend fun signOutAnonymous(): Flow<Response<Boolean>>
+
     suspend fun signOut(): Flow<Response<Boolean>>
 
     fun getFirebaseAuthState(): Flow<Boolean>
