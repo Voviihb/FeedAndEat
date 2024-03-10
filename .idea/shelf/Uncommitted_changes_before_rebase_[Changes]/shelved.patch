@@ -1,0 +1,629 @@
+Index: app/src/main/java/com/vk_edu/feed_and_eat/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.vk_edu.feed_and_eat\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport com.vk_edu.feed_and_eat.ui.theme.FeedAndEatTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        setContent {\r\n            FeedAndEatTheme {\r\n                // A surface container using the 'background' color from the theme\r\n                Surface(\r\n                    modifier = Modifier.fillMaxSize(),\r\n                    color = MaterialTheme.colorScheme.background\r\n                ) {\r\n                    Greeting(\"Android\")\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun Greeting(name: String, modifier: Modifier = Modifier) {\r\n    Text(\r\n        text = \"Hello $name!\",\r\n        modifier = modifier\r\n    )\r\n}\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun GreetingPreview() {\r\n    FeedAndEatTheme {\r\n        Greeting(\"Android\")\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/vk_edu/feed_and_eat/MainActivity.kt b/app/src/main/java/com/vk_edu/feed_and_eat/MainActivity.kt
+--- a/app/src/main/java/com/vk_edu/feed_and_eat/MainActivity.kt	(revision 2bfd8f30cb2e402edb8086b223298172d6d65c66)
++++ b/app/src/main/java/com/vk_edu/feed_and_eat/MainActivity.kt	(date 1710087429960)
+@@ -3,13 +3,16 @@
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
++import androidx.compose.foundation.background
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.Surface
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.tooling.preview.Preview
++import com.vk_edu.feed_and_eat.features.recipe.pres.RecipeScreenViewModel
+ import com.vk_edu.feed_and_eat.ui.theme.FeedAndEatTheme
+ 
+ class MainActivity : ComponentActivity() {
+@@ -19,10 +22,28 @@
+             FeedAndEatTheme {
+                 // A surface container using the 'background' color from the theme
+                 Surface(
+-                    modifier = Modifier.fillMaxSize(),
++                    modifier = Modifier
++                        .fillMaxSize()
++                        .background(Color.Black),
+                     color = MaterialTheme.colorScheme.background
+                 ) {
+-                    Greeting("Android")
++                    val description = listOf("Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
++                            "Рецепт рецепт рецепт",
++                            "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
++                            "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт")
++                    val ingredients = listOf("ingred 1", "ingred 2")
++                    val steps = listOf("step 1", "step 2")
++
++                    RecipeScreenViewModel(
++                        Picture = R.drawable.recipe,
++                        Cooked = 1234,
++                        Rating = 3.3,
++                        Description = description,
++                        InFavor = false,
++                        Name = "Бараньи ребрышки по-узбекски",
++                        Steps = steps,
++                        Ingredients = ingredients
++                        )
+                 }
+             }
+         }
+Index: app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/pres/RecipeScreenViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.vk_edu.feed_and_eat.features.recipe.pres\r\n\r\nclass RecipeScreenViewModel {\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/pres/RecipeScreenViewModel.kt b/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/pres/RecipeScreenViewModel.kt
+--- a/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/pres/RecipeScreenViewModel.kt	(revision 2bfd8f30cb2e402edb8086b223298172d6d65c66)
++++ b/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/pres/RecipeScreenViewModel.kt	(date 1710088713434)
+@@ -1,5 +1,268 @@
+ package com.vk_edu.feed_and_eat.features.recipe.pres
+ 
+-class RecipeScreenViewModel {
++import androidx.compose.foundation.Image
++import androidx.compose.foundation.background
++import androidx.compose.foundation.border
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.fillMaxHeight
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.layout.width
++import androidx.compose.foundation.lazy.LazyColumn
++import androidx.compose.foundation.lazy.LazyRow
++import androidx.compose.foundation.shape.RoundedCornerShape
++import androidx.compose.material3.Button
++import androidx.compose.material3.ButtonColors
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.draw.clip
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.graphics.RectangleShape
++import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.text.style.TextAlign
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import com.vk_edu.feed_and_eat.R
++import com.vk_edu.feed_and_eat.common.graphics.RatingBarPreview
++import com.vk_edu.feed_and_eat.common.graphics.ReturnBackButton
++import com.vk_edu.feed_and_eat.common.graphics.infoSquareButton
++
++
++@Composable
++fun RecipeScreenViewModel(Picture : Int,
++                          Rating : Double,
++                          Cooked : Int,
++                          Description : List<String>,
++                          InFavor : Boolean,
++                          Name : String,
++                          Ingredients : List<String>,
++                          Steps : List<String>
++    ) {
++    val pictureHeight = 310
++//    global container
++    Column(modifier = Modifier
++        .fillMaxSize()
++        .background(Color(red = 0xF0, green = 0xF0, blue = 0xF0))
++    ) {
++        Image(
++            painter = painterResource(id = Picture),
++            contentDescription = null,
++            modifier = Modifier
++                .fillMaxWidth()
++                .height(pictureHeight.dp)
++        )
++//        container of rating
++        Column(modifier = Modifier
++            .height(50.dp)
++        ){
++            Spacer(modifier = Modifier.height(20.dp))
++            Row(modifier = Modifier
++                .fillMaxWidth()
++            ) {
++                Spacer(modifier = Modifier.width(15.dp))
++                RatingBarPreview(Rating)
++                Spacer(modifier = Modifier.width(5.dp))
++                Text(Rating.toString(), modifier = Modifier
++                    .background(Color.Transparent),
++                    fontSize = 25.sp
++                )
++                Spacer(modifier = Modifier.width(70.dp))
++                Image(
++                    painter = painterResource(R.drawable.povar),
++                    contentDescription = null,
++                    modifier = Modifier
++                        .size(50.dp)
++                    )
++                Text(
++                    text = Cooked.toString(),
++                    fontSize = 25.sp
++                    )
++            }
++        }
++//        Textfield
++    Column(
++        modifier = Modifier
++            .fillMaxWidth()
++            .height(300.dp)
++            .padding(horizontal = 15.dp)
++            .background(Color.Transparent),
++        horizontalAlignment = Alignment.CenterHorizontally
++    ) {
++        Spacer(modifier = Modifier.height(10.dp))
++        Text(text = stringResource(R.string.short_recipe),
++            color = Color.Gray,
++            textAlign = TextAlign.Left,
++            modifier = Modifier
++                .background(Color.Transparent),
++            fontSize = 25.sp
++        )
++        Spacer(modifier = Modifier.height(10.dp))
++        LazyColumn(
++            modifier = Modifier
++                .background(
++                    Color(red = 0xE4, blue = 0xFE, green = 0xFA, alpha = 0xFF),
++                    shape = RoundedCornerShape(20.dp),
++                )
++                .clip(shape = RoundedCornerShape(20.dp))
++                .height(280.dp)
++                .border(
++                    1.dp,
++                    Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
++                    shape = RoundedCornerShape(20.dp)
++                ),
++
++        ){
++            for (i in 0..(Description.size - 1)){
++                item {
++                    Text(
++                        text = (i + 1).toString() + ". " + Description[i],
++                        modifier = Modifier
++                            .padding(start = 15.dp, end = 25.dp, top = 10.dp),
++                        fontSize = 20.sp
++                        )
++                }
++            }
++        }
++    }
++//        Buttons add to collection
++        Column(
++            modifier = Modifier
++                .padding(15.dp)
++//                .clip(shape = RoundedCornerShape(10.dp))
++//                .background(Color.Yellow, shape = RoundedCornerShape(10.dp))
++        ) {
++            Spacer(modifier = Modifier.height(10.dp))
++            Row(horizontalArrangement = Arrangement.SpaceBetween,
++                modifier = Modifier
++                    .fillMaxWidth()
++                    .clip(shape = RoundedCornerShape(10.dp))
++                    .border(
++                        2.dp,
++                        Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
++                        shape = RoundedCornerShape(10.dp)
++                    )
++
++            ) {
++                Button(onClick = { /*TODO*/ },
++                    shape = RectangleShape,
++                    colors = ButtonColors(Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF), Color.White, Color.White, Color.Black),
++                    modifier = Modifier
++                        .weight(1f)
++                        .height(30.dp)
++                ) {
++                    Text(
++                        stringResource(R.string.add_to_favourite),
++                        fontSize = 12.sp
++                    )
++                }
++                Button(onClick = { /*TODO*/ },
++                    shape = RectangleShape,
++                    colors = ButtonColors(Color.White, Color.Gray, Color.White, Color.Black),
++                    modifier = Modifier
++                        .weight(1f)
++                        .height(30.dp)
++                ) {
++                    Text(
++                        stringResource(R.string.add_to_playlist),
++                        fontSize = 12.sp
++                        )
++                }
++            }
++        }
+ 
++//        Info about Recipe + Start cooking
++    Column(
++        modifier = Modifier
++            .height(40.dp)
++            .fillMaxWidth()
++            .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB))
++            .border(
++                1.dp,
++                Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
++            )
++    ){
++        Row(
++            modifier = Modifier
++                .fillMaxWidth(),
++            horizontalArrangement = Arrangement.SpaceAround
++        ){
++            Text(text = stringResource(R.string.ingridients) + ":" + Ingredients.size,
++                modifier = Modifier
++                    .weight(1f)
++                    .padding(vertical = 10.dp),
++                textAlign = TextAlign.Center
++                )
++            Button(
++                onClick = { /*TODO*/ },
++                modifier = Modifier
++                    .weight(2f)
++                    .fillMaxHeight(),
++                colors = ButtonColors(
++                    Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xFF),
++                    Color.Black, Color.White, Color.Black),
++            ) {
++                Text(text = stringResource(R.string.start_cooking),
++                    fontSize = 15.sp,
++                    textAlign = TextAlign.Center
++                    )
++            }
++            Text(text = stringResource(R.string.steps) + ":" + Steps.size,
++                modifier = Modifier
++                    .weight(1f)
++                    .padding(vertical = 10.dp),
++                textAlign = TextAlign.Center
++                )
++        }
++    }
++
++    }//end of global container
++
++//    container for recipe name
++    Column(modifier = Modifier,
++        verticalArrangement = Arrangement.Top
++    ) {
++        LazyColumn(modifier = Modifier
++            .height(pictureHeight.dp)
++            .fillMaxWidth(),
++            verticalArrangement = Arrangement.Bottom
++        ){
++            item{
++                Text(text = Name,
++                    fontSize = 25.sp,
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .height(35.dp)
++                        .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xBF)),
++                    textAlign = TextAlign.Center)
++            }
++        }
++    }
++//    extra container for back button & info
++    Column() {
++        Spacer(modifier = Modifier.height(20.dp))
++        LazyRow(modifier = Modifier
++            .background(Color.Transparent)
++            .height(80.dp)
++            .fillMaxWidth(),
++            horizontalArrangement = Arrangement.SpaceBetween,
++            verticalAlignment = Alignment.CenterVertically,
++        ) {
++            item {
++                Spacer(Modifier.width(20.dp))
++                ReturnBackButton()
++            }
++            item {
++                infoSquareButton()
++            }
++        }
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/CommonElements.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.vk_edu.feed_and_eat.common.graphics\r\n\r\nclass CommonElements {\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/CommonElements.kt b/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/CommonElements.kt
+--- a/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/CommonElements.kt	(revision 2bfd8f30cb2e402edb8086b223298172d6d65c66)
++++ b/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/CommonElements.kt	(date 1709991563666)
+@@ -1,4 +1,95 @@
+ package com.vk_edu.feed_and_eat.common.graphics
+ 
+-class CommonElements {
++import android.util.Log
++import androidx.compose.foundation.Image
++import androidx.compose.foundation.background
++import androidx.compose.foundation.border
++import androidx.compose.foundation.layout.PaddingValues
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.width
++import androidx.compose.foundation.shape.CornerSize
++import androidx.compose.foundation.shape.RoundedCornerShape
++import androidx.compose.material3.Button
++import androidx.compose.material3.ButtonDefaults
++import androidx.compose.material3.MaterialTheme
++import androidx.compose.material3.Surface
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.tooling.preview.Preview
++import androidx.compose.ui.unit.dp
++import com.vk_edu.feed_and_eat.R
++
++
++val plug: () -> Unit = {Log.d("PLUG", "plug pressed")}
++
++@Preview
++@Composable
++fun ReturnBackButton(
++    modifier: Modifier = Modifier,
++    func: () -> Unit = plug
++) {
++    Button(
++        onClick = func,
++        modifier = modifier
++            .width(60.dp)
++            .height(60.dp),
++        shape = RoundedCornerShape(30.dp),
++        contentPadding = PaddingValues(0.dp),
++        ) {
++            Image(  painter = painterResource(id = R.drawable.back),
++                    contentDescription = null,
++                    modifier = Modifier.fillMaxSize()
++                )
++        }
++    }
++
++@Composable
++fun infoSquareButton(
++    modifier: Modifier = Modifier,
++    func: () -> Unit = plug
++){
++    Button(
++        onClick = func,
++        modifier = modifier
++            .width(63.dp)
++            .height(88.dp)
++            .background(Color.Transparent),
++        contentPadding = PaddingValues(0.dp),
++        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
++    ){
++        Image(  painter = painterResource(id = R.drawable.info),
++            contentDescription = null,
++            modifier = Modifier.fillMaxSize()
++        )
++    }
++}
++
++@Composable
++fun ComposeButton(text : String, fn:() -> Unit) {
++    Button(
++        onClick = fn,
++        modifier = Modifier
++            .background(Color.White, RoundedCornerShape(CornerSize(15.dp)))
++            .border(2.dp, Color.Black, RoundedCornerShape(CornerSize(30.dp))),
++        contentPadding = PaddingValues(0.dp)
++    ) {
++        Surface(
++            modifier = Modifier
++                .background(Color.White, RoundedCornerShape(CornerSize(15.dp)))
++                .padding(16.dp)
++
++        ) {
++            // Your button text
++            Text(
++                text = text,
++                color = Color.Black,
++                style = MaterialTheme.typography.titleLarge
++            )
++        }
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/RatingBar.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/RatingBar.kt b/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/RatingBar.kt
+new file mode 100644
+--- /dev/null	(date 1709993113242)
++++ b/app/src/main/java/com/vk_edu/feed_and_eat/common/graphics/RatingBar.kt	(date 1709993113242)
+@@ -0,0 +1,123 @@
++package com.vk_edu.feed_and_eat.common.graphics
++
++import androidx.compose.foundation.Canvas
++import androidx.compose.foundation.background
++import androidx.compose.foundation.layout.BoxWithConstraints
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.aspectRatio
++import androidx.compose.foundation.layout.fillMaxHeight
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.layout.wrapContentSize
++import androidx.compose.foundation.shape.GenericShape
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.draw.clip
++import androidx.compose.ui.geometry.Offset
++import androidx.compose.ui.geometry.Size
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.graphics.Path
++import androidx.compose.ui.graphics.SolidColor
++import androidx.compose.ui.unit.dp
++
++@Composable
++fun RatingBar(
++    rating: Float,
++    modifier: Modifier = Modifier,
++    color: Color = Color.Yellow
++) {
++    Row(modifier = modifier.wrapContentSize()) {
++        (1..5).forEach { step ->
++            val stepRating = when {
++                rating > step -> 1f
++                step.rem(rating) < 1 -> rating - (step - 1f)
++                else -> 0f
++            }
++            RatingStar(stepRating, color)
++        }
++    }
++}
++
++@Composable
++private fun RatingStar(
++    rating: Float,
++    ratingColor: Color = Color.Yellow,
++    backgroundColor: Color = Color.Gray
++) {
++    BoxWithConstraints(
++        modifier = Modifier
++            .fillMaxHeight()
++            .aspectRatio(1f)
++            .clip(starShape)
++    ) {
++        Canvas(modifier = Modifier.size(maxHeight)) {
++            drawRect(
++                brush = SolidColor(backgroundColor),
++                size = Size(
++                    height = size.height * 1.4f,
++                    width = size.width * 1.4f
++                ),
++                topLeft = Offset(
++                    x = -(size.width * 0.1f),
++                    y = -(size.height * 0.1f)
++                )
++            )
++            if (rating > 0) {
++                drawRect(
++                    brush = SolidColor(ratingColor),
++                    size = Size(
++                        height = size.height * 1.1f,
++                        width = size.width * rating
++                    )
++                )
++            }
++        }
++    }
++}
++
++private val starShape = GenericShape { size, _ ->
++    addPath(starPath(size.height))
++}
++
++private val starPath = { size: Float ->
++    Path().apply {
++        val outerRadius: Float = size / 1.8f
++        val innerRadius: Double = outerRadius / 2.5
++        var rot: Double = Math.PI / 2 * 3
++        val cx: Float = size / 2
++        val cy: Float = size / 20 * 11
++        var x: Float = cx
++        var y: Float = cy
++        val step = Math.PI / 5
++
++        moveTo(cx, cy - outerRadius)
++        repeat(5) {
++            x = (cx + Math.cos(rot) * outerRadius).toFloat()
++            y = (cy + Math.sin(rot) * outerRadius).toFloat()
++            lineTo(x, y)
++            rot += step
++
++            x = (cx + Math.cos(rot) * innerRadius).toFloat()
++            y = (cy + Math.sin(rot) * innerRadius).toFloat()
++            lineTo(x, y)
++            rot += step
++        }
++        close()
++    }
++}
++
++
++@Composable
++fun RatingBarPreview(rating : Double) {
++    Column(
++        Modifier
++            .background(Color.Transparent)
++    ) {
++        RatingBar(
++            rating = rating.toFloat(),
++            modifier = Modifier.height(25.dp)
++        )
++
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/data/RecipeRepo.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.vk_edu.feed_and_eat.features.recipe.data\r\n\r\nclass RecipeRepo {\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/data/RecipeRepo.kt b/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/data/RecipeRepo.kt
+--- a/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/data/RecipeRepo.kt	(revision 2bfd8f30cb2e402edb8086b223298172d6d65c66)
++++ b/app/src/main/java/com/vk_edu/feed_and_eat/features/recipe/data/RecipeRepo.kt	(date 1709989651523)
+@@ -1,4 +1,15 @@
+ package com.vk_edu.feed_and_eat.features.recipe.data
+ 
++import android.graphics.drawable.Drawable
++import androidx.compose.runtime.Composable
++
+ class RecipeRepo {
++    @Composable
++    fun takePres(Picture : Drawable,
++                 Rating : Float,
++                 Cooked : Int,
++                 Description : List<String>
++                 ){
++
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">FeedAndEat</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision 2bfd8f30cb2e402edb8086b223298172d6d65c66)
++++ b/app/src/main/res/values/strings.xml	(date 1710087207537)
+@@ -1,3 +1,9 @@
+ <resources>
+     <string name="app_name">FeedAndEat</string>
++    <string name="short_recipe">Краткий рецепт</string>
++    <string name="add_to_favourite">Добавить в любимое</string>
++    <string name="add_to_playlist">Добавить в подборку</string>
++    <string name="ingridients">Ингр</string>
++    <string name="steps">Шагов</string>
++    <string name="start_cooking">Начать готовить</string>
+ </resources>
+\ No newline at end of file
