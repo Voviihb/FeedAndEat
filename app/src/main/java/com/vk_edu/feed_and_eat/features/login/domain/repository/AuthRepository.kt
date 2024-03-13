@@ -6,15 +6,15 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     fun isUserAuthenticatedInFirebase(): Boolean
 
-    suspend fun firebaseSignInAnonymously(): Flow<Response<Boolean>>
+    fun firebaseSignInAnonymously(): Flow<Response<Boolean>>
 
-    suspend fun firebaseSignUp(email: String, password: String): Flow<Response<Boolean>>
+    fun firebaseSignUp(email: String, password: String): Flow<Response<Boolean>>
 
-    suspend fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>>
+    fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>>
 
-    suspend fun signOutAnonymous(): Flow<Response<Boolean>>
+    fun signOutAnonymous(): Flow<Response<Boolean>>
 
-    suspend fun signOut(): Flow<Response<Boolean>>
+    fun signOut(): Flow<Response<Boolean>>
 
     fun getFirebaseAuthState(): Flow<Boolean>
 }

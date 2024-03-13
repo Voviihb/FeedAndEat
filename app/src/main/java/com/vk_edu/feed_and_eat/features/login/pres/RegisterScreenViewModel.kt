@@ -9,7 +9,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
-import com.vk_edu.feed_and_eat.features.login.domain.models.RegisterForm
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.launch
 

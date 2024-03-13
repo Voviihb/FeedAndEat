@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.login.domain.models
+package com.vk_edu.feed_and_eat.features.login.pres
 
 data class RegisterForm(
     val email: String = "",

@@ -19,10 +19,9 @@ import javax.inject.Singleton
 class AuthRepoImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : AuthRepository {
-    private val ERROR_MESSAGE: String = "Error"
     override fun isUserAuthenticatedInFirebase() = auth.currentUser != null
 
-    private suspend fun AuthRepoTryCatchBlock(func: suspend () -> Task<AuthResult>): Flow<Response<Boolean>> =
+    private fun authRepoTryCatchBlock(func: suspend () -> Task<AuthResult>): Flow<Response<Boolean>> =
         flow {
             try {
                 emit(Response.Loading)
@@ -33,19 +32,19 @@ class AuthRepoImpl @Inject constructor(
             }
         }
 
-    override suspend fun firebaseSignInAnonymously(): Flow<Response<Boolean>> =
-        AuthRepoTryCatchBlock { auth.signInAnonymously() }.flowOn(Dispatchers.IO)
+    override fun firebaseSignInAnonymously(): Flow<Response<Boolean>> =
+        authRepoTryCatchBlock { auth.signInAnonymously() }.flowOn(Dispatchers.IO)
 
-    override suspend fun firebaseSignUp(email: String, password: String): Flow<Response<Boolean>> =
-        AuthRepoTryCatchBlock { auth.createUserWithEmailAndPassword(email, password) }
+    override fun firebaseSignUp(email: String, password: String): Flow<Response<Boolean>> =
+        authRepoTryCatchBlock { auth.createUserWithEmailAndPassword(email, password) }
             .flowOn(Dispatchers.IO)
 
-    override suspend fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>> =
-        AuthRepoTryCatchBlock { auth.signInWithEmailAndPassword(email, password) }
+    override fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>> =
+        authRepoTryCatchBlock { auth.signInWithEmailAndPassword(email, password) }
             .flowOn(Dispatchers.IO)
 
 
-    override suspend fun signOutAnonymous(): Flow<Response<Boolean>> = flow {
+    override fun signOutAnonymous(): Flow<Response<Boolean>> = flow {
         try {
             emit(Response.Loading)
             auth.currentUser?.delete()?.await()
@@ -55,7 +54,7 @@ class AuthRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun signOut(): Flow<Response<Boolean>> = flow {
+    override fun signOut(): Flow<Response<Boolean>> = flow {
         try {
             emit(Response.Loading)
             auth.signOut()

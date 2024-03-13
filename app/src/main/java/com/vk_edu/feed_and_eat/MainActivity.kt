@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
-import com.vk_edu.feed_and_eat.features.login.pres.RegisterScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,7 +12,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LoginScreen(this)
-//            RegisterScreen(context = this)
         }
     }
 }
