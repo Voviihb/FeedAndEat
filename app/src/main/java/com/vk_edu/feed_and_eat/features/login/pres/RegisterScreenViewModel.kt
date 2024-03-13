@@ -36,11 +36,11 @@ class RegisterScreenViewModel : ViewModel() {
 
     fun registerUserWithEmail() {
         viewModelScope.launch {
-            if (_registerFormState.value.password1 == _registerFormState.value.password2) {
+            if (_registerFormState.value.password == _registerFormState.value.passwordControl) {
                 try {
                     _authRepo.firebaseSignUp(
                         _registerFormState.value.email,
-                        _registerFormState.value.password1
+                        _registerFormState.value.password
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
@@ -84,13 +84,13 @@ class RegisterScreenViewModel : ViewModel() {
 
     fun password1Changed(value: String) {
         _registerFormState.value = _registerFormState.value.copy(
-            password1 = value
+            password = value
         )
     }
 
     fun password2Changed(value: String) {
         _registerFormState.value = _registerFormState.value.copy(
-            password2 = value
+            passwordControl = value
         )
     }
 }

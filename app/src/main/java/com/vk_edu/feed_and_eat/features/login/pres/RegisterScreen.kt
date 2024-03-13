@@ -239,7 +239,7 @@ fun RegisterScreen(context: Context) {
 
                 ) {
                     TextField(
-                        value = registerForm.password1,
+                        value = registerForm.password,
                         onValueChange = {
                             viewModel.password1Changed(it)
                             viewModel.clearError()
@@ -305,7 +305,7 @@ fun RegisterScreen(context: Context) {
 
                 ) {
                     TextField(
-                        value = registerForm.password2,
+                        value = registerForm.passwordControl,
                         onValueChange = {
                             viewModel.password2Changed(it)
                             viewModel.clearError()
