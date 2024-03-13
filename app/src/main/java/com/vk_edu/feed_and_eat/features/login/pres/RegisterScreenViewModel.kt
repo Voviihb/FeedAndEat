@@ -56,8 +56,9 @@ class RegisterScreenViewModel : ViewModel() {
             } else {
                 onError(PASSWORD_DIFFERS)
             }
+            _loading.value = false
         }
-        _loading.value = false
+
     }
 
     private fun onError(message: String) {

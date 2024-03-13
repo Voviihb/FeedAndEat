@@ -66,7 +66,6 @@ import com.vk_edu.feed_and_eat.R
 fun LoginScreen(context: Context) {
     val viewModel: LoginScreenViewModel = viewModel()
     val loginForm by viewModel.loginFormState
-    val loading by viewModel.loading
     val errorMsg by viewModel.errorMessage
 
     val (focusRequester) = FocusRequester.createRefs()
@@ -147,42 +146,7 @@ fun LoginScreen(context: Context) {
                     keyboardController = keyboardController
                 )
 
-
-                /* Log in button */
-                Button(
-                    onClick = { viewModel.loginWithEmail() },
-                    shape = RoundedCornerShape(roundValue),
-                    colors = ButtonColors(
-                        containerColor = colorResource(id = R.color.purple_fae),
-                        contentColor = colorResource(id = R.color.white),
-                        disabledContainerColor = colorResource(id = R.color.purple_fae),
-                        disabledContentColor = colorResource(id = R.color.white)
-                    ),
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .border(
-                            1.dp,
-                            colorResource(id = R.color.white),
-                            shape = RoundedCornerShape(roundValue)
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .padding(vertical = 4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = stringResource(R.string.log_in), fontSize = 24.sp)
-                        /* TODO is loading working? */
-                        if (loading) {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .height(2.dp)
-                                    .fillMaxWidth(),
-                            )
-                        }
-                    }
-                }
+                LoginButton(roundValue = roundValue, viewModel = viewModel)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -191,51 +155,20 @@ fun LoginScreen(context: Context) {
                     color = colorResource(id = R.color.white)
                 )
 
-                /* Enter with no login  button */
-                Button(
-                    onClick = { /*TODO*/ },
-                    shape = RoundedCornerShape(roundValue),
-                    colors = ButtonColors(
-                        containerColor = colorResource(id = R.color.purple_fae),
-                        contentColor = colorResource(id = R.color.white),
-                        disabledContainerColor = colorResource(id = R.color.purple_fae),
-                        disabledContentColor = colorResource(id = R.color.white)
-                    ),
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .border(
-                            1.dp,
-                            colorResource(id = R.color.white),
-                            shape = RoundedCornerShape(roundValue)
-                        )
-                ) {
-                    Text(text = stringResource(R.string.enter_no_login), fontSize = 24.sp)
-                }
+                NoAuthLoginButton(roundValue = roundValue, viewModel = viewModel)
+
             }
         }
 
-        /* Sign up button */
-        Button(
-            onClick = { /*TODO delete sign out function*/
-                viewModel.logout()
-            },
-            shape = RoundedCornerShape(topStart = roundValue),
-            colors = ButtonColors(
-                containerColor = colorResource(id = R.color.purple_fae),
-                contentColor = colorResource(id = R.color.white),
-                disabledContainerColor = colorResource(id = R.color.purple_fae),
-                disabledContentColor = colorResource(id = R.color.white)
-            ),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .border(
-                    1.dp,
-                    colorResource(id = R.color.white),
-                    shape = RoundedCornerShape(topStart = roundValue)
-                )
-        ) {
-            Text(text = stringResource(R.string.sign_up_text), fontSize = 24.sp)
-        }
+        val modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .border(
+                1.dp,
+                colorResource(id = R.color.white),
+                shape = RoundedCornerShape(topStart = roundValue)
+            )
+        RegisterButton(roundValue = roundValue, viewModel = viewModel, modifier = modifier)
+
     }
 }
 
@@ -397,5 +330,85 @@ private fun PasswordField(
                 disabledTextColor = Color.Gray,
             )
         )
+    }
+}
+
+@Composable
+private fun LoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
+    val loading by viewModel.loading
+    Button(
+        onClick = { viewModel.loginWithEmail() },
+        shape = RoundedCornerShape(roundValue),
+        colors = ButtonColors(
+            containerColor = colorResource(id = R.color.purple_fae),
+            contentColor = colorResource(id = R.color.white),
+            disabledContainerColor = colorResource(id = R.color.purple_fae),
+            disabledContentColor = colorResource(id = R.color.white)
+        ),
+        modifier = Modifier
+            .padding(vertical = 16.dp)
+            .border(
+                1.dp,
+                colorResource(id = R.color.white),
+                shape = RoundedCornerShape(roundValue)
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .width(100.dp)
+                .padding(vertical = 4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(R.string.log_in), fontSize = 24.sp)
+            if (loading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .height(2.dp)
+                        .fillMaxWidth(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NoAuthLoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
+    Button(
+        onClick = { /*TODO*/ },
+        shape = RoundedCornerShape(roundValue),
+        colors = ButtonColors(
+            containerColor = colorResource(id = R.color.purple_fae),
+            contentColor = colorResource(id = R.color.white),
+            disabledContainerColor = colorResource(id = R.color.purple_fae),
+            disabledContentColor = colorResource(id = R.color.white)
+        ),
+        modifier = Modifier
+            .padding(vertical = 16.dp)
+            .border(
+                1.dp,
+                colorResource(id = R.color.white),
+                shape = RoundedCornerShape(roundValue)
+            )
+    ) {
+        Text(text = stringResource(R.string.enter_no_login), fontSize = 24.sp)
+    }
+}
+
+@Composable
+private fun RegisterButton(roundValue: Dp, viewModel: LoginScreenViewModel, modifier: Modifier) {
+    Button(
+        onClick = { /*TODO delete sign out and replace with sign up screen nav*/
+            viewModel.logout()
+        },
+        shape = RoundedCornerShape(topStart = roundValue),
+        colors = ButtonColors(
+            containerColor = colorResource(id = R.color.purple_fae),
+            contentColor = colorResource(id = R.color.white),
+            disabledContainerColor = colorResource(id = R.color.purple_fae),
+            disabledContentColor = colorResource(id = R.color.white)
+        ),
+        modifier = modifier
+    ) {
+        Text(text = stringResource(R.string.sign_up_text), fontSize = 24.sp)
     }
 }

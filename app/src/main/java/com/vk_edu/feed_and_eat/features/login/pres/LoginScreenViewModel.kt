@@ -50,8 +50,9 @@ class LoginScreenViewModel : ViewModel() {
             } catch (e: Exception) {
                 onError(e.message ?: EXCEPTION_OCCURRED)
             }
+            _loading.value = false
         }
-        _loading.value = false
+
     }
 
     fun logout() {
@@ -60,7 +61,7 @@ class LoginScreenViewModel : ViewModel() {
                 _authRepo.signOut().collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
-                        is Response.Success -> _signInState.value = true
+                        is Response.Success -> _signInState.value = false
                         is Response.Failure -> onError(response.e.message ?: EXCEPTION_OCCURRED)
                     }
                     Log.d("Taag", response.toString())
@@ -68,8 +69,8 @@ class LoginScreenViewModel : ViewModel() {
             } catch (e: Exception) {
                 onError(e.message ?: EXCEPTION_OCCURRED)
             }
+            _loading.value = false
         }
-        _loading.value = false
     }
 
     private fun onError(message: String) {
