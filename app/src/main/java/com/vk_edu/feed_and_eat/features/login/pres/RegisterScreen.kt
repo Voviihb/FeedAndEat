@@ -74,12 +74,6 @@ fun RegisterScreen(context: Context) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, "Authenticated!", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -182,6 +176,13 @@ fun RegisterScreen(context: Context) {
             )
         LoginButton(roundValue = roundValue, modifier = modifier)
     }
+
+    LaunchedEffect(Unit) {
+        if (viewModel.isUserAuthenticated) {
+            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
 }
 
 
@@ -190,7 +191,7 @@ private fun EmailField(
     roundValue: Dp,
     registerForm: RegisterForm,
     viewModel: RegisterScreenViewModel,
-    errorMsg: String?
+    errorMsg: Exception?
 ) {
     Box(
         modifier = Modifier
@@ -246,7 +247,7 @@ private fun UsernameField(
     roundValue: Dp,
     registerForm: RegisterForm,
     viewModel: RegisterScreenViewModel,
-    errorMsg: String?
+    errorMsg: Exception?
 ) {
     Box(
         modifier = Modifier
@@ -302,7 +303,7 @@ private fun PasswordField(
     registerForm: RegisterForm,
     viewModel: RegisterScreenViewModel,
     passwordVisible: MutableState<Boolean>,
-    errorMsg: String?
+    errorMsg: Exception?
 ) {
     Box(
         modifier = Modifier
@@ -378,7 +379,7 @@ private fun PasswordControlField(
     passwordVisible: MutableState<Boolean>,
     keyboardController: SoftwareKeyboardController?,
     focusRequester: FocusRequester,
-    errorMsg: String?
+    errorMsg: Exception?
 ) {
     Box(
         modifier = Modifier
@@ -438,7 +439,11 @@ private fun PasswordControlField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 4.dp),
-                        text = errorMsg,
+                        text = errorMsg.message ?: if (errorMsg is PasswordDiffersException) {
+                            stringResource(R.string.password_differs)
+                        } else {
+                            stringResource(R.string.exception_occured)
+                        },
                         color = Color.Red
                     )
                     viewModel.password1Changed("")

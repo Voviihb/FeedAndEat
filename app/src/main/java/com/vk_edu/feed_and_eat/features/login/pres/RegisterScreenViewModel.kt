@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -13,17 +12,14 @@ import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.launch
 
 class RegisterScreenViewModel : ViewModel() {
-    private val EXCEPTION_OCCURRED = "Exception occurred!"
-    private val PASSWORD_DIFFERS = "Passwords are not equal!"
-
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
     val registerFormState: State<RegisterForm> = _registerFormState
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
-    private val _errorMessage = mutableStateOf<String?>(null)
-    val errorMessage: State<String?> = _errorMessage
+    private val _errorMessage = mutableStateOf<Exception?>(null)
+    val errorMessage: State<Exception?> = _errorMessage
 
     private val _auth: FirebaseAuth = Firebase.auth
     private val _authRepo = AuthRepoImpl(_auth)
@@ -44,24 +40,23 @@ class RegisterScreenViewModel : ViewModel() {
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> _signUpState.value = true
-                            is Response.Failure -> onError(response.e.message ?: EXCEPTION_OCCURRED)
+                            is Response.Failure -> onError(response.e)
                         }
-                        Log.d("Taag", response.toString())
                     }
 
                 } catch (e: Exception) {
-                    onError(e.message ?: EXCEPTION_OCCURRED)
+                    onError(e)
                 }
 
             } else {
-                onError(PASSWORD_DIFFERS)
+                onError(PasswordDiffersException())
             }
             _loading.value = false
         }
 
     }
 
-    private fun onError(message: String) {
+    private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false
     }

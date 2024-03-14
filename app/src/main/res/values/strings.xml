@@ -17,4 +17,7 @@
     <string name="repeat_password">Повторите пароль</string>
     <string name="error_icon">Error icon</string>
     <string name="press_button_login">После ввода, нажмите кнопку \'Войти\'</string>
+    <string name="exception_occured">Произошла ошибка!</string>
+    <string name="password_differs">Введенные пароли отличаются!</string>
+    <string name="authenticated">Authenticated!</string>
 </resources>

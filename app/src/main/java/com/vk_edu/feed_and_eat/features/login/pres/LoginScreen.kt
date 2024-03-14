@@ -71,12 +71,6 @@ fun LoginScreen(context: Context) {
     val (focusRequester) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, "Authenticated!", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -170,6 +164,13 @@ fun LoginScreen(context: Context) {
         RegisterButton(roundValue = roundValue, viewModel = viewModel, modifier = modifier)
 
     }
+
+    LaunchedEffect(Unit) {
+        if (viewModel.isUserAuthenticated) {
+            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
 }
 
 @Composable
@@ -178,7 +179,7 @@ private fun EmailField(
     loginForm: LoginForm,
     viewModel: LoginScreenViewModel,
     focusRequester: FocusRequester,
-    errorMsg: String?
+    errorMsg: Exception?
 ) {
     Box(
         modifier = Modifier
@@ -237,7 +238,7 @@ private fun PasswordField(
     loginForm: LoginForm,
     viewModel: LoginScreenViewModel,
     focusRequester: FocusRequester,
-    errorMsg: String?,
+    errorMsg: Exception?,
     keyboardController: SoftwareKeyboardController?,
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -283,7 +284,7 @@ private fun PasswordField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 4.dp),
-                        text = errorMsg,
+                        text = errorMsg.message ?: stringResource(R.string.exception_occured),
                         color = Color.Red
                     )
                     viewModel.passwordChanged("")
