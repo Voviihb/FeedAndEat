@@ -55,7 +55,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -68,7 +67,7 @@ fun LoginScreen(context: Context) {
     val loginForm by viewModel.loginFormState
     val errorMsg by viewModel.errorMessage
 
-    val (focusRequester) = FocusRequester.createRefs()
+    val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
@@ -79,7 +78,6 @@ fun LoginScreen(context: Context) {
                 contentScale = ContentScale.FillBounds
             )
     ) {
-        val roundValue = 12.dp
 
         Column(
             modifier = Modifier
@@ -124,7 +122,6 @@ fun LoginScreen(context: Context) {
             ) {
 
                 EmailField(
-                    roundValue = roundValue,
                     loginForm = loginForm,
                     viewModel = viewModel,
                     focusRequester = focusRequester,
@@ -132,7 +129,6 @@ fun LoginScreen(context: Context) {
                 )
 
                 PasswordField(
-                    roundValue = roundValue,
                     loginForm = loginForm,
                     viewModel = viewModel,
                     focusRequester = focusRequester,
@@ -140,7 +136,7 @@ fun LoginScreen(context: Context) {
                     keyboardController = keyboardController
                 )
 
-                LoginButton(roundValue = roundValue, viewModel = viewModel)
+                LoginButton(viewModel = viewModel)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -149,7 +145,7 @@ fun LoginScreen(context: Context) {
                     color = colorResource(id = R.color.white)
                 )
 
-                NoAuthLoginButton(roundValue = roundValue, viewModel = viewModel)
+                NoAuthLoginButton(viewModel = viewModel)
 
             }
         }
@@ -159,9 +155,9 @@ fun LoginScreen(context: Context) {
             .border(
                 1.dp,
                 colorResource(id = R.color.white),
-                shape = RoundedCornerShape(topStart = roundValue)
+                shape = RoundedCornerShape(topStart = 12.dp)
             )
-        RegisterButton(roundValue = roundValue, viewModel = viewModel, modifier = modifier)
+        RegisterButton(viewModel = viewModel, modifier = modifier)
 
     }
 
@@ -175,7 +171,6 @@ fun LoginScreen(context: Context) {
 
 @Composable
 private fun EmailField(
-    roundValue: Dp,
     loginForm: LoginForm,
     viewModel: LoginScreenViewModel,
     focusRequester: FocusRequester,
@@ -185,11 +180,11 @@ private fun EmailField(
         modifier = Modifier
             .width(300.dp)
             .padding(vertical = 8.dp)
-            .clip(RoundedCornerShape(roundValue))
+            .clip(RoundedCornerShape(12.dp))
             .border(
                 2.dp,
                 colorResource(id = R.color.purple_fae),
-                shape = RoundedCornerShape(roundValue)
+                shape = RoundedCornerShape(12.dp)
             )
 
     ) {
@@ -234,7 +229,6 @@ private fun EmailField(
 
 @Composable
 private fun PasswordField(
-    roundValue: Dp,
     loginForm: LoginForm,
     viewModel: LoginScreenViewModel,
     focusRequester: FocusRequester,
@@ -246,11 +240,11 @@ private fun PasswordField(
         modifier = Modifier
             .width(300.dp)
             .padding(vertical = 8.dp)
-            .clip(RoundedCornerShape(roundValue))
+            .clip(RoundedCornerShape(12.dp))
             .border(
                 2.dp,
                 colorResource(id = R.color.purple_fae),
-                shape = RoundedCornerShape(roundValue)
+                shape = RoundedCornerShape(12.dp)
             )
             .background(Color.White)
 
@@ -335,11 +329,11 @@ private fun PasswordField(
 }
 
 @Composable
-private fun LoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
+private fun LoginButton(viewModel: LoginScreenViewModel) {
     val loading by viewModel.loading
     Button(
         onClick = { viewModel.loginWithEmail() },
-        shape = RoundedCornerShape(roundValue),
+        shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
             contentColor = colorResource(id = R.color.white),
@@ -351,7 +345,7 @@ private fun LoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
             .border(
                 1.dp,
                 colorResource(id = R.color.white),
-                shape = RoundedCornerShape(roundValue)
+                shape = RoundedCornerShape(12.dp)
             )
     ) {
         Column(
@@ -373,10 +367,10 @@ private fun LoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
 }
 
 @Composable
-private fun NoAuthLoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
+private fun NoAuthLoginButton(viewModel: LoginScreenViewModel) {
     Button(
         onClick = { /*TODO*/ },
-        shape = RoundedCornerShape(roundValue),
+        shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
             contentColor = colorResource(id = R.color.white),
@@ -388,7 +382,7 @@ private fun NoAuthLoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
             .border(
                 1.dp,
                 colorResource(id = R.color.white),
-                shape = RoundedCornerShape(roundValue)
+                shape = RoundedCornerShape(12.dp)
             )
     ) {
         Text(text = stringResource(R.string.enter_no_login), fontSize = 24.sp)
@@ -396,12 +390,12 @@ private fun NoAuthLoginButton(roundValue: Dp, viewModel: LoginScreenViewModel) {
 }
 
 @Composable
-private fun RegisterButton(roundValue: Dp, viewModel: LoginScreenViewModel, modifier: Modifier) {
+private fun RegisterButton(viewModel: LoginScreenViewModel, modifier: Modifier) {
     Button(
         onClick = { /*TODO delete sign out and replace with sign up screen nav*/
             viewModel.logout()
         },
-        shape = RoundedCornerShape(topStart = roundValue),
+        shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
             contentColor = colorResource(id = R.color.white),

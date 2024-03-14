@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.login.data
 
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
@@ -21,48 +20,33 @@ class AuthRepoImpl @Inject constructor(
 ) : AuthRepository {
     override fun isUserAuthenticatedInFirebase() = auth.currentUser != null
 
-    private fun authRepoTryCatchBlock(func: suspend () -> Task<AuthResult>): Flow<Response<Boolean>> =
+    private fun <T> authRepoTryCatchBlock(func: suspend () -> T): Flow<Response<T>> =
         flow {
             try {
                 emit(Response.Loading)
-                func().await()
-                emit(Response.Success(true))
+                val res = func()
+                emit(Response.Success(res))
             } catch (e: Exception) {
                 emit(Response.Failure(e))
             }
         }
 
-    override fun firebaseSignInAnonymously(): Flow<Response<Boolean>> =
-        authRepoTryCatchBlock { auth.signInAnonymously() }.flowOn(Dispatchers.IO)
+    override fun firebaseSignInAnonymously(): Flow<Response<AuthResult>> =
+        authRepoTryCatchBlock { auth.signInAnonymously().await() }.flowOn(Dispatchers.IO)
 
-    override fun firebaseSignUp(email: String, password: String): Flow<Response<Boolean>> =
-        authRepoTryCatchBlock { auth.createUserWithEmailAndPassword(email, password) }
+    override fun firebaseSignUp(email: String, password: String): Flow<Response<AuthResult>> =
+        authRepoTryCatchBlock { auth.createUserWithEmailAndPassword(email, password).await() }
             .flowOn(Dispatchers.IO)
 
-    override fun firebaseSignIn(email: String, password: String): Flow<Response<Boolean>> =
-        authRepoTryCatchBlock { auth.signInWithEmailAndPassword(email, password) }
+    override fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>> =
+        authRepoTryCatchBlock { auth.signInWithEmailAndPassword(email, password).await() }
             .flowOn(Dispatchers.IO)
 
+    override fun signOutAnonymous(): Flow<Response<Void?>> =
+        authRepoTryCatchBlock { auth.currentUser?.delete()?.await() }.flowOn(Dispatchers.IO)
 
-    override fun signOutAnonymous(): Flow<Response<Boolean>> = flow {
-        try {
-            emit(Response.Loading)
-            auth.currentUser?.delete()?.await()
-            emit(Response.Success(true))
-        } catch (e: Exception) {
-            emit(Response.Failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
-
-    override fun signOut(): Flow<Response<Boolean>> = flow {
-        try {
-            emit(Response.Loading)
-            auth.signOut()
-            emit(Response.Success(true))
-        } catch (e: Exception) {
-            emit(Response.Failure(e))
-        }
-    }.flowOn(Dispatchers.IO)
+    override fun signOut(): Flow<Response<Unit>> =
+        authRepoTryCatchBlock { auth.signOut() }.flowOn(Dispatchers.IO)
 
     override fun getFirebaseAuthState() = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
