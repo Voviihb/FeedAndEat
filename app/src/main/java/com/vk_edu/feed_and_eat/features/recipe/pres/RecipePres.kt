@@ -36,10 +36,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.graphics.ArrowBackButton
 import com.vk_edu.feed_and_eat.common.graphics.BoxofText
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
-import com.vk_edu.feed_and_eat.common.graphics.RatingBarPreview
+import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
+import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 
 
 val LightWhite = Color(red = 0xFC, blue = 0xFC, green = 0xFC)
@@ -83,17 +83,13 @@ fun InfoSurface(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(8.dp)
             ) {
-                for (i in 0..names.size - 1){
-                    item{
-                        Text(
-                            text = stringResource(id = names[i]),
-                            fontSize = 20.sp,
-                            color = Color.Gray
-                        )
-                    }
-                    item {
-                        Text(text = EnergyData[i].toString() + " " + stringResource(id = R.string.gramm))
-                    }
+                items(names.size){ i ->
+                    Text(
+                        text = stringResource(id = names[i]),
+                        fontSize = 20.sp,
+                        color = Color.Gray
+                    )
+                    Text(text = EnergyData[i].toString() + " " + stringResource(id = R.string.gramm))
                 }
             }
         }
@@ -108,7 +104,6 @@ fun BackButtonContainer(
     Tags : List<String>,
     EnergyData : List<Int>,
 ){
-    //    extra container for back button & info
     val surfaceWidth = 350
     Column() {
         LazyRow(modifier = Modifier
@@ -118,7 +113,7 @@ fun BackButtonContainer(
             verticalAlignment = Alignment.Top,
         ) {
             item {
-                ArrowBackButton()
+                SquareArrowButton()
             }
             item {
                 ExpandableInfo(width = surfaceWidth, surface = {
@@ -134,7 +129,6 @@ fun RecipeNameContainer(
     Name : String,
     PictureHeight : Int
 ){
-    //    container for recipe name
     Column(modifier = Modifier,
         verticalArrangement = Arrangement.Top
     ) {
@@ -161,7 +155,6 @@ fun StartCookingContainer(
     Ingredients : List<String>,
     Steps : List<String>
 ){
-    //        Info about Recipe + Start cooking
     Column(
         modifier = Modifier
             .height(40.dp)
@@ -208,8 +201,7 @@ fun StartCookingContainer(
 }
 
 @Composable
-fun ButtonsContainer(){
-//        Buttons add to collection
+fun AddCollectionButtons(){
     Column(
         modifier = Modifier
             .padding(15.dp)
@@ -261,7 +253,6 @@ fun ButtonsContainer(){
 fun TextContainer(
     Description : List<String>,
 ){
-    //Container which represents recipe description
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -321,7 +312,7 @@ fun RatingContainer(
             .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.width(15.dp))
-            RatingBarPreview(Rating)
+            RatingBarPres(Rating)
             Spacer(modifier = Modifier.width(5.dp))
             Text(Rating.toString(), modifier = Modifier
                 .background(Color.Transparent),
@@ -370,7 +361,7 @@ fun RecipePres(
         )
         RatingContainer(Rating = Rating, Cooked = Cooked)
         TextContainer(Description = Description)
-        ButtonsContainer()
+        AddCollectionButtons()
         StartCookingContainer(Ingredients = Ingredients, Steps = Steps)
     }
     RecipeNameContainer(Name = Name, PictureHeight = PictureHeight)

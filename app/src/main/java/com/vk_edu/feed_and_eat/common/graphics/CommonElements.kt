@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
@@ -20,16 +19,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
-
-
-val plug: () -> Unit = {Log.d("PLUG", "plug pressed")}
-val turquoise = Color(red = 0x00, blue = 0xB6, green = 0xBB)
+import com.vk_edu.feed_and_eat.features.recipe.pres.Turquoise
 
 
 @Composable
-fun ArrowBackButton(
+fun SquareArrowButton(
     modifier: Modifier = Modifier,
-    onclick: () -> Unit = plug,
+    onclick: () -> Unit = {},
 ){
     Button(
         onClick = onclick,
@@ -38,8 +34,8 @@ fun ArrowBackButton(
             .width(60.dp)
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .rightBorder(3.dp, turquoise)
-            .bottomBorder(3.dp, turquoise),
+            .rightBorder(3.dp, Turquoise)
+            .bottomBorder(3.dp, Turquoise),
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
@@ -47,7 +43,7 @@ fun ArrowBackButton(
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
             contentDescription = stringResource(id = R.string.back),
-            tint = turquoise,
+            tint = Turquoise,
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
@@ -58,7 +54,7 @@ fun ArrowBackButton(
 @Composable
 fun InfoSquareButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = plug,
+    onClick: () -> Unit = {},
 ){
     Button(
         onClick = onClick,
@@ -67,10 +63,10 @@ fun InfoSquareButton(
             .width(60.dp)
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .leftBorder(3.dp, turquoise)
-            .bottomBorder(3.dp, turquoise)
-            .topBorder(3.dp, turquoise)
-            .bottomBorder(3.dp, turquoise),
+            .leftBorder(3.dp, Turquoise)
+            .bottomBorder(3.dp, Turquoise)
+            .topBorder(3.dp, Turquoise)
+            .bottomBorder(3.dp, Turquoise),
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
@@ -78,7 +74,7 @@ fun InfoSquareButton(
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = stringResource(id = R.string.info),
-            tint = turquoise,
+            tint = Turquoise,
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)

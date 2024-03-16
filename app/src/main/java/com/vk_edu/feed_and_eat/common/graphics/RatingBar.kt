@@ -109,7 +109,7 @@ private val starPath = { size: Float ->
 
 
 @Composable
-fun RatingBarPreview(rating : Double) {
+fun RatingBarPres(rating : Double) {
     Column(
         Modifier
             .background(Color.Transparent)
