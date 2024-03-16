@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 
@@ -24,13 +25,14 @@ import com.vk_edu.feed_and_eat.R
 val plug: () -> Unit = {Log.d("PLUG", "plug pressed")}
 val turquoise = Color(red = 0x00, blue = 0xB6, green = 0xBB)
 
+
 @Composable
-fun BackSquareButton(
+fun ArrowBackButton(
     modifier: Modifier = Modifier,
-    func: () -> Unit = plug,
+    onclick: () -> Unit = plug,
 ){
     Button(
-        onClick = func,
+        onClick = onclick,
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
@@ -44,7 +46,7 @@ fun BackSquareButton(
     ){
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.back),
             tint = turquoise,
             modifier = Modifier
                 .height(50.dp)
@@ -56,10 +58,10 @@ fun BackSquareButton(
 @Composable
 fun InfoSquareButton(
     modifier: Modifier = Modifier,
-    func: () -> Unit = plug,
+    onClick: () -> Unit = plug,
 ){
     Button(
-        onClick = func,
+        onClick = onClick,
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
@@ -75,7 +77,7 @@ fun InfoSquareButton(
     ){
         Icon(
             imageVector = Icons.Default.Info,
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.info),
             tint = turquoise,
             modifier = Modifier
                 .height(50.dp)

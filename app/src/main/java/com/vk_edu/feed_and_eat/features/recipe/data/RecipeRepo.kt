@@ -1,38 +1,15 @@
 package com.vk_edu.feed_and_eat.features.recipe.data
 
-import androidx.compose.runtime.Composable
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.recipe.pres.RecipePres
+import com.vk_edu.feed_and_eat.features.recipe.domain.RecipeForm
 
 class RecipeRepo {
-    val description : List<String>
-    val ingredients : List<String>
-    val steps : List<String>
-    val tags : List<String>
-    val energyData : List<Int>
-    @Composable
-    fun RecipeData(){
-        RecipePres(
-            Picture = R.drawable.recipe,
-            Cooked = 1234,
-            PictureHeight = 300,
-            Rating = 3.3,
-            Description = description,
-            InFavor = false,
-            Name = "Бараньи ребрышки по-узбекски",
-            Steps = steps,
-            Ingredients = ingredients,
-            EnergyData = energyData,
-            Tags = tags,
-        )
-    }
-
-    init {
-        description = listOf("Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
+    fun getRecipe() : RecipeForm {
+        val description = listOf("Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
             "Рецепт рецепт рецепт",
             "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
             "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт")
-        ingredients = listOf(
+        val ingredients = listOf(
             "ingred 1 hwerfhsdjknwausfvnhzxkajshpvnsjdz", "ingred 2",
             "ingred 1", "ingred 2",
             "ingred 1", "ingred 2",
@@ -42,7 +19,7 @@ class RecipeRepo {
             "ingred 1", "ingred 2",
             "ingred 1", "ingred 2",
         )
-        steps = listOf(
+        val steps = listOf(
             "step 1", "step 2",
             "step 1", "step 2",
             "step 1", "step 2",
@@ -52,8 +29,8 @@ class RecipeRepo {
             "step 1", "step 2",
             "step 1", "step 2",
         )
-        energyData = listOf(38, 38, 38, 38)
-        tags = listOf(
+        val energyData = listOf(38, 38, 38, 38)
+        val tags = listOf(
             "tag1", "tag2",
             "tag1", "tag2",
             "tag1", "tag2",
@@ -61,5 +38,20 @@ class RecipeRepo {
             "tag1", "tag2",
             "tag1", "tag2",
         )
+
+        val form = RecipeForm(
+                Picture = R.drawable.recipe,
+                Cooked = 1234,
+                PictureHeight = 300,
+                Rating = 3.3,
+                Description = description,
+                InFavor = false,
+                Name = "Бараньи ребрышки по-узбекски",
+                Steps = steps,
+                Ingredients = ingredients,
+                EnergyData = energyData,
+                Tags = tags,
+            )
+        return form
     }
 }

@@ -14,4 +14,7 @@
     <string name="proteins">Белкт</string>
     <string name="carbons">Углеводы</string>
     <string name="gramm">гр</string>
+    <string name="info">информация</string>
+    <string name="image">так выглядит рецепт</string>
+    <string name="back">вернуться назад</string>
 </resources>

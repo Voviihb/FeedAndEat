@@ -27,7 +27,6 @@ fun TextBox(text : String){
         modifier = Modifier
             .padding(5.dp)
             .width(80.dp)
-//            .fillMaxHeight()
             .background(LightWhite, shape = RoundedCornerShape(5.dp))
             .clip(RoundedCornerShape(5.dp)),
     )
