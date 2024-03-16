@@ -87,8 +87,8 @@ private val starPath = { size: Float ->
         var rot: Double = Math.PI / 2 * 3
         val cx: Float = size / 2
         val cy: Float = size / 20 * 11
-        var x: Float = cx
-        var y: Float = cy
+        var x: Float
+        var y: Float
         val step = Math.PI / 5
 
         moveTo(cx, cy - outerRadius)

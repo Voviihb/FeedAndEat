@@ -50,9 +50,9 @@ val LightBlue = Color(red = 0xCF, blue = 0xFF, green = 0xFC)
 @Composable
 fun InfoSurface(
     surfaceWidth : Int,
-    Ingredients : List<String>,
-    Tags : List<String>,
-    EnergyData : List<Int>,){
+    ingredients : List<String>,
+    tags : List<String>,
+    energyData : List<Int>,){
     val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons)
     Surface(
         modifier = Modifier
@@ -69,11 +69,11 @@ fun InfoSurface(
             Text(stringResource(id = R.string.ingridients),
                 modifier = Modifier.padding(5.dp)
             )
-            BoxofText(bigText = Ingredients)
+            BoxofText(bigText = ingredients)
             Text(stringResource(id = R.string.tags),
                 modifier = Modifier.padding(5.dp)
             )
-            BoxofText(bigText = Tags)
+            BoxofText(bigText = tags)
             Text(stringResource(id = R.string.energy_value),
                 modifier = Modifier.padding(5.dp),
                 fontSize = 20.sp,
@@ -89,7 +89,7 @@ fun InfoSurface(
                         fontSize = 20.sp,
                         color = Color.Gray
                     )
-                    Text(text = EnergyData[i].toString() + " " + stringResource(id = R.string.gramm))
+                    Text(text = energyData[i].toString() + " " + stringResource(id = R.string.gramm))
                 }
             }
         }
@@ -100,12 +100,12 @@ fun InfoSurface(
 
 @Composable
 fun BackButtonContainer(
-    Ingredients : List<String>,
-    Tags : List<String>,
-    EnergyData : List<Int>,
+    ingredients : List<String>,
+    tags : List<String>,
+    energyData : List<Int>,
 ){
     val surfaceWidth = 350
-    Column() {
+    Column {
         LazyRow(modifier = Modifier
             .background(Color.Transparent)
             .fillMaxWidth(),
@@ -117,7 +117,7 @@ fun BackButtonContainer(
             }
             item {
                 ExpandableInfo(width = surfaceWidth, surface = {
-                    InfoSurface(surfaceWidth, Ingredients, Tags, EnergyData)
+                    InfoSurface(surfaceWidth, ingredients, tags, energyData)
                 })
             }
         }
@@ -126,19 +126,19 @@ fun BackButtonContainer(
 
 @Composable
 fun RecipeNameContainer(
-    Name : String,
-    PictureHeight : Int
+    name : String,
+    pictureHeight : Int
 ){
     Column(modifier = Modifier,
         verticalArrangement = Arrangement.Top
     ) {
         LazyColumn(modifier = Modifier
-            .height(PictureHeight.dp)
+            .height(pictureHeight.dp)
             .fillMaxWidth(),
             verticalArrangement = Arrangement.Bottom
         ){
             item{
-                Text(text = Name,
+                Text(text = name,
                     fontSize = 25.sp,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -152,8 +152,8 @@ fun RecipeNameContainer(
 
 @Composable
 fun StartCookingContainer(
-    Ingredients : List<String>,
-    Steps : List<String>
+    ingredients : List<String>,
+    steps : List<String>
 ){
     Column(
         modifier = Modifier
@@ -170,7 +170,7 @@ fun StartCookingContainer(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ){
-            Text(text = stringResource(R.string.ingridients) + ":" + Ingredients.size,
+            Text(text = stringResource(R.string.ingridients) + ":" + ingredients.size,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 10.dp),
@@ -190,7 +190,7 @@ fun StartCookingContainer(
                     textAlign = TextAlign.Center
                 )
             }
-            Text(text = stringResource(R.string.steps) + ":" + Steps.size,
+            Text(text = stringResource(R.string.steps) + ":" + steps.size,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 10.dp),
@@ -251,7 +251,7 @@ fun AddCollectionButtons(){
 
 @Composable
 fun TextContainer(
-    Description : List<String>,
+    description : List<String>,
 ){
     Column(
         modifier = Modifier
@@ -285,10 +285,10 @@ fun TextContainer(
                 ),
 
             ){
-            for (i in 0..(Description.size - 1)){
+            for (i in description.indices){
                 item {
                     Text(
-                        text = (i + 1).toString() + ". " + Description[i],
+                        text = (i + 1).toString() + ". " + description[i],
                         modifier = Modifier
                             .padding(start = 15.dp, end = 25.dp, top = 10.dp),
                         fontSize = 20.sp
@@ -301,8 +301,8 @@ fun TextContainer(
 
 @Composable
 fun RatingContainer(
-    Rating : Double,
-    Cooked : Int,
+    rating : Double,
+    cooked : Int,
 ){
     Column(modifier = Modifier
         .height(50.dp)
@@ -312,9 +312,9 @@ fun RatingContainer(
             .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.width(15.dp))
-            RatingBarPres(Rating)
+            RatingBarPres(rating)
             Spacer(modifier = Modifier.width(5.dp))
-            Text(Rating.toString(), modifier = Modifier
+            Text(rating.toString(), modifier = Modifier
                 .background(Color.Transparent),
                 fontSize = 25.sp
             )
@@ -326,7 +326,7 @@ fun RatingContainer(
                     .size(50.dp)
             )
             Text(
-                text = Cooked.toString(),
+                text = cooked.toString(),
                 fontSize = 25.sp
             )
         }
@@ -336,34 +336,33 @@ fun RatingContainer(
 
 @Composable
 fun RecipePres(
-    Picture : Int,
-    Rating : Double,
-    Cooked : Int,
-    Description : List<String>,
-    InFavor : Boolean,
-    Name : String,
-    Ingredients : List<String>,
-    Steps : List<String>,
-    Tags : List<String>,
-    EnergyData : List<Int>,
-    PictureHeight : Int,
+    picture : Int,
+    rating : Double,
+    cooked : Int,
+    description : List<String>,
+    name : String,
+    ingredients : List<String>,
+    steps : List<String>,
+    tags : List<String>,
+    energyData : List<Int>,
+    pictureHeight : Int,
 ) {
     Column(modifier = Modifier
         .fillMaxSize()
         .background(LightWhite)
     ) {
         Image(
-            painter = painterResource(id = Picture),
+            painter = painterResource(id = picture),
             contentDescription = stringResource(id = R.string.image),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(PictureHeight.dp)
+                .height(pictureHeight.dp)
         )
-        RatingContainer(Rating = Rating, Cooked = Cooked)
-        TextContainer(Description = Description)
+        RatingContainer(rating, cooked)
+        TextContainer(description)
         AddCollectionButtons()
-        StartCookingContainer(Ingredients = Ingredients, Steps = Steps)
+        StartCookingContainer(ingredients, steps)
     }
-    RecipeNameContainer(Name = Name, PictureHeight = PictureHeight)
-    BackButtonContainer(Ingredients, Tags, EnergyData)
+    RecipeNameContainer(name, pictureHeight)
+    BackButtonContainer(ingredients, tags, energyData)
 }

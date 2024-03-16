@@ -4,11 +4,13 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.recipe.domain.RecipeForm
 
 class RecipeRepo {
-    fun getRecipe() : RecipeForm {
-        val description = listOf("Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
+    fun getRecipe(): RecipeForm {
+        val description = listOf(
+            "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
             "Рецепт рецепт рецепт",
             "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
-            "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт")
+            "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт"
+        )
         val ingredients = listOf(
             "ingred 1 hwerfhsdjknwausfvnhzxkajshpvnsjdz", "ingred 2",
             "ingred 1", "ingred 2",
@@ -39,19 +41,17 @@ class RecipeRepo {
             "tag1", "tag2",
         )
 
-        val form = RecipeForm(
-                Picture = R.drawable.recipe,
-                Cooked = 1234,
-                PictureHeight = 300,
-                Rating = 3.3,
-                Description = description,
-                InFavor = false,
-                Name = "Бараньи ребрышки по-узбекски",
-                Steps = steps,
-                Ingredients = ingredients,
-                EnergyData = energyData,
-                Tags = tags,
-            )
-        return form
+        return RecipeForm(
+            picture = R.drawable.recipe,
+            cooked = 1234,
+            pictureHeight = 300,
+            rating = 3.3,
+            description = description,
+            name = "Бараньи ребрышки по-узбекски",
+            steps = steps,
+            ingredients = ingredients,
+            energyData = energyData,
+            tags = tags,
+        )
     }
 }
