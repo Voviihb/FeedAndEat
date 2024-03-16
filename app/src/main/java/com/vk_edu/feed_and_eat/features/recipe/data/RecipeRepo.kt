@@ -8,6 +8,8 @@ class RecipeRepo {
     val description : List<String>
     val ingredients : List<String>
     val steps : List<String>
+    val tags : List<String>
+    val energyData : List<Int>
     @Composable
     fun RecipeData(){
         RecipePres(
@@ -20,6 +22,8 @@ class RecipeRepo {
             Name = "Бараньи ребрышки по-узбекски",
             Steps = steps,
             Ingredients = ingredients,
+            EnergyData = energyData,
+            Tags = tags,
         )
     }
 
@@ -28,7 +32,34 @@ class RecipeRepo {
             "Рецепт рецепт рецепт",
             "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
             "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт")
-        ingredients = listOf("ingred 1", "ingred 2")
-        steps = listOf("step 1", "step 2")
+        ingredients = listOf(
+            "ingred 1 hwerfhsdjknwausfvnhzxkajshpvnsjdz", "ingred 2",
+            "ingred 1", "ingred 2",
+            "ingred 1", "ingred 2",
+            "ingred 1", "ingred 2",
+            "ingred 1", "ingred 2",
+            "ingred 1", "ingred 2",
+            "ingred 1", "ingred 2",
+            "ingred 1", "ingred 2",
+        )
+        steps = listOf(
+            "step 1", "step 2",
+            "step 1", "step 2",
+            "step 1", "step 2",
+            "step 1", "step 2",
+            "step 1", "step 2",
+            "step 1", "step 2",
+            "step 1", "step 2",
+            "step 1", "step 2",
+        )
+        energyData = listOf(38, 38, 38, 38)
+        tags = listOf(
+            "tag1", "tag2",
+            "tag1", "tag2",
+            "tag1", "tag2",
+            "tag1", "tag2",
+            "tag1", "tag2",
+            "tag1", "tag2",
+        )
     }
 }

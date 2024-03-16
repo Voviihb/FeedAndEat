@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,9 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,27 +37,100 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BackSquareButton
-import com.vk_edu.feed_and_eat.common.graphics.InfoSquareButton
+import com.vk_edu.feed_and_eat.common.graphics.BoxofText
+import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPreview
 
+
+
+val LightWhite = Color(red = 0xFC, blue = 0xFC, green = 0xFC)
+val Turquoise = Color(red = 0x00, blue = 0xB6, green = 0xBB)
+val LightBlue = Color(red = 0xCF, blue = 0xFF, green = 0xFC)
+
+
 @Composable
-fun BackButtonContainer(){
+fun InfoSurface(
+    surfaceWidth : Int,
+    Ingredients : List<String>,
+                Tags : List<String>,
+                EnergyData : List<Int>,){
+    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons)
+    Surface(
+        modifier = Modifier
+            .padding(8.dp)
+            .background(Color.Red)
+            .width(surfaceWidth.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
+            Text(stringResource(id = R.string.ingridients),
+                modifier = Modifier.padding(5.dp)
+                )
+            BoxofText(bigText = Ingredients)
+            Text(stringResource(id = R.string.tags),
+                modifier = Modifier.padding(5.dp)
+                )
+            BoxofText(bigText = Tags)
+            Text(stringResource(id = R.string.energy_value),
+                modifier = Modifier.padding(5.dp),
+                fontSize = 20.sp,
+                color = Color.Gray
+                )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp)
+            ) {
+                for (i in 0..names.size - 1){
+                    item{
+                        Text(
+                            text = stringResource(id = names[i]),
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
+                    }
+                    item {
+                        Text(text = EnergyData[i].toString() + " " + stringResource(id = R.string.gramm))
+                    }
+                }
+//                item{
+//                    Text(text = "1")
+//                    }
+//                item {
+//                    Text(text = "2")
+//                    }
+            }
+        }
+    }
+}
+
+
+
+@Composable
+fun BackButtonContainer(
+    Ingredients : List<String>,
+    Tags : List<String>,
+    EnergyData : List<Int>,
+    ){
     //    extra container for back button & info
+    val surfaceWidth = 350
     Column() {
-//        Spacer(modifier = Modifier.height(20.dp))
         LazyRow(modifier = Modifier
             .background(Color.Transparent)
-            .height(60.dp)
             .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             item {
-//                Spacer(Modifier.width(20.dp))
                 BackSquareButton()
             }
             item {
-                InfoSquareButton()
+                ExpandableInfo(width = surfaceWidth, surface = {
+                    InfoSurface(surfaceWidth, Ingredients, Tags, EnergyData)
+                })
             }
         }
     }
@@ -143,8 +220,6 @@ fun ButtonsContainer(){
     Column(
         modifier = Modifier
             .padding(15.dp)
-//                .clip(shape = RoundedCornerShape(10.dp))
-//                .background(Color.Yellow, shape = RoundedCornerShape(10.dp))
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,7 +235,10 @@ fun ButtonsContainer(){
         ) {
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
-                colors = ButtonColors(Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF), Color.White, Color.White, Color.Black),
+                colors = ButtonColors(Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
+                    Color.White,
+                    Color.White,
+                    Color.Black),
                 modifier = Modifier
                     .weight(1f)
                     .height(30.dp)
@@ -282,7 +360,9 @@ fun RecipePres(
     Name : String,
     Ingredients : List<String>,
     Steps : List<String>,
-    PictureHeight : Int
+    Tags : List<String>,
+    EnergyData : List<Int>,
+    PictureHeight : Int,
     ) {
 //    global container
     Column(modifier = Modifier
@@ -303,5 +383,5 @@ fun RecipePres(
 
     }//end of global container
     RecipeNameContainer(Name = Name, PictureHeight = PictureHeight)
-    BackButtonContainer()
+    BackButtonContainer(Ingredients, Tags, EnergyData)
 }
