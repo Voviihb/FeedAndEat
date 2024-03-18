@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun RatingBar(
@@ -93,13 +95,13 @@ private val starPath = { size: Float ->
 
         moveTo(cx, cy - outerRadius)
         repeat(5) {
-            x = (cx + Math.cos(rot) * outerRadius).toFloat()
-            y = (cy + Math.sin(rot) * outerRadius).toFloat()
+            x = (cx + cos(rot) * outerRadius).toFloat()
+            y = (cy + sin(rot) * outerRadius).toFloat()
             lineTo(x, y)
             rot += step
 
-            x = (cx + Math.cos(rot) * innerRadius).toFloat()
-            y = (cy + Math.sin(rot) * innerRadius).toFloat()
+            x = (cx + cos(rot) * innerRadius).toFloat()
+            y = (cy + sin(rot) * innerRadius).toFloat()
             lineTo(x, y)
             rot += step
         }

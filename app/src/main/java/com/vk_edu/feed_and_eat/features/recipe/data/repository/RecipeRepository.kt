@@ -1,10 +1,10 @@
-package com.vk_edu.feed_and_eat.features.recipe.data
+package com.vk_edu.feed_and_eat.features.recipe.data.repository
 
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.recipe.domain.RecipeForm
+import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 
 class RecipeRepo {
-    fun getRecipe(): RecipeForm {
+    suspend fun getRecipe(): RecipeDataModel {
         val description = listOf(
             "Рецепт рецепт рецепт рецепт рецепт рецепт рецепт рецепт",
             "Рецепт рецепт рецепт",
@@ -41,7 +41,7 @@ class RecipeRepo {
             "tag1", "tag2",
         )
 
-        return RecipeForm(
+        return RecipeDataModel(
             picture = R.drawable.recipe,
             cooked = 1234,
             pictureHeight = 300,

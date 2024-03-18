@@ -1,8 +1,10 @@
-package com.vk_edu.feed_and_eat.features.recipe.domain
+package com.vk_edu.feed_and_eat.features.recipe.domain.models
 
+interface RecipeInfo{
+    suspend fun getRecipe(): RecipeForm
+}
 
-
-class RecipeForm(
+data class RecipeForm(
     val picture: Int,
     val rating: Double,
     val cooked: Int,

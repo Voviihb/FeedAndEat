@@ -30,29 +30,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoxofText
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
+import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 
 
-val LightWhite = Color(red = 0xFC, blue = 0xFC, green = 0xFC)
-val Turquoise = Color(red = 0x00, blue = 0xB6, green = 0xBB)
-val LightBlue = Color(red = 0xCF, blue = 0xFF, green = 0xFC)
+@Composable
+fun lightWhite(): Color {
+    return Color(red = 0xFC, green = 0xFC, blue = 0xFC)
+}
+
+@Composable
+fun turquoise(): Color {
+    return Color(red = 0x00, green = 0xB6, blue = 0xBB)
+}
+
+@Composable
+fun lightBlue(): Color {
+    return Color(red = 0xCF, green = 0xFF, blue = 0xFC)
+}
 
 
 @Composable
 fun InfoSurface(
     surfaceWidth : Int,
-    ingredients : List<String>,
-    tags : List<String>,
-    energyData : List<Int>,){
+    model : RecipeDataModel,
+){
+    val ingredients = model.ingredients
+    val tags = model.tags
+    val energyData = model.energyData
     val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons)
     Surface(
         modifier = Modifier
@@ -100,11 +116,8 @@ fun InfoSurface(
 
 @Composable
 fun BackButtonContainer(
-    ingredients : List<String>,
-    tags : List<String>,
-    energyData : List<Int>,
+    model: RecipeDataModel
 ){
-    val surfaceWidth = 350
     Column {
         LazyRow(modifier = Modifier
             .background(Color.Transparent)
@@ -116,8 +129,8 @@ fun BackButtonContainer(
                 SquareArrowButton()
             }
             item {
-                ExpandableInfo(width = surfaceWidth, surface = {
-                    InfoSurface(surfaceWidth, ingredients, tags, energyData)
+                ExpandableInfo(width = 350, surface = {
+                    InfoSurface(350, model)
                 })
             }
         }
@@ -125,26 +138,32 @@ fun BackButtonContainer(
 }
 
 @Composable
-fun RecipeNameContainer(
-    name : String,
-    pictureHeight : Int
+fun RecipeImageContainer(
+    model : RecipeDataModel
 ){
-    Column(modifier = Modifier,
+    Column(modifier = Modifier.background(Color.Transparent),
         verticalArrangement = Arrangement.Top
     ) {
-        LazyColumn(modifier = Modifier
-            .height(pictureHeight.dp)
-            .fillMaxWidth(),
-            verticalArrangement = Arrangement.Bottom
+        Image(
+            painter = painterResource(id = model.picture),
+            contentDescription = stringResource(id = R.string.image),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+            )
+        LazyColumn(
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier
         ){
             item{
-                Text(text = name,
+                Text(text = model.name,
                     fontSize = 25.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(35.dp)
                         .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xBF)),
-                    textAlign = TextAlign.Center)
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -152,9 +171,10 @@ fun RecipeNameContainer(
 
 @Composable
 fun StartCookingContainer(
-    ingredients : List<String>,
-    steps : List<String>
+    model: RecipeDataModel
 ){
+    val steps = model.steps
+    val ingredients = model.ingredients
     Column(
         modifier = Modifier
             .height(40.dp)
@@ -251,8 +271,9 @@ fun AddCollectionButtons(){
 
 @Composable
 fun TextContainer(
-    description : List<String>,
+    model : RecipeDataModel
 ){
+    val description = model.description
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,15 +306,13 @@ fun TextContainer(
                 ),
 
             ){
-            for (i in description.indices){
-                item {
-                    Text(
-                        text = (i + 1).toString() + ". " + description[i],
-                        modifier = Modifier
-                            .padding(start = 15.dp, end = 25.dp, top = 10.dp),
-                        fontSize = 20.sp
-                    )
-                }
+            items(description.size){ index ->
+                Text(
+                    text = (index + 1).toString() + ". " + description[index],
+                    modifier = Modifier
+                        .padding(start = 15.dp, end = 25.dp, top = 10.dp),
+                    fontSize = 20.sp
+                )
             }
         }
     }
@@ -301,10 +320,10 @@ fun TextContainer(
 
 @Composable
 fun RatingContainer(
-    rating : Double,
-    cooked : Int,
+    model : RecipeDataModel
 ){
-    Column(modifier = Modifier
+    Column(
+        modifier = Modifier
         .height(50.dp)
     ){
         Spacer(modifier = Modifier.height(20.dp))
@@ -312,9 +331,9 @@ fun RatingContainer(
             .fillMaxWidth()
         ) {
             Spacer(modifier = Modifier.width(15.dp))
-            RatingBarPres(rating)
+            RatingBarPres(model.rating)
             Spacer(modifier = Modifier.width(5.dp))
-            Text(rating.toString(), modifier = Modifier
+            Text(model.rating.toString(), modifier = Modifier
                 .background(Color.Transparent),
                 fontSize = 25.sp
             )
@@ -326,7 +345,7 @@ fun RatingContainer(
                     .size(50.dp)
             )
             Text(
-                text = cooked.toString(),
+                text = model.cooked.toString(),
                 fontSize = 25.sp
             )
         }
@@ -335,34 +354,26 @@ fun RatingContainer(
 
 
 @Composable
-fun RecipePres(
-    picture : Int,
-    rating : Double,
-    cooked : Int,
-    description : List<String>,
-    name : String,
-    ingredients : List<String>,
-    steps : List<String>,
-    tags : List<String>,
-    energyData : List<Int>,
-    pictureHeight : Int,
-) {
+fun RecipeScreen() {
+    val viewModel: RecipeScreenViewModel = viewModel()
+    viewModel.getRecipe()
+    val model = viewModel.recipe.value
+
     Column(modifier = Modifier
-        .fillMaxSize()
-        .background(LightWhite)
-    ) {
-        Image(
-            painter = painterResource(id = picture),
-            contentDescription = stringResource(id = R.string.image),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(pictureHeight.dp)
-        )
-        RatingContainer(rating, cooked)
-        TextContainer(description)
-        AddCollectionButtons()
-        StartCookingContainer(ingredients, steps)
+            .fillMaxSize()
+            .background(lightWhite())
+        ) {
+            RecipeImageContainer(model)
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                RatingContainer(model)
+                TextContainer(model)
+                AddCollectionButtons()
+                StartCookingContainer(model)
+            }
+        }
+        BackButtonContainer(model)
     }
-    RecipeNameContainer(name, pictureHeight)
-    BackButtonContainer(ingredients, tags, energyData)
-}

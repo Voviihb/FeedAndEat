@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.vk_edu.feed_and_eat.features.recipe.pres.RecipeScreenViewModel
+import com.vk_edu.feed_and_eat.features.recipe.pres.RecipeScreen
 import com.vk_edu.feed_and_eat.ui.theme.FeedAndEatTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier,
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RecipeScreenViewModel()
+                    RecipeScreen()
                 }
             }
         }

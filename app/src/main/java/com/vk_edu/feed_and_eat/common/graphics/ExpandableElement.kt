@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 fun ExpandableInfo(width : Int, surface : @Composable () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     val xOffset by animateDpAsState(targetValue = if (expanded) (0).dp else (width - 60).dp,
-        animationSpec = tween(durationMillis = 500)
+        animationSpec = tween(durationMillis = 500), label = ""
     )
 
     Surface(
