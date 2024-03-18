@@ -4,14 +4,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginScreenViewModel : ViewModel() {
+@HiltViewModel
+class LoginScreenViewModel @Inject constructor(
+    private val _authRepo: AuthRepoImpl
+) : ViewModel() {
     private val _loginFormState = mutableStateOf(LoginForm("", ""))
     val loginFormState: State<LoginForm> = _loginFormState
 
@@ -20,9 +22,6 @@ class LoginScreenViewModel : ViewModel() {
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
-
-    private val _auth: FirebaseAuth = Firebase.auth
-    private val _authRepo = AuthRepoImpl(_auth)
 
     private val _signInState = mutableStateOf(false)
     val signInState: State<Boolean> = _signInState
