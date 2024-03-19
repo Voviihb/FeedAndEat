@@ -19,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.recipe.pres.turquoise
 
 
 @Composable
@@ -27,6 +26,7 @@ fun SquareArrowButton(
     modifier: Modifier = Modifier,
     onclick: () -> Unit = {},
 ){
+    val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
         onClick = onclick,
         modifier = modifier
@@ -34,8 +34,8 @@ fun SquareArrowButton(
             .width(60.dp)
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .rightBorder(3.dp, turquoise())
-            .bottomBorder(3.dp, turquoise()),
+            .rightBorder(3.dp, turquoise)
+            .bottomBorder(3.dp, turquoise),
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
@@ -43,7 +43,7 @@ fun SquareArrowButton(
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
             contentDescription = stringResource(id = R.string.back),
-            tint = turquoise(),
+            tint = turquoise,
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
@@ -56,6 +56,7 @@ fun InfoSquareButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ){
+    val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
         onClick = onClick,
         modifier = modifier
@@ -63,10 +64,10 @@ fun InfoSquareButton(
             .width(60.dp)
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .leftBorder(3.dp, turquoise())
-            .bottomBorder(3.dp, turquoise())
-            .topBorder(3.dp, turquoise())
-            .bottomBorder(3.dp, turquoise()),
+            .leftBorder(3.dp, turquoise)
+            .bottomBorder(3.dp, turquoise)
+            .topBorder(3.dp, turquoise)
+            .bottomBorder(3.dp, turquoise),
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
@@ -74,7 +75,7 @@ fun InfoSquareButton(
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = stringResource(id = R.string.info),
-            tint = turquoise(),
+            tint = turquoise,
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)

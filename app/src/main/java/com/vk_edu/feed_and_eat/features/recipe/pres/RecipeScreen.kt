@@ -46,22 +46,6 @@ import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 
 
 @Composable
-fun lightWhite(): Color {
-    return Color(red = 0xFC, green = 0xFC, blue = 0xFC)
-}
-
-@Composable
-fun turquoise(): Color {
-    return Color(red = 0x00, green = 0xB6, blue = 0xBB)
-}
-
-@Composable
-fun lightBlue(): Color {
-    return Color(red = 0xCF, green = 0xFF, blue = 0xFC)
-}
-
-
-@Composable
 fun InfoSurface(
     surfaceWidth : Int,
     model : RecipeDataModel,
@@ -355,13 +339,14 @@ fun RatingContainer(
 
 @Composable
 fun RecipeScreen() {
+    val lightWhite =  Color(red = 0xFC, green = 0xFC, blue = 0xFC)
     val viewModel: RecipeScreenViewModel = viewModel()
     viewModel.getRecipe()
     val model = viewModel.recipe.value
 
     Column(modifier = Modifier
             .fillMaxSize()
-            .background(lightWhite())
+            .background(lightWhite)
         ) {
             RecipeImageContainer(model)
             Column(
