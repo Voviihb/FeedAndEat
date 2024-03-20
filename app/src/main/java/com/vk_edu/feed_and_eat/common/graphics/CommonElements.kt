@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -29,16 +30,17 @@ fun SquareArrowButton(
     val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
         onClick = onclick,
+        contentPadding = PaddingValues(0.dp),
+        shape = RectangleShape,
+        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
+            .border(2.dp,
+                color = turquoise,
+                shape = RoundedCornerShape(5.dp))
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .rightBorder(3.dp, turquoise)
-            .bottomBorder(3.dp, turquoise),
-        contentPadding = PaddingValues(0.dp),
-        shape = RectangleShape,
-        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
     ){
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
@@ -59,18 +61,17 @@ fun InfoSquareButton(
     val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
         onClick = onClick,
+        contentPadding = PaddingValues(0.dp),
+        shape = RectangleShape,
+        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .leftBorder(3.dp, turquoise)
-            .bottomBorder(3.dp, turquoise)
-            .topBorder(3.dp, turquoise)
-            .bottomBorder(3.dp, turquoise),
-        contentPadding = PaddingValues(0.dp),
-        shape = RectangleShape,
-        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent)
+            .border(2.dp,
+                color = turquoise,
+                shape = RoundedCornerShape(5.dp)),
     ){
         Icon(
             imageVector = Icons.Default.Info,

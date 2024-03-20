@@ -70,10 +70,3 @@ fun FeedAndEatTheme(
         content = content
     )
 }
-
-@Composable
-fun PlugTheme(
-
-){
-
-}

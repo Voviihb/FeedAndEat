@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 
 android {
@@ -52,7 +54,8 @@ android {
 }
 
 dependencies {
-
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
