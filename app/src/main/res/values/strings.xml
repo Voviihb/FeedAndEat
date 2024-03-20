@@ -1,5 +1,22 @@
 <resources>
     <string name="app_name">FeedAndEat</string>
+    <string name="short_recipe">Краткий рецепт</string>
+    <string name="add_to_favourite">Добавить в любимое</string>
+    <string name="add_to_playlist">Добавить в подборку</string>
+    <string name="ingr">Ингр</string>
+    <string name="steps">Шагов</string>
+    <string name="start_cooking">Начать готовить</string>
+    <string name="ingridients">Ингредиенты</string>
+    <string name="tags">Теги</string>
+    <string name="energy_value">Энергетическая Ценность</string>
+    <string name="calories">Калории</string>
+    <string name="fats">Жиры</string>
+    <string name="proteins">Белки</string>
+    <string name="carbons">Углеводы</string>
+    <string name="gramm">гр</string>
+    <string name="info">информация</string>
+    <string name="image">так выглядит рецепт</string>
+    <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
     <string name="hide_password">Спрятать пароль</string>
     <string name="show_password">Показать пароль</string>
