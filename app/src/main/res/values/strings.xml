@@ -17,4 +17,24 @@
     <string name="info">информация</string>
     <string name="image">так выглядит рецепт</string>
     <string name="back">вернуться назад</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="hide_password">Спрятать пароль</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="log_in">Вход</string>
+    <string name="or_login">Или</string>
+    <string name="enter_no_login">Войти без авторизации</string>
+    <string name="sign_up_text">Регистрация</string>
+    <string name="enter_e_mail">Введите E-Mail</string>
+    <string name="email_logo">Email logo</string>
+    <string name="feed_and_eat_logo">Feed and eat logo</string>
+    <string name="lock_logo">Lock logo</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="enter_nickname">Введите имя пользователя</string>
+    <string name="person_logo">Person logo</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="error_icon">Error icon</string>
+    <string name="press_button_login">После ввода, нажмите кнопку \'Войти\'</string>
+    <string name="exception_occured">Произошла ошибка!</string>
+    <string name="password_differs">Введенные пароли отличаются!</string>
+    <string name="authenticated">Authenticated!</string>
 </resources>
