@@ -28,6 +28,8 @@ class LoginScreenViewModel @Inject constructor(
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
+    val currentUserId get() = _authRepo.getUserId()
+
     fun loginWithEmail() {
         viewModelScope.launch {
             try {
@@ -35,6 +37,26 @@ class LoginScreenViewModel @Inject constructor(
                     _loginFormState.value.email,
                     _loginFormState.value.password
                 ).collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> _signInState.value = true
+                        is Response.Failure -> onError(response.e)
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+
+    }
+
+    fun signInAnonymously() {
+        viewModelScope.launch {
+            try {
+                _authRepo.firebaseSignInAnonymously()
+                .collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> _signInState.value = true

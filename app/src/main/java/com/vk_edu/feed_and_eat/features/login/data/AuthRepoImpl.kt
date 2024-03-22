@@ -2,6 +2,7 @@ package com.vk_edu.feed_and_eat.features.login.data
 
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,10 @@ class AuthRepoImpl @Inject constructor(
 ) : AuthRepository {
     override fun isUserAuthenticatedInFirebase() = auth.currentUser != null
 
+    override fun getUserLogin(): String? = auth.currentUser?.displayName
+
+    override fun getUserId(): String? = auth.currentUser?.uid
+
     private fun <T> authRepoTryCatchBlock(func: suspend () -> T): Flow<Response<T>> =
         flow {
             try {
@@ -34,8 +39,18 @@ class AuthRepoImpl @Inject constructor(
     override fun firebaseSignInAnonymously(): Flow<Response<AuthResult>> =
         authRepoTryCatchBlock { auth.signInAnonymously().await() }.flowOn(Dispatchers.IO)
 
-    override fun firebaseSignUp(email: String, password: String): Flow<Response<AuthResult>> =
-        authRepoTryCatchBlock { auth.createUserWithEmailAndPassword(email, password).await() }
+    override fun firebaseSignUp(
+        email: String,
+        password: String,
+        login: String
+    ): Flow<Response<Void>> =
+        authRepoTryCatchBlock {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            val profileUpdates = userProfileChangeRequest {
+                displayName = login
+            }
+            auth.currentUser!!.updateProfile(profileUpdates).await()
+        }
             .flowOn(Dispatchers.IO)
 
     override fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>> =
@@ -46,7 +61,13 @@ class AuthRepoImpl @Inject constructor(
         authRepoTryCatchBlock { auth.currentUser?.delete()?.await() }.flowOn(Dispatchers.IO)
 
     override fun signOut(): Flow<Response<Unit>> =
-        authRepoTryCatchBlock { auth.signOut() }.flowOn(Dispatchers.IO)
+        authRepoTryCatchBlock {
+            val user = auth.currentUser
+            if (user?.isAnonymous == true) {
+                user.delete().await()
+            }
+            auth.signOut()
+        }.flowOn(Dispatchers.IO)
 
     override fun getFirebaseAuthState() = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
@@ -58,5 +79,3 @@ class AuthRepoImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 }
-
-

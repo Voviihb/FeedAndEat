@@ -173,7 +173,7 @@ fun RegisterScreen(context: Context) {
 
     LaunchedEffect(Unit) {
         if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
+            Toast.makeText(context, viewModel.currentUserId, Toast.LENGTH_SHORT)
                 .show()
         }
     }

@@ -163,7 +163,7 @@ fun LoginScreen(context: Context) {
 
     LaunchedEffect(Unit) {
         if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
+            Toast.makeText(context, viewModel.currentUserId, Toast.LENGTH_SHORT)
                 .show()
         }
     }
@@ -369,7 +369,7 @@ private fun LoginButton(viewModel: LoginScreenViewModel) {
 @Composable
 private fun NoAuthLoginButton(viewModel: LoginScreenViewModel) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { viewModel.signInAnonymously() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
