@@ -58,13 +58,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.vk_edu.feed_and_eat.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun RegisterScreen(context: Context) {
-    val viewModel: RegisterScreenViewModel = viewModel()
+fun RegisterScreen(
+    context: Context,
+    navController: NavHostController
+) {
+    val viewModel: RegisterScreenViewModel = hiltViewModel()
     val registerForm by viewModel.registerFormState
     val errorMsg by viewModel.errorMessage
     val signUpState by viewModel.signUpState
@@ -72,6 +76,7 @@ fun RegisterScreen(context: Context) {
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
+    val destination = stringResource(id = R.string.ProfileScreen)
 
     Box(
         modifier = Modifier
@@ -168,13 +173,14 @@ fun RegisterScreen(context: Context) {
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        LoginButton(modifier = modifier)
+        LoginButton(modifier = modifier, navController = navController)
     }
 
     LaunchedEffect(Unit) {
         if (viewModel.isUserAuthenticated) {
             Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
                 .show()
+            navController.navigate(destination)
         }
     }
 }
@@ -510,9 +516,13 @@ private fun SignUpButton(viewModel: RegisterScreenViewModel) {
 }
 
 @Composable
-private fun LoginButton(modifier: Modifier) {
+private fun LoginButton(
+    modifier: Modifier,
+    navController: NavHostController
+) {
+    val destination = stringResource(id = R.string.LoginScreen)
     Button(
-        onClick = { /*TODO add link to login screen nav*/ },
+        onClick = { navController.navigate(destination) },
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

@@ -1,4 +1,5 @@
 <resources>
+<!--    single recipe-->
     <string name="app_name">FeedAndEat</string>
     <string name="short_recipe">Краткий рецепт</string>
     <string name="add_to_favourite">Добавить в любимое</string>
@@ -16,6 +17,7 @@
     <string name="gramm">гр</string>
     <string name="info">информация</string>
     <string name="image">так выглядит рецепт</string>
+<!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
     <string name="hide_password">Спрятать пароль</string>
@@ -37,4 +39,21 @@
     <string name="exception_occured">Произошла ошибка!</string>
     <string name="password_differs">Введенные пароли отличаются!</string>
     <string name="authenticated">Authenticated!</string>
+<!--    navigation-->
+    <string name="main">Главная</string>
+    <string name="search">Поиск</string>
+    <string name="collection">Коллекция</string>
+    <string name="inProgress">В процессе</string>
+    <string name="profile">Профиль</string>
+<!--    screen names-->
+    <string name="HomeScreen">HomeScreen</string>
+    <string name="CollectionScreen">CollectionScreen</string>
+    <string name="ProfileScreen">ProfileScreen</string>
+    <string name="SearchScreen">SearchScreen</string>
+    <string name="NewRecipeScreen">NewRecipeScreen</string>
+    <string name="LoginScreen">LoginScreen</string>
+    <string name="RegisterScreen">RegisterScreen</string>
+    <string name="RecipeScreen">RecipeScreen</string>
+    <string name="inProgressScreen">inProgressScreen</string>
+
 </resources>
