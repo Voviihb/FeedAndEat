@@ -59,14 +59,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.vk_edu.feed_and_eat.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun RegisterScreen(
     context: Context,
-    navController: NavHostController
+    navigateToHome : () -> Unit,
+    navigateToLogin : () -> Unit,
 ) {
     val viewModel: RegisterScreenViewModel = hiltViewModel()
     val registerForm by viewModel.registerFormState
@@ -76,7 +76,6 @@ fun RegisterScreen(
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
-    val destination = stringResource(id = R.string.ProfileScreen)
 
     Box(
         modifier = Modifier
@@ -173,14 +172,14 @@ fun RegisterScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        LoginButton(modifier = modifier, navController = navController)
+        LoginButton(modifier = modifier, navigateToLogin)
     }
 
     LaunchedEffect(Unit) {
         if (viewModel.isUserAuthenticated) {
             Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
                 .show()
-            navController.navigate(destination)
+            navigateToHome()
         }
     }
 }
@@ -518,11 +517,11 @@ private fun SignUpButton(viewModel: RegisterScreenViewModel) {
 @Composable
 private fun LoginButton(
     modifier: Modifier,
-    navController: NavHostController
+    navigateToLogin : () -> Unit,
 ) {
     val destination = stringResource(id = R.string.LoginScreen)
     Button(
-        onClick = { navController.navigate(destination) },
+        onClick = navigateToLogin,
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

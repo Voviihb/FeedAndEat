@@ -58,14 +58,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.vk_edu.feed_and_eat.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun LoginScreen(
     context: Context,
-    navController: NavHostController
+    navigateToHome : () -> Unit,
+    navigateToRegister : () -> Unit,
 ) {
     val viewModel: LoginScreenViewModel = hiltViewModel()
     val loginForm by viewModel.loginFormState
@@ -141,7 +141,7 @@ fun LoginScreen(
                     keyboardController = keyboardController
                 )
 
-                LoginButton(viewModel = viewModel, navController)
+                LoginButton(viewModel = viewModel)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -150,7 +150,7 @@ fun LoginScreen(
                     color = colorResource(id = R.color.white)
                 )
 
-                NoAuthLoginButton(viewModel = viewModel, navController)
+                NoAuthLoginButton(viewModel = viewModel, navigateToHome)
 
             }
         }
@@ -162,7 +162,7 @@ fun LoginScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        RegisterButton(viewModel = viewModel, modifier = modifier, navController)
+        RegisterButton(viewModel = viewModel, modifier = modifier, navigateToRegister)
 
     }
 
@@ -170,7 +170,7 @@ fun LoginScreen(
         if (viewModel.isUserAuthenticated) {
             Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
                 .show()
-            navController.navigate(destination)
+            navigateToHome()
         }
     }
 }
@@ -337,7 +337,6 @@ private fun PasswordField(
 @Composable
 private fun LoginButton(
     viewModel: LoginScreenViewModel,
-    navController: NavHostController
 ) {
     val loading by viewModel.loading
     Button(
@@ -378,13 +377,10 @@ private fun LoginButton(
 @Composable
 private fun NoAuthLoginButton(
     viewModel: LoginScreenViewModel,
-    navController: NavHostController
+    navigateToHome : () -> Unit
     ) {
-    val destination = stringResource(id = R.string.HomeScreen)
     Button(
-        onClick = {
-                  navController.navigate(destination)
-        },
+        onClick = navigateToHome,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -405,12 +401,14 @@ private fun NoAuthLoginButton(
 }
 
 @Composable
-private fun RegisterButton(viewModel: LoginScreenViewModel, modifier: Modifier, navController: NavHostController) {
+private fun RegisterButton(
+    viewModel: LoginScreenViewModel,
+    modifier: Modifier,
+    navigateToRegister : () -> Unit,
+) {
     val destination = stringResource(id = R.string.RegisterScreen)
     Button(
-        onClick = {
-            navController.navigate(destination)
-        },
+        onClick = navigateToRegister,
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

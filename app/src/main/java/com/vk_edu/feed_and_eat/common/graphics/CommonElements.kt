@@ -19,22 +19,17 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.vk_edu.feed_and_eat.R
 
 
 @Composable
 fun SquareArrowButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onclick: () -> Unit = {},
-    navController: NavHostController
 ){
     val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
-        onClick = {
-            val previous = navController.previousBackStackEntry?.destination?.route!!
-            navController.navigate(previous)
-        },
+        onClick = onClick,
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
@@ -57,6 +52,7 @@ fun SquareArrowButton(
         )
     }
 }
+
 
 @Composable
 fun InfoSquareButton(

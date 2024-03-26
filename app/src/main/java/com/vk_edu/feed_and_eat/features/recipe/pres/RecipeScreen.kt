@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoxofText
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
@@ -119,7 +118,7 @@ fun InfoSurface(
 @Composable
 fun BackButtonContainer(
     model: RecipeDataModel,
-    navController: NavHostController
+    navigateBack : () -> Unit,
 ){
     Column {
         LazyRow(modifier = Modifier
@@ -129,7 +128,7 @@ fun BackButtonContainer(
             verticalAlignment = Alignment.Top,
         ) {
             item {
-                SquareArrowButton(navController = navController)
+                SquareArrowButton(navigateBack)
             }
             item {
                 ExpandableInfo(width = 350, surface = {
@@ -289,8 +288,6 @@ fun AddCollectionButtons(){
 fun TextContainer(
     model : RecipeDataModel
 ){
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp
     val description = model.description
     Column(
         modifier = Modifier
@@ -372,7 +369,9 @@ fun RatingContainer(
 
 
 @Composable
-fun RecipeScreen(navController : NavHostController) {
+fun RecipeScreen(
+    navigateBack : () -> Unit
+) {
     val lightWhite =  Color(red = 0xFC, green = 0xFC, blue = 0xFC)
     val viewModel: RecipeScreenViewModel = hiltViewModel()
     viewModel.getRecipe()
@@ -396,7 +395,7 @@ fun RecipeScreen(navController : NavHostController) {
                     StartCookingContainer(model)
                 }
             }
-            BackButtonContainer(model, navController)
+            BackButtonContainer(model, navigateBack)
         }
     }
 }
