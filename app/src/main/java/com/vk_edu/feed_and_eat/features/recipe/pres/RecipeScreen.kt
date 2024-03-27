@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -60,7 +61,7 @@ fun InfoSurface(
             .width(surfaceWidth.dp)
             .border(
                 2.dp,
-                Color(red = 0x00, green = 0xB6, blue = 0xBB),
+                colorResource(id = R.color.turqoise),
                 shape = RoundedCornerShape(10.dp)
             )
             .clip(shape = RoundedCornerShape(10.dp))
@@ -169,7 +170,7 @@ fun RecipeImageContainer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(35.dp)
-                        .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xBF)),
+                        .background(colorResource(id = R.color.lightwhite)),
                     textAlign = TextAlign.Center
                 )
             }
@@ -187,10 +188,10 @@ fun StartCookingContainer(
         modifier = Modifier
             .height(50.dp)
             .fillMaxWidth()
-            .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB))
+            .background(colorResource(id = R.color.lightwhite))
             .border(
                 1.dp,
-                Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
+                colorResource(id = R.color.turqoise),
             )
     ){
         Row(
@@ -212,7 +213,7 @@ fun StartCookingContainer(
                     .weight(2f)
                     .fillMaxHeight(),
                 colors = ButtonColors(
-                    Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xFF),
+                    colorResource(id = R.color.lightwhite),
                     Color.Black, Color.White, Color.Black),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
@@ -245,7 +246,7 @@ fun AddCollectionButtons(){
                 .clip(shape = RoundedCornerShape(10.dp))
                 .border(
                     2.dp,
-                    Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
+                    colorResource(id = R.color.mediumcyan),
                     shape = RoundedCornerShape(10.dp)
                 )
 
@@ -253,7 +254,8 @@ fun AddCollectionButtons(){
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
                 contentPadding = PaddingValues(0.dp),
-                colors = ButtonColors(Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
+                colors = ButtonColors(
+                    colorResource(id = R.color.mediumcyan),
                     Color.White,
                     Color.White,
                     Color.Black),
@@ -309,14 +311,14 @@ fun TextContainer(
         LazyColumn(
             modifier = Modifier
                 .background(
-                    Color(red = 0xE4, blue = 0xFE, green = 0xFA, alpha = 0xFF),
+                    colorResource(id = R.color.strange),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
                 .height(280.dp)
                 .border(
                     1.dp,
-                    Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
+                    colorResource(id = R.color.turqoise),
                     shape = RoundedCornerShape(20.dp)
                 ),
 
@@ -372,14 +374,13 @@ fun RatingContainer(
 fun RecipeScreen(
     navigateBack : () -> Unit
 ) {
-    val lightWhite =  Color(red = 0xFC, green = 0xFC, blue = 0xFC)
     val viewModel: RecipeScreenViewModel = hiltViewModel()
     viewModel.getRecipe()
     val model = viewModel.recipe.value
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .background(lightWhite)
+        .background(colorResource(id = R.color.background))
         ) {
         Box{
             Column{

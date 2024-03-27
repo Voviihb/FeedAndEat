@@ -45,5 +45,14 @@
     <string name="collection">Коллекция</string>
     <string name="inProgress">В процессе</string>
     <string name="profile">Профиль</string>
-
+<!--    screen names-->
+    <string name="HomeScreen">HomeScreen</string>
+    <string name="CollectionScreen">CollectionScreen</string>
+    <string name="ProfileScreen">ProfileScreen</string>
+    <string name="SearchScreen">SearchScreen</string>
+    <string name="NewRecipeScreen">NewRecipeScreen</string>
+    <string name="LoginScreen">LoginScreen</string>
+    <string name="RegisterScreen">RegisterScreen</string>
+    <string name="RecipeScreen">RecipeScreen</string>
+    <string name="inProgressScreen">inProgressScreen</string>
 </resources>

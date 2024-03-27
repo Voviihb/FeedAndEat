@@ -7,7 +7,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -23,9 +26,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,12 +53,34 @@ val BarScreens = listOf(
     Screen.ProfileScreen
 )
 
+fun onSelect(
+    list1 : MutableList<Int>,
+    list2 : MutableList<Int>,
+    str : String?
+) : Boolean{
+    list1.replaceAll { R.color.lightcyan }
+    list2.replaceAll { 40 }
+    for (index in 0..4){
+        if (BarScreens[index].route == str){
+            list1[index] = R.color.mediumcyan
+            list2[index] = 45
+        }
+    }
+    return true
+}
+
 @Composable
 fun NavBar(){
     val navController = rememberNavController()
     val context = LocalContext.current
     val bottomBarState = rememberSaveable {
         mutableStateOf(true)
+    }
+    val bottomBarColors = rememberSaveable {
+        mutableStateOf(MutableList(5){R.color.lightcyan})
+    }
+    val bottomBarIcons = rememberSaveable {
+        mutableStateOf(MutableList(5){40})
     }
 
     val drawables = listOf(
@@ -75,8 +100,7 @@ fun NavBar(){
 
     Scaffold(
         modifier = Modifier
-            .background(Color.White)
-        ,
+            .background(Color.White),
          bottomBar = {
              AnimatedVisibility(
                  visible = bottomBarState.value,
@@ -85,10 +109,9 @@ fun NavBar(){
                  content = {
             BottomNavigation(
                 modifier = Modifier
-                .padding(vertical = 4.dp)
             ){
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
+                navBackStackEntry?.destination
                 repeat(5) {index ->
                     BottomNavigationItem(
                         icon = {
@@ -99,16 +122,22 @@ fun NavBar(){
                                 Icon(
                                     painter = painterResource(drawables[index]),
                                     contentDescription = stringResource(names[index]),
-                                    tint = colorResource(R.color.lightcyan)
+                                    tint = colorResource((bottomBarColors.value)[index]),
+                                    modifier = Modifier.size(bottomBarIcons.value[index].dp)
                                 )
                                 Text(
                                     text = stringResource(names[index]),
                                     fontSize = 15.sp,
-                                    color = colorResource(R.color.lightcyan),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = colorResource((bottomBarColors.value)[index]),
+                                    modifier = Modifier
                                 )
                             }
                         },
-                        selected = currentDestination?.hierarchy?.any { it.route == BarScreens[index].route } == true,
+                        selectedContentColor = colorResource(id = R.color.mediumcyan),
+                        unselectedContentColor = colorResource(id = R.color.lightcyan),
+                        selected = onSelect(bottomBarColors.value, bottomBarIcons.value, navController.currentBackStackEntry?.destination?.route),
                         onClick = {
                             navController.navigate(BarScreens[index].route){
                                 popUpTo(navController.graph.findStartDestination().id) {
