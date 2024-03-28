@@ -34,6 +34,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -65,8 +66,8 @@ import com.vk_edu.feed_and_eat.R
 @OptIn(ExperimentalComposeUiApi::class)
 fun RegisterScreen(
     context: Context,
-    navigateToHome : () -> Unit,
-    navigateToLogin : () -> Unit,
+    navigateToHome: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     val viewModel: RegisterScreenViewModel = hiltViewModel()
     val registerForm by viewModel.registerFormState
@@ -160,7 +161,10 @@ fun RegisterScreen(
                 )
 
 
-                SignUpButton(viewModel = viewModel)
+                SignUpButton(
+                    onClickFunc = { viewModel.registerUserWithEmail() },
+                    loadingState = viewModel.loading
+                )
 
             }
         }
@@ -474,12 +478,10 @@ private fun PasswordControlField(
 }
 
 @Composable
-private fun SignUpButton(viewModel: RegisterScreenViewModel) {
-    val loading by viewModel.loading
+private fun SignUpButton(onClickFunc: () -> Unit, loadingState: State<Boolean>) {
+    val loading by loadingState
     Button(
-        onClick = {
-            viewModel.registerUserWithEmail()
-        },
+        onClick = onClickFunc,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -517,7 +519,7 @@ private fun SignUpButton(viewModel: RegisterScreenViewModel) {
 @Composable
 private fun LoginButton(
     modifier: Modifier,
-    navigateToLogin : () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     val destination = stringResource(id = R.string.LoginScreen)
     Button(

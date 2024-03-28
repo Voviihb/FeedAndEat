@@ -32,6 +32,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,8 +65,8 @@ import com.vk_edu.feed_and_eat.R
 @OptIn(ExperimentalComposeUiApi::class)
 fun LoginScreen(
     context: Context,
-    navigateToHome : () -> Unit,
-    navigateToRegister : () -> Unit,
+    navigateToHome: () -> Unit,
+    navigateToRegister: () -> Unit,
 ) {
     val viewModel: LoginScreenViewModel = hiltViewModel()
     val loginForm by viewModel.loginFormState
@@ -141,7 +142,10 @@ fun LoginScreen(
                     keyboardController = keyboardController
                 )
 
-                LoginButton(viewModel = viewModel)
+                LoginButton(
+                    onClickFunc = { viewModel.loginWithEmail() },
+                    loadingState = viewModel.loading
+                )
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -162,7 +166,7 @@ fun LoginScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        RegisterButton(viewModel = viewModel, modifier = modifier, navigateToRegister)
+        RegisterButton(modifier = modifier, navigateToRegister)
 
     }
 
@@ -336,11 +340,12 @@ private fun PasswordField(
 
 @Composable
 private fun LoginButton(
-    viewModel: LoginScreenViewModel,
+    onClickFunc: () -> Unit,
+    loadingState: State<Boolean>
 ) {
-    val loading by viewModel.loading
+    val loading by loadingState
     Button(
-        onClick = {viewModel.loginWithEmail()},
+        onClick = onClickFunc,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -377,8 +382,8 @@ private fun LoginButton(
 @Composable
 private fun NoAuthLoginButton(
     viewModel: LoginScreenViewModel,
-    navigateToHome : () -> Unit
-    ) {
+    navigateToHome: () -> Unit
+) {
     Button(
         onClick = navigateToHome,
         shape = RoundedCornerShape(12.dp),
@@ -402,9 +407,8 @@ private fun NoAuthLoginButton(
 
 @Composable
 private fun RegisterButton(
-    viewModel: LoginScreenViewModel,
     modifier: Modifier,
-    navigateToRegister : () -> Unit,
+    navigateToRegister: () -> Unit,
 ) {
     val destination = stringResource(id = R.string.RegisterScreen)
     Button(
