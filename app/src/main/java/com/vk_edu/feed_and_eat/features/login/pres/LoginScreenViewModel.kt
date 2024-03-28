@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,12 +24,9 @@ class LoginScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private val _signInState = mutableStateOf(false)
-    val signInState: State<Boolean> = _signInState
-
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
-    fun loginWithEmail() {
+    fun loginWithEmail(preferencesManager: PreferencesManager, navigateFunc: () -> Unit) {
         viewModelScope.launch {
             try {
                 _authRepo.firebaseSignIn(
@@ -37,7 +35,11 @@ class LoginScreenViewModel @Inject constructor(
                 ).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
-                        is Response.Success -> _signInState.value = true
+                        is Response.Success -> {
+                            writeUserId(preferencesManager, _authRepo.getCurrentUserId() ?: "null")
+                            navigateFunc()
+                        }
+
                         is Response.Failure -> onError(response.e)
                     }
                 }
@@ -50,13 +52,13 @@ class LoginScreenViewModel @Inject constructor(
 
     }
 
-    fun logout() {
+    fun logout(preferencesManager: PreferencesManager) {
         viewModelScope.launch {
             try {
                 _authRepo.signOut().collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
-                        is Response.Success -> _signInState.value = false
+                        is Response.Success -> writeUserId(preferencesManager, "null")
                         is Response.Failure -> onError(response.e)
                     }
                 }
@@ -86,5 +88,9 @@ class LoginScreenViewModel @Inject constructor(
         _loginFormState.value = _loginFormState.value.copy(
             password = value
         )
+    }
+
+    private fun writeUserId(preferencesManager: PreferencesManager, id: String) {
+        preferencesManager.saveData("currentUser", id)
     }
 }

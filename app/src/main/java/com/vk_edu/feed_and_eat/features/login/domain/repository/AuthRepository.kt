@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     fun isUserAuthenticatedInFirebase(): Boolean
 
+    fun getCurrentUserId(): String?
+
     fun firebaseSignInAnonymously(): Flow<Response<AuthResult>>
 
     fun firebaseSignUp(email: String, password: String): Flow<Response<AuthResult>>

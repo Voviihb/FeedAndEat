@@ -20,6 +20,8 @@ class AuthRepoImpl @Inject constructor(
 ) : AuthRepository {
     override fun isUserAuthenticatedInFirebase() = auth.currentUser != null
 
+    override fun getCurrentUserId() = auth.currentUser?.uid
+
     private fun <T> authRepoTryCatchBlock(func: suspend () -> T): Flow<Response<T>> =
         flow {
             try {
