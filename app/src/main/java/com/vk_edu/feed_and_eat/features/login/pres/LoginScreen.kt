@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +57,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.R
 
 @Composable
@@ -75,6 +74,7 @@ fun LoginScreen(
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val destination = stringResource(id = R.string.ProfileScreen)
+    val preferencesManager = PreferencesManager(context)
 
     Box(
         modifier = Modifier
@@ -143,7 +143,7 @@ fun LoginScreen(
                 )
 
                 LoginButton(
-                    onClickFunc = { viewModel.loginWithEmail() },
+                    onClickFunc = { viewModel.loginWithEmail(preferencesManager, navigateToHome) },
                     loadingState = viewModel.loading
                 )
 
@@ -170,13 +170,13 @@ fun LoginScreen(
 
     }
 
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
-                .show()
-            navigateToHome()
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        if (viewModel.isUserAuthenticated) {
+//            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
+//                .show()
+//            navigateToHome()
+//        }
+//    }
 }
 
 @Composable

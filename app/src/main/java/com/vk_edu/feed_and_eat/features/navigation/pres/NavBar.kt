@@ -34,6 +34,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
@@ -54,14 +55,14 @@ val BarScreens = listOf(
 )
 
 fun onSelect(
-    list1 : MutableList<Int>,
-    list2 : MutableList<Int>,
-    str : String?
-) : Boolean{
+    list1: MutableList<Int>,
+    list2: MutableList<Int>,
+    str: String?
+): Boolean {
     list1.replaceAll { R.color.lightcyan }
     list2.replaceAll { 40 }
-    for (index in 0..4){
-        if (BarScreens[index].route == str){
+    for (index in 0..4) {
+        if (BarScreens[index].route == str) {
             list1[index] = R.color.mediumcyan
             list2[index] = 45
         }
@@ -70,17 +71,17 @@ fun onSelect(
 }
 
 @Composable
-fun NavBar(){
+fun NavBar() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val bottomBarState = rememberSaveable {
         mutableStateOf(true)
     }
     val bottomBarColors = rememberSaveable {
-        mutableStateOf(MutableList(5){R.color.lightcyan})
+        mutableStateOf(MutableList(5) { R.color.lightcyan })
     }
     val bottomBarIcons = rememberSaveable {
-        mutableStateOf(MutableList(5){40})
+        mutableStateOf(MutableList(5) { 40 })
     }
 
     val drawables = listOf(
@@ -97,93 +98,102 @@ fun NavBar(){
         R.string.inProgress,
         R.string.profile,
     )
+    val preferencesManager = PreferencesManager(context)
+    val data = preferencesManager.getData("currentUser")
+    val startDestination =
+        if (data != "null") Screen.HomeScreen.route else Screen.LoginScreen.route
 
     Scaffold(
         modifier = Modifier
             .background(Color.White),
-         bottomBar = {
-             AnimatedVisibility(
-                 visible = bottomBarState.value,
-                 enter = slideInVertically(initialOffsetY = { it }),
-                 exit = slideOutVertically(targetOffsetY = { it }),
-                 content = {
-            BottomNavigation(
-                modifier = Modifier
-            ){
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                navBackStackEntry?.destination
-                repeat(5) {index ->
-                    BottomNavigationItem(
-                        icon = {
-                            Column (
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                            ){
-                                Icon(
-                                    painter = painterResource(drawables[index]),
-                                    contentDescription = stringResource(names[index]),
-                                    tint = colorResource((bottomBarColors.value)[index]),
-                                    modifier = Modifier.size(bottomBarIcons.value[index].dp)
-                                )
-                                Text(
-                                    text = stringResource(names[index]),
-                                    fontSize = 15.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = colorResource((bottomBarColors.value)[index]),
-                                    modifier = Modifier
-                                )
-                            }
-                        },
-                        selectedContentColor = colorResource(id = R.color.mediumcyan),
-                        unselectedContentColor = colorResource(id = R.color.lightcyan),
-                        selected = onSelect(bottomBarColors.value, bottomBarIcons.value, navController.currentBackStackEntry?.destination?.route),
-                        onClick = {
-                            navController.navigate(BarScreens[index].route){
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = bottomBarState.value,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+                content = {
+                    BottomNavigation(
                         modifier = Modifier
-                            .background(Color.White)
-                            .padding(vertical = 8.dp),
-                        )
+                    ) {
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        navBackStackEntry?.destination
+                        repeat(5) { index ->
+                            BottomNavigationItem(
+                                icon = {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(drawables[index]),
+                                            contentDescription = stringResource(names[index]),
+                                            tint = colorResource((bottomBarColors.value)[index]),
+                                            modifier = Modifier.size(bottomBarIcons.value[index].dp)
+                                        )
+                                        Text(
+                                            text = stringResource(names[index]),
+                                            fontSize = 15.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = colorResource((bottomBarColors.value)[index]),
+                                            modifier = Modifier
+                                        )
+                                    }
+                                },
+                                selectedContentColor = colorResource(id = R.color.mediumcyan),
+                                unselectedContentColor = colorResource(id = R.color.lightcyan),
+                                selected = onSelect(
+                                    bottomBarColors.value,
+                                    bottomBarIcons.value,
+                                    navController.currentBackStackEntry?.destination?.route
+                                ),
+                                onClick = {
+                                    navController.navigate(BarScreens[index].route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .background(Color.White)
+                                    .padding(vertical = 8.dp),
+                            )
+                        }
                     }
-                }
-            })
+                })
         }
-        ) {padding ->
+    ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.HomeScreen.route,
-            modifier = Modifier.padding(padding)){
-            composable(Screen.HomeScreen.route){
+            startDestination = startDestination,
+            modifier = Modifier.padding(padding)
+        ) {
+            composable(Screen.HomeScreen.route) {
                 bottomBarState.value = true
                 HomeScreen()
             }
-            composable(Screen.SearchScreen.route){
+            composable(Screen.SearchScreen.route) {
                 bottomBarState.value = true
                 SearchScreen()
             }
-            composable(Screen.CollectionScreen.route){
+            composable(Screen.CollectionScreen.route) {
                 bottomBarState.value = true
                 CollectionScreen(
                     { navController.navigate(Screen.NewRecipeScreen.route) },
                     { navController.navigate(Screen.RecipeScreen.route) },
-                    )
+                )
             }
-            composable(Screen.InProgressScreen.route){
+            composable(Screen.InProgressScreen.route) {
                 bottomBarState.value = true
                 InProgressScreen()
             }
-            composable(Screen.ProfileScreen.route){
+            composable(Screen.ProfileScreen.route) {
                 bottomBarState.value = true
                 ProfileScreen { navController.navigate(Screen.LoginScreen.route) }
             }
-            composable(Screen.LoginScreen.route){
+            composable(Screen.LoginScreen.route) {
                 bottomBarState.value = false
                 LoginScreen(
                     context,
@@ -191,7 +201,7 @@ fun NavBar(){
                     { navController.navigate(Screen.RegisterScreen.route) }
                 )
             }
-            composable(Screen.RegisterScreen.route){
+            composable(Screen.RegisterScreen.route) {
                 bottomBarState.value = false
                 RegisterScreen(
                     context,
@@ -199,25 +209,26 @@ fun NavBar(){
                     { navController.navigate(Screen.LoginScreen.route) }
                 )
             }
-            composable(Screen.NewRecipeScreen.route){
+            composable(Screen.NewRecipeScreen.route) {
                 bottomBarState.value = true
                 NewRecipeScreen()
             }
-            composable(Screen.RecipeScreen.route){
+            composable(Screen.RecipeScreen.route) {
                 bottomBarState.value = true
                 RecipeScreen {
                     val previous = navController.previousBackStackEntry?.destination?.route
-                    if (previous != null){
+                    if (previous != null) {
                         navController.navigate(previous)
                     }
                 }
             }
         }
-        }
     }
+}
+
 sealed class Screen(val route: String) {
     data object HomeScreen : Screen("HomeScreen")
-    data object  SearchScreen : Screen("SearchScreen")
+    data object SearchScreen : Screen("SearchScreen")
     data object CollectionScreen : Screen("CollectionScreen")
     data object InProgressScreen : Screen("inProgressScreen")
     data object ProfileScreen : Screen("ProfileScreen")
