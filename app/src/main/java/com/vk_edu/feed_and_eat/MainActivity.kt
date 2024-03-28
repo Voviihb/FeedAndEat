@@ -3,7 +3,7 @@ package com.vk_edu.feed_and_eat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.vk_edu.feed_and_eat.features.dishes.pres.DishScreen
+import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -12,7 +12,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 //            LoginScreen(this)
-            DishScreen()
+//            DishScreen()
+            ProfileScreen()
         }
     }
 }

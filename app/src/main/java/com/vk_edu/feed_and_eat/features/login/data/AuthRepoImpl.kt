@@ -25,7 +25,6 @@ class AuthRepoImpl @Inject constructor(
 
     override fun getUserId(): String? = auth.currentUser?.uid
 
-
     override fun firebaseSignInAnonymously(): Flow<Response<AuthResult>> =
         repoTryCatchBlock { auth.signInAnonymously().await() }.flowOn(Dispatchers.IO)
 
@@ -46,9 +45,6 @@ class AuthRepoImpl @Inject constructor(
     override fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>> =
         repoTryCatchBlock { auth.signInWithEmailAndPassword(email, password).await() }
             .flowOn(Dispatchers.IO)
-
-    override fun signOutAnonymous(): Flow<Response<Void?>> =
-        repoTryCatchBlock { auth.currentUser?.delete()?.await() }.flowOn(Dispatchers.IO)
 
     override fun signOut(): Flow<Response<Unit>> =
         repoTryCatchBlock {

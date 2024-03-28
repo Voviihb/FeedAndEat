@@ -17,8 +17,6 @@ interface AuthRepository {
 
     fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>>
 
-    fun signOutAnonymous(): Flow<Response<Void?>>
-
     fun signOut(): Flow<Response<Unit>>
 
     fun getFirebaseAuthState(): Flow<Boolean>

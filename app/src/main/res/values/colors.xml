@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple_fae">#6E0D80</color>
+    <color name="cyan_fae">#00B6BB</color>
+    <color name="light_cyan_fae">#E5FEFB</color>
 </resources>
