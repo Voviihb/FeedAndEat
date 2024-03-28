@@ -60,6 +60,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.R
 
 @Composable
@@ -72,11 +73,11 @@ fun RegisterScreen(
     val viewModel: RegisterScreenViewModel = hiltViewModel()
     val registerForm by viewModel.registerFormState
     val errorMsg by viewModel.errorMessage
-    val signUpState by viewModel.signUpState
 
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
+    val preferencesManager = PreferencesManager(context)
 
     Box(
         modifier = Modifier
@@ -162,7 +163,12 @@ fun RegisterScreen(
 
 
                 SignUpButton(
-                    onClickFunc = { viewModel.registerUserWithEmail() },
+                    onClickFunc = {
+                        viewModel.registerUserWithEmail(
+                            preferencesManager,
+                            navigateToHome
+                        )
+                    },
                     loadingState = viewModel.loading
                 )
 

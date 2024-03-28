@@ -170,13 +170,6 @@ fun LoginScreen(
 
     }
 
-//    LaunchedEffect(Unit) {
-//        if (viewModel.isUserAuthenticated) {
-//            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
-//                .show()
-//            navigateToHome()
-//        }
-//    }
 }
 
 @Composable

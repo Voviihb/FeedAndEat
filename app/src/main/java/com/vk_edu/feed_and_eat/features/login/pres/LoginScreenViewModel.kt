@@ -24,9 +24,6 @@ class LoginScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private val _signInState = mutableStateOf(false)
-    val signInState: State<Boolean> = _signInState
-
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
     fun loginWithEmail(preferencesManager: PreferencesManager, navigateFunc: () -> Unit) {
@@ -55,13 +52,13 @@ class LoginScreenViewModel @Inject constructor(
 
     }
 
-    fun logout() {
+    fun logout(preferencesManager: PreferencesManager) {
         viewModelScope.launch {
             try {
                 _authRepo.signOut().collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
-                        is Response.Success -> _signInState.value = false
+                        is Response.Success -> writeUserId(preferencesManager, "null")
                         is Response.Failure -> onError(response.e)
                     }
                 }
