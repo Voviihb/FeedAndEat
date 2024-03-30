@@ -37,13 +37,12 @@ class RegisterScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-                                writeUserId(
-                                    preferencesManager,
-                                    _authRepo.getCurrentUserId() ?: "null"
-                                )
-                                navigateFunc()
+                                val currentUserId = _authRepo.getCurrentUserId()
+                                if (currentUserId != null) {
+                                    writeUserId(preferencesManager, currentUserId)
+                                    navigateFunc()
+                                }
                             }
-
                             is Response.Failure -> onError(response.e)
                         }
                     }
@@ -91,9 +90,5 @@ class RegisterScreenViewModel @Inject constructor(
         _registerFormState.value = _registerFormState.value.copy(
             passwordControl = value
         )
-    }
-
-    private fun writeUserId(preferencesManager: PreferencesManager, id: String) {
-        preferencesManager.saveData("currentUser", id)
     }
 }

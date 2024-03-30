@@ -40,6 +40,7 @@ import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
 import com.vk_edu.feed_and_eat.features.login.pres.RegisterScreen
+import com.vk_edu.feed_and_eat.features.login.pres.getCurrentUserId
 import com.vk_edu.feed_and_eat.features.main.pres.HomeScreen
 import com.vk_edu.feed_and_eat.features.newrecipe.pres.NewRecipeScreen
 import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
@@ -99,9 +100,9 @@ fun NavBar() {
         R.string.profile,
     )
     val preferencesManager = PreferencesManager(context)
-    val data = preferencesManager.getData("currentUser")
+    val data = getCurrentUserId(preferencesManager)
     val startDestination =
-        if (data != "null") Screen.HomeScreen.route else Screen.LoginScreen.route
+        if (data != null) Screen.HomeScreen.route else Screen.LoginScreen.route
 
     Scaffold(
         modifier = Modifier

@@ -36,10 +36,12 @@ class LoginScreenViewModel @Inject constructor(
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            writeUserId(preferencesManager, _authRepo.getCurrentUserId() ?: "null")
-                            navigateFunc()
+                            val currentUserId = _authRepo.getCurrentUserId()
+                            if (currentUserId != null) {
+                                writeUserId(preferencesManager, currentUserId)
+                                navigateFunc()
+                            }
                         }
-
                         is Response.Failure -> onError(response.e)
                     }
                 }
@@ -58,7 +60,7 @@ class LoginScreenViewModel @Inject constructor(
                 _authRepo.signOut().collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
-                        is Response.Success -> writeUserId(preferencesManager, "null")
+                        is Response.Success -> removeUserId(preferencesManager)
                         is Response.Failure -> onError(response.e)
                     }
                 }
@@ -88,9 +90,5 @@ class LoginScreenViewModel @Inject constructor(
         _loginFormState.value = _loginFormState.value.copy(
             password = value
         )
-    }
-
-    private fun writeUserId(preferencesManager: PreferencesManager, id: String) {
-        preferencesManager.saveData("currentUser", id)
     }
 }

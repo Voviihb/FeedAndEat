@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -183,14 +181,6 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
         LoginButton(modifier = modifier, navigateToLogin)
-    }
-
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
-                .show()
-            navigateToHome()
-        }
     }
 }
 

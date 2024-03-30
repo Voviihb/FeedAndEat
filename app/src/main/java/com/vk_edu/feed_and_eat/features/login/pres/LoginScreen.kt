@@ -154,7 +154,11 @@ fun LoginScreen(
                     color = colorResource(id = R.color.white)
                 )
 
-                NoAuthLoginButton(viewModel = viewModel, navigateToHome)
+                NoAuthLoginButton(
+                    onClickFunc = { viewModel.logout(preferencesManager) }, /* TODO replace it after merge! */
+                    navigateToHome
+                    /* TODO pass nav func to VM after merge with feature_firebaseDatastore */
+                )
 
             }
         }
@@ -374,11 +378,14 @@ private fun LoginButton(
 
 @Composable
 private fun NoAuthLoginButton(
-    viewModel: LoginScreenViewModel,
+    onClickFunc: () -> Unit,
     navigateToHome: () -> Unit
 ) {
     Button(
-        onClick = navigateToHome,
+        onClick = {
+            onClickFunc()
+            navigateToHome()
+        },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
