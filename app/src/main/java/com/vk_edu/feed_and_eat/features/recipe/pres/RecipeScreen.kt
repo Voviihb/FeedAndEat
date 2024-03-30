@@ -372,9 +372,9 @@ fun RatingContainer(
 
 @Composable
 fun RecipeScreen(
+    viewModel: RecipeScreenViewModel = hiltViewModel(),
     navigateBack : () -> Unit
 ) {
-    val viewModel: RecipeScreenViewModel = hiltViewModel()
     viewModel.getRecipe()
     val model = viewModel.recipe.value
 

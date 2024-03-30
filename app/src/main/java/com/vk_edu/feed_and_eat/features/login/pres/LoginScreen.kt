@@ -63,8 +63,8 @@ import com.vk_edu.feed_and_eat.R
 fun LoginScreen(
     navigateToHome: () -> Unit,
     navigateToRegister: () -> Unit,
+    viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
-    val viewModel: LoginScreenViewModel = hiltViewModel()
     val loginForm by viewModel.loginFormState
     val errorMsg by viewModel.errorMessage
 

@@ -64,8 +64,8 @@ import com.vk_edu.feed_and_eat.R
 fun RegisterScreen(
     navigateToHome: () -> Unit,
     navigateToLogin: () -> Unit,
+    viewModel: RegisterScreenViewModel = hiltViewModel()
 ) {
-    val viewModel: RegisterScreenViewModel = hiltViewModel()
     val registerForm by viewModel.registerFormState
     val errorMsg by viewModel.errorMessage
 

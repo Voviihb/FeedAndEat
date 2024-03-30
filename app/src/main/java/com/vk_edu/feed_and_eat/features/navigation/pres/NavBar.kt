@@ -71,8 +71,7 @@ fun onSelect(
 }
 
 @Composable
-fun NavBar() {
-    val viewModel: NavBarViewModel = hiltViewModel()
+fun NavBar(viewModel: NavBarViewModel = hiltViewModel()) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val bottomBarState = rememberSaveable {
