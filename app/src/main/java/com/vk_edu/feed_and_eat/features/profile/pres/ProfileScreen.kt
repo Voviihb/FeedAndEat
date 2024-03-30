@@ -12,9 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -48,48 +54,7 @@ fun ProfileScreen() {
                 .fillMaxSize()
                 .padding(16.dp),
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(id = R.drawable.user_default_icon),
-                    contentDescription = "User profile icon",
-                    modifier = Modifier.size(100.dp)
-                )
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = "Имя:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
-                        Text(
-                            text = "Test test",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Right
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Никнейм:",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                        Text(
-                            text = "Test testgdfg",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Right
-                        )
-                    }
-
-                }
-            }
+            UserInfoBlock()
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -97,6 +62,53 @@ fun ProfileScreen() {
                 AboutMeBlock()
                 SaveInfoButton()
                 LogoutButton()
+                SettingsBlock()
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun UserInfoBlock() {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Image(
+            painter = painterResource(id = R.drawable.user_default_icon),
+            contentDescription = "User profile icon",
+            modifier = Modifier.size(100.dp)
+        )
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Имя:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+                Text(
+                    text = "Test test",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Right
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Никнейм:",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Normal
+                )
+                Text(
+                    text = "Test testgdfg",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Right
+                )
             }
 
         }
@@ -189,14 +201,7 @@ private fun LogoutButton() {
             disabledContainerColor = Color.Red,
             disabledContentColor = colorResource(id = R.color.white)
         ),
-//        modifier = Modifier
-//            .padding(vertical = 16.dp)
-//            .border(
-//                1.dp,
-//                colorResource(id = R.color.cyan_fae),
-//                shape = RoundedCornerShape(12.dp)
-//            )
-
+        modifier = Modifier.padding(bottom = 16.dp)
     ) {
         Column(
             modifier = Modifier
@@ -205,6 +210,83 @@ private fun LogoutButton() {
         ) {
             Text("Выйти из аккаунта", fontSize = 24.sp, fontWeight = FontWeight.Medium)
         }
+    }
+}
 
+@Composable
+private fun SettingsBlock() {
+    val themes = listOf("Светлая", "Темная", "Как в системе")
+    val (selectedThemeOption, onThemeOptionSelected) = remember { mutableStateOf(themes[0]) }
+    val profileType = listOf("Открытый", "Закрытый")
+    val (selectedProfileOption, onProfileOptionSelected) = remember { mutableStateOf(profileType[0]) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            text = "Настройки:",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Тема:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+            Column(
+                Modifier
+                    .selectableGroup()
+                    .width(200.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                themes.forEach { element ->
+                    Row(verticalAlignment = Alignment.CenterVertically)
+                    {
+                        RadioButton(
+                            selected = (element == selectedThemeOption),
+                            onClick = { onThemeOptionSelected(element) },
+                            colors = RadioButtonColors(
+                                selectedColor = Color.Black,
+                                unselectedColor = Color.Black,
+                                disabledSelectedColor = Color.Black,
+                                disabledUnselectedColor = Color.Black
+                            )
+                        )
+                        Text(text = element, fontSize = 20.sp)
+                    }
+                }
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "Профиль:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+            Column(
+                Modifier
+                    .selectableGroup()
+                    .width(200.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                profileType.forEach { element ->
+                    Row(verticalAlignment = Alignment.CenterVertically)
+                    {
+                        RadioButton(
+                            selected = (element == selectedProfileOption),
+                            onClick = { onProfileOptionSelected(element) },
+                            colors = RadioButtonColors(
+                                selectedColor = Color.Black,
+                                unselectedColor = Color.Black,
+                                disabledSelectedColor = Color.Black,
+                                disabledUnselectedColor = Color.Black
+                            )
+                        )
+                        Text(text = element, fontSize = 20.sp)
+                    }
+                }
+            }
+        }
     }
 }
