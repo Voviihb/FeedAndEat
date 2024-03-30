@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl
+    private val _authRepo: AuthRepoImpl,
+    private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
     val registerFormState: State<RegisterForm> = _registerFormState
@@ -26,7 +27,7 @@ class RegisterScreenViewModel @Inject constructor(
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
-    fun registerUserWithEmail(preferencesManager: PreferencesManager, navigateFunc: () -> Unit) {
+    fun registerUserWithEmail(navigateFunc: () -> Unit) {
         viewModelScope.launch {
             if (_registerFormState.value.password == _registerFormState.value.passwordControl) {
                 try {
@@ -39,7 +40,7 @@ class RegisterScreenViewModel @Inject constructor(
                             is Response.Success -> {
                                 val currentUserId = _authRepo.getCurrentUserId()
                                 if (currentUserId != null) {
-                                    writeUserId(preferencesManager, currentUserId)
+                                    writeUserId(_preferencesManager, currentUserId)
                                     navigateFunc()
                                 }
                             }

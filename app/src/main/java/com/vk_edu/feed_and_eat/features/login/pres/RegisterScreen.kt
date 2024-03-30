@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,13 +57,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun RegisterScreen(
-    context: Context,
     navigateToHome: () -> Unit,
     navigateToLogin: () -> Unit,
 ) {
@@ -75,7 +72,6 @@ fun RegisterScreen(
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
-    val preferencesManager = PreferencesManager(context)
 
     Box(
         modifier = Modifier
@@ -163,7 +159,6 @@ fun RegisterScreen(
                 SignUpButton(
                     onClickFunc = {
                         viewModel.registerUserWithEmail(
-                            preferencesManager,
                             navigateToHome
                         )
                     },

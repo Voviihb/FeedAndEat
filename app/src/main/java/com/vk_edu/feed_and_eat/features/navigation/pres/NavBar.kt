@@ -1,6 +1,8 @@
 package com.vk_edu.feed_and_eat.features.navigation.pres
 
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -8,9 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -29,18 +29,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
 import com.vk_edu.feed_and_eat.features.login.pres.RegisterScreen
-import com.vk_edu.feed_and_eat.features.login.pres.getCurrentUserId
 import com.vk_edu.feed_and_eat.features.main.pres.HomeScreen
 import com.vk_edu.feed_and_eat.features.newrecipe.pres.NewRecipeScreen
 import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
@@ -73,6 +72,7 @@ fun onSelect(
 
 @Composable
 fun NavBar() {
+    val viewModel: NavBarViewModel = hiltViewModel()
     val navController = rememberNavController()
     val context = LocalContext.current
     val bottomBarState = rememberSaveable {
@@ -99,10 +99,8 @@ fun NavBar() {
         R.string.inProgress,
         R.string.profile,
     )
-    val preferencesManager = PreferencesManager(context)
-    val data = getCurrentUserId(preferencesManager)
-    val startDestination =
-        if (data != null) Screen.HomeScreen.route else Screen.LoginScreen.route
+
+    val startDestination = viewModel.getStartDestination()
 
     Scaffold(
         modifier = Modifier
@@ -197,7 +195,6 @@ fun NavBar() {
             composable(Screen.LoginScreen.route) {
                 bottomBarState.value = false
                 LoginScreen(
-                    context,
                     { navController.navigate(Screen.HomeScreen.route) },
                     { navController.navigate(Screen.RegisterScreen.route) }
                 )
@@ -205,7 +202,6 @@ fun NavBar() {
             composable(Screen.RegisterScreen.route) {
                 bottomBarState.value = false
                 RegisterScreen(
-                    context,
                     { navController.navigate(Screen.HomeScreen.route) },
                     { navController.navigate(Screen.LoginScreen.route) }
                 )

@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl
+    private val _authRepo: AuthRepoImpl,
+    private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _loginFormState = mutableStateOf(LoginForm("", ""))
     val loginFormState: State<LoginForm> = _loginFormState
@@ -26,7 +27,7 @@ class LoginScreenViewModel @Inject constructor(
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
-    fun loginWithEmail(preferencesManager: PreferencesManager, navigateFunc: () -> Unit) {
+    fun loginWithEmail(navigateFunc: () -> Unit) {
         viewModelScope.launch {
             try {
                 _authRepo.firebaseSignIn(
@@ -38,7 +39,7 @@ class LoginScreenViewModel @Inject constructor(
                         is Response.Success -> {
                             val currentUserId = _authRepo.getCurrentUserId()
                             if (currentUserId != null) {
-                                writeUserId(preferencesManager, currentUserId)
+                                writeUserId(_preferencesManager, currentUserId)
                                 navigateFunc()
                             }
                         }
@@ -54,13 +55,13 @@ class LoginScreenViewModel @Inject constructor(
 
     }
 
-    fun logout(preferencesManager: PreferencesManager) {
+    fun logout() {
         viewModelScope.launch {
             try {
                 _authRepo.signOut().collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
-                        is Response.Success -> removeUserId(preferencesManager)
+                        is Response.Success -> removeUserId(_preferencesManager)
                         is Response.Failure -> onError(response.e)
                     }
                 }

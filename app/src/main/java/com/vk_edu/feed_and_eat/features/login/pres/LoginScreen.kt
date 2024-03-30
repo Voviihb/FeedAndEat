@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -57,13 +56,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.R
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun LoginScreen(
-    context: Context,
     navigateToHome: () -> Unit,
     navigateToRegister: () -> Unit,
 ) {
@@ -74,7 +71,6 @@ fun LoginScreen(
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val destination = stringResource(id = R.string.ProfileScreen)
-    val preferencesManager = PreferencesManager(context)
 
     Box(
         modifier = Modifier
@@ -143,7 +139,7 @@ fun LoginScreen(
                 )
 
                 LoginButton(
-                    onClickFunc = { viewModel.loginWithEmail(preferencesManager, navigateToHome) },
+                    onClickFunc = { viewModel.loginWithEmail(navigateToHome) },
                     loadingState = viewModel.loading
                 )
 
@@ -155,7 +151,7 @@ fun LoginScreen(
                 )
 
                 NoAuthLoginButton(
-                    onClickFunc = { viewModel.logout(preferencesManager) }, /* TODO replace it after merge! */
+                    onClickFunc = { viewModel.logout() }, /* TODO replace it after merge! */
                     navigateToHome
                     /* TODO pass nav func to VM after merge with feature_firebaseDatastore */
                 )

@@ -1,13 +1,13 @@
 package com.vk_edu.feed_and_eat
 
-import android.content.Context
 import android.content.SharedPreferences
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class PreferencesManager(context: Context) {
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(PROJECT_PREFS, Context.MODE_PRIVATE)
-
+@Singleton
+class PreferencesManager @Inject constructor(
+    private val sharedPreferences: SharedPreferences
+) {
     fun saveData(key: String, value: String) {
         val editor = sharedPreferences.edit()
         editor.putString(key, value)
@@ -25,7 +25,7 @@ class PreferencesManager(context: Context) {
     }
 
     companion object {
-        private const val PROJECT_PREFS = "FeedAndEatPrefs"
+        const val PROJECT_PREFS = "FeedAndEatPrefs"
         const val CURRENT_USER = "currentUser"
     }
 }
