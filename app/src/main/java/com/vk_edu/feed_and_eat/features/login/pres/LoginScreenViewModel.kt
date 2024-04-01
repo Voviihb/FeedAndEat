@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +28,7 @@ class LoginScreenViewModel @Inject constructor(
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
-    fun loginWithEmail(navigateFunc: () -> Unit) {
+    fun loginWithEmail(navigateToRoute: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 _authRepo.firebaseSignIn(
@@ -40,7 +41,7 @@ class LoginScreenViewModel @Inject constructor(
                             val currentUserId = _authRepo.getCurrentUserId()
                             if (currentUserId != null) {
                                 writeUserId(_preferencesManager, currentUserId)
-                                navigateFunc()
+                                navigateToRoute(BottomScreen.HomeScreen.route)
                             }
                         }
                         is Response.Failure -> onError(response.e)

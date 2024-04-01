@@ -141,7 +141,7 @@ fun LoginScreen(
                     keyboardController = keyboardController
                 )
 
-                LoginButton(viewModel = viewModel)
+                LoginButton(viewModel = viewModel, navigateToRoute)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -337,10 +337,11 @@ private fun PasswordField(
 @Composable
 private fun LoginButton(
     viewModel: LoginScreenViewModel,
+    navigateToRoute : (String) -> Unit
 ) {
     val loading by viewModel.loading
     Button(
-        onClick = {viewModel.loginWithEmail()},
+        onClick = {viewModel.loginWithEmail(navigateToRoute)},
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
