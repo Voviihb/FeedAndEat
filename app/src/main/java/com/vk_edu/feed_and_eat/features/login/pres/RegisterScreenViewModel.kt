@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl
+    private val _authRepo: AuthRepoImpl,
+    private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
     val registerFormState: State<RegisterForm> = _registerFormState
@@ -25,10 +27,7 @@ class RegisterScreenViewModel @Inject constructor(
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
-    private val _signUpState = mutableStateOf(false)
-    val signUpState: State<Boolean> = _signUpState
-
-    fun registerUserWithEmail() {
+    fun registerUserWithEmail(navigateFunc: () -> Unit) {
         viewModelScope.launch {
             if (_registerFormState.value.password == _registerFormState.value.passwordControl) {
                 try {
@@ -38,7 +37,13 @@ class RegisterScreenViewModel @Inject constructor(
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
-                            is Response.Success -> _signUpState.value = true
+                            is Response.Success -> {
+                                val currentUserId = _authRepo.getCurrentUserId()
+                                if (currentUserId != null) {
+                                    writeUserId(_preferencesManager, currentUserId)
+                                    navigateFunc()
+                                }
+                            }
                             is Response.Failure -> onError(response.e)
                         }
                     }
