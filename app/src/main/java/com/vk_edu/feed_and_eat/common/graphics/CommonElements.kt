@@ -29,7 +29,7 @@ fun SquareArrowButton(
     modifier: Modifier = Modifier,
 ){
     Button(
-        onClick = onClick,
+        onClick = { onClick() },
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),

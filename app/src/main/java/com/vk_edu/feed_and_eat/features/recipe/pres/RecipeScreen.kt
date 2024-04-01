@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,8 @@ import com.vk_edu.feed_and_eat.common.graphics.BoxofText
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 
 
@@ -372,15 +375,20 @@ fun RatingContainer(
 
 @Composable
 fun RecipeScreen(
+    navigateToRoute: (String) -> Unit,
     navigateBack : () -> Unit
 ) {
     val viewModel: RecipeScreenViewModel = hiltViewModel()
     viewModel.getRecipe()
     val model = viewModel.recipe.value
 
+    Scaffold(
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
+    ) {padding ->
     Column(modifier = Modifier
         .fillMaxSize()
         .background(colorResource(id = R.color.background))
+        .padding(padding)
         ) {
         Box{
             Column{
@@ -397,6 +405,7 @@ fun RecipeScreen(
                 }
             }
             BackButtonContainer(model, navigateBack)
+            }
         }
     }
 }
