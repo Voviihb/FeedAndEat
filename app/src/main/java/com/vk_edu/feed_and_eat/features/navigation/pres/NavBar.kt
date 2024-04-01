@@ -1,6 +1,8 @@
 package com.vk_edu.feed_and_eat.features.navigation.pres
 
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -8,9 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -45,58 +45,25 @@ import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.RecipeScreen
 import com.vk_edu.feed_and_eat.features.search.pres.SearchScreen
 
-val BarScreens = listOf(
-    Screen.HomeScreen,
-    Screen.SearchScreen,
-    Screen.CollectionScreen,
-    Screen.InProgressScreen,
-    Screen.ProfileScreen
-)
-
-fun onSelect(
-    list1 : MutableList<Int>,
-    list2 : MutableList<Int>,
-    str : String?
-) : Boolean{
-    list1.replaceAll { R.color.lightcyan }
-    list2.replaceAll { 40 }
-    for (index in 0..4){
-        if (BarScreens[index].route == str){
-            list1[index] = R.color.mediumcyan
-            list2[index] = 45
-        }
-    }
-    return true
-}
 
 @Composable
-fun NavBar(){
+fun GlobalNavigation(){
+    val barScreens = listOf(
+        BottomScreen.HomeScreen,
+        BottomScreen.SearchScreen,
+        BottomScreen.CollectionScreen,
+        BottomScreen.InProgressScreen,
+        BottomScreen.ProfileScreen
+    )
     val navController = rememberNavController()
     val context = LocalContext.current
     val bottomBarState = rememberSaveable {
         mutableStateOf(true)
     }
-    val bottomBarColors = rememberSaveable {
-        mutableStateOf(MutableList(5){R.color.lightcyan})
+    val bottomBarData = rememberSaveable {
+        mutableStateOf(MutableList(5){BottomData(R.color.lightcyan, 40)})
     }
-    val bottomBarIcons = rememberSaveable {
-        mutableStateOf(MutableList(5){40})
-    }
-
-    val drawables = listOf(
-        R.drawable.home,
-        R.drawable.search,
-        R.drawable.collection,
-        R.drawable.progress,
-        R.drawable.profile,
-    )
-    val names = listOf(
-        R.string.main,
-        R.string.search,
-        R.string.collection,
-        R.string.inProgress,
-        R.string.profile,
-    )
+    bottomBarData.value[0] = BottomData(R.color.mediumcyan, 45)
 
     Scaffold(
         modifier = Modifier
@@ -120,31 +87,41 @@ fun NavBar(){
                                 modifier = Modifier
                             ){
                                 Icon(
-                                    painter = painterResource(drawables[index]),
-                                    contentDescription = stringResource(names[index]),
-                                    tint = colorResource((bottomBarColors.value)[index]),
-                                    modifier = Modifier.size(bottomBarIcons.value[index].dp)
+                                    painter = painterResource(barScreens[index].drawable),
+                                    contentDescription = stringResource(barScreens[index].name),
+                                    tint = colorResource((bottomBarData.value)[index].color),
+                                    modifier = Modifier.size(bottomBarData.value[index].size.dp)
                                 )
                                 Text(
-                                    text = stringResource(names[index]),
+                                    text = stringResource(barScreens[index].name),
                                     fontSize = 15.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    color = colorResource((bottomBarColors.value)[index]),
+                                    color = colorResource((bottomBarData.value)[index].color),
                                     modifier = Modifier
                                 )
                             }
                         },
                         selectedContentColor = colorResource(id = R.color.mediumcyan),
                         unselectedContentColor = colorResource(id = R.color.lightcyan),
-                        selected = onSelect(bottomBarColors.value, bottomBarIcons.value, navController.currentBackStackEntry?.destination?.route),
+                        selected = true,
                         onClick = {
-                            navController.navigate(BarScreens[index].route){
+                            navController.navigate(barScreens[index].route){
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
                                 restoreState = true
+                            }
+                            val str = navController.currentBackStackEntry?.destination?.route
+                            if (str in (barScreens.map { it.route })){
+                                bottomBarData.value.replaceAll { BottomData(R.color.lightcyan, 40) }
+                                for (i in 0..4){
+                                    if (barScreens[i].route == str){
+                                        bottomBarData.value[i].color = R.color.mediumcyan
+                                        bottomBarData.value[i].size = 45
+                                    }
+                                }
                             }
                         },
                         modifier = Modifier
@@ -158,28 +135,28 @@ fun NavBar(){
         ) {padding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.HomeScreen.route,
+            startDestination = BottomScreen.HomeScreen.route,
             modifier = Modifier.padding(padding)){
-            composable(Screen.HomeScreen.route){
+            composable(BottomScreen.HomeScreen.route){
                 bottomBarState.value = true
                 HomeScreen()
             }
-            composable(Screen.SearchScreen.route){
+            composable(BottomScreen.SearchScreen.route){
                 bottomBarState.value = true
-                SearchScreen()
-            }
-            composable(Screen.CollectionScreen.route){
-                bottomBarState.value = true
-                CollectionScreen(
+                SearchScreen(
                     { navController.navigate(Screen.NewRecipeScreen.route) },
                     { navController.navigate(Screen.RecipeScreen.route) },
-                    )
+                )
             }
-            composable(Screen.InProgressScreen.route){
+            composable(BottomScreen.CollectionScreen.route){
+                bottomBarState.value = true
+                CollectionScreen()
+            }
+            composable(BottomScreen.InProgressScreen.route){
                 bottomBarState.value = true
                 InProgressScreen()
             }
-            composable(Screen.ProfileScreen.route){
+            composable(BottomScreen.ProfileScreen.route){
                 bottomBarState.value = true
                 ProfileScreen { navController.navigate(Screen.LoginScreen.route) }
             }
@@ -187,7 +164,7 @@ fun NavBar(){
                 bottomBarState.value = false
                 LoginScreen(
                     context,
-                    { navController.navigate(Screen.HomeScreen.route) },
+                    { navController.navigate(BottomScreen.HomeScreen.route) },
                     { navController.navigate(Screen.RegisterScreen.route) }
                 )
             }
@@ -195,7 +172,7 @@ fun NavBar(){
                 bottomBarState.value = false
                 RegisterScreen(
                     context,
-                    { navController.navigate(Screen.HomeScreen.route) },
+                    { navController.navigate(BottomScreen.HomeScreen.route) },
                     { navController.navigate(Screen.LoginScreen.route) }
                 )
             }
@@ -213,16 +190,27 @@ fun NavBar(){
                 }
             }
         }
-        }
     }
+}
+
 sealed class Screen(val route: String) {
-    data object HomeScreen : Screen("HomeScreen")
-    data object  SearchScreen : Screen("SearchScreen")
-    data object CollectionScreen : Screen("CollectionScreen")
-    data object InProgressScreen : Screen("inProgressScreen")
-    data object ProfileScreen : Screen("ProfileScreen")
     data object LoginScreen : Screen("LoginScreen")
     data object RegisterScreen : Screen("RegisterScreen")
     data object NewRecipeScreen : Screen("NewRecipeScreen")
     data object RecipeScreen : Screen("RecipeScreen")
 }
+
+sealed class BottomScreen(
+    val route: String,
+    val drawable : Int,
+    val name : Int,
+    ) {
+    data object HomeScreen : BottomScreen("HomeScreen",  R.drawable.home,  R.string.main)
+    data object  SearchScreen : BottomScreen("SearchScreen", R.drawable.search, R.string.search)
+    data object CollectionScreen : BottomScreen("CollectionScreen", R.drawable.collection, R.string.collection)
+    data object InProgressScreen : BottomScreen("inProgressScreen", R.drawable.progress, R.string.inProgress)
+    data object ProfileScreen : BottomScreen("ProfileScreen", R.drawable.profile, R.string.profile)
+
+}
+
+data class BottomData(var color : Int, var size : Int)

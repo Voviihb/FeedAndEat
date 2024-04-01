@@ -14,6 +14,6 @@ fun InProgressScreen() {
     Column(
         modifier = Modifier.padding(0.dp)
     ) {
-        Text(stringResource(id = R.string.HomeScreen))
+        Text(stringResource(id = R.string.inProgressScreen))
     }
 }

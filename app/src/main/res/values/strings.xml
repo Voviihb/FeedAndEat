@@ -55,4 +55,6 @@
     <string name="RegisterScreen">RegisterScreen</string>
     <string name="RecipeScreen">RecipeScreen</string>
     <string name="inProgressScreen">inProgressScreen</string>
+<!--    collection names-->
+    <string name="recipes">Рецептов</string>
 </resources>
