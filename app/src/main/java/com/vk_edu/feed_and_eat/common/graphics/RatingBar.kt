@@ -21,23 +21,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import com.vk_edu.feed_and_eat.ui.theme.Gray
+import com.vk_edu.feed_and_eat.ui.theme.Yellow
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
 fun RatingBar(
     rating: Float,
-    modifier: Modifier = Modifier,
-    color: Color = Color.Yellow
+    stars: Int = 5,
+    modifier: Modifier = Modifier
 ) {
+    val realRating = rating * stars / 5
     Row(modifier = modifier.wrapContentSize()) {
-        (1..5).forEach { step ->
+        (1..stars).forEach { step ->
             val stepRating = when {
-                rating > step -> 1f
-                step.rem(rating) < 1 -> rating - (step - 1f)
+                realRating > step -> 1f
+                step.rem(realRating) < 1 -> realRating - (step - 1f)
                 else -> 0f
             }
-            RatingStar(stepRating, color)
+            RatingStar(stepRating, Yellow, Gray)
         }
     }
 }
@@ -45,8 +48,8 @@ fun RatingBar(
 @Composable
 private fun RatingStar(
     rating: Float,
-    ratingColor: Color = Color.Yellow,
-    backgroundColor: Color = Color.Gray
+    ratingColor: Color,
+    backgroundColor: Color
 ) {
     BoxWithConstraints(
         modifier = Modifier
