@@ -1,7 +1,5 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,8 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,16 +56,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun RegisterScreen(context: Context) {
-    val viewModel: RegisterScreenViewModel = viewModel()
+fun RegisterScreen(
+    navigateToRoute: (String) -> Unit,
+    viewModel: RegisterScreenViewModel = hiltViewModel()
+) {
     val registerForm by viewModel.registerFormState
     val errorMsg by viewModel.errorMessage
-    val signUpState by viewModel.signUpState
 
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -156,7 +156,14 @@ fun RegisterScreen(context: Context) {
                 )
 
 
-                SignUpButton(viewModel = viewModel)
+                SignUpButton(
+                    onClickFunc = {
+                        viewModel.registerUserWithEmail(
+                            navigateToRoute
+                        )
+                    },
+                    loadingState = viewModel.loading
+                )
 
             }
         }
@@ -168,14 +175,7 @@ fun RegisterScreen(context: Context) {
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        LoginButton(modifier = modifier)
-    }
-
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
-                .show()
-        }
+        LoginButton(modifier = modifier, navigateToRoute)
     }
 }
 
@@ -469,12 +469,10 @@ private fun PasswordControlField(
 }
 
 @Composable
-private fun SignUpButton(viewModel: RegisterScreenViewModel) {
-    val loading by viewModel.loading
+private fun SignUpButton(onClickFunc: () -> Unit, loadingState: State<Boolean>) {
+    val loading by loadingState
     Button(
-        onClick = {
-            viewModel.registerUserWithEmail()
-        },
+        onClick = onClickFunc,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -510,9 +508,12 @@ private fun SignUpButton(viewModel: RegisterScreenViewModel) {
 }
 
 @Composable
-private fun LoginButton(modifier: Modifier) {
+private fun LoginButton(
+    modifier: Modifier,
+    navigateToRoute: (String) -> Unit,
+) {
     Button(
-        onClick = { /*TODO add link to login screen nav*/ },
+        onClick = { navigateToRoute(Screen.LoginScreen.route) },
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

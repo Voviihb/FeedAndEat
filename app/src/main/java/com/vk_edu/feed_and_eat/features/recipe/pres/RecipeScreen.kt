@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,16 +13,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,17 +32,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoxofText
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 
 
@@ -56,9 +61,13 @@ fun InfoSurface(
     val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons)
     Surface(
         modifier = Modifier
-            .padding(8.dp)
-            .background(Color.Red)
             .width(surfaceWidth.dp)
+            .border(
+                2.dp,
+                colorResource(id = R.color.turqoise),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .clip(shape = RoundedCornerShape(10.dp))
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -79,17 +88,29 @@ fun InfoSurface(
                 fontSize = 20.sp,
                 color = Color.Gray
             )
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(8.dp)
+            LazyColumn(
+                contentPadding = PaddingValues(start = 8.dp,
+                                                top = 8.dp,
+                                                bottom = 8.dp,
+                                                end = 70.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 items(names.size){ i ->
-                    Text(
-                        text = stringResource(id = names[i]),
-                        fontSize = 20.sp,
-                        color = Color.Gray
-                    )
-                    Text(text = energyData[i].toString() + " " + stringResource(id = R.string.gramm))
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ){
+                        Text(
+                            text = stringResource(id = names[i]),
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
+                        Text(text = energyData[i].toString() + " " + stringResource(id = R.string.gramm),
+                            fontSize = 20.sp,
+                            modifier = Modifier.align(Alignment.CenterVertically))
+                    }
                 }
             }
         }
@@ -100,7 +121,8 @@ fun InfoSurface(
 
 @Composable
 fun BackButtonContainer(
-    model: RecipeDataModel
+    model: RecipeDataModel,
+    navigateBack : () -> Unit,
 ){
     Column {
         LazyRow(modifier = Modifier
@@ -110,7 +132,7 @@ fun BackButtonContainer(
             verticalAlignment = Alignment.Top,
         ) {
             item {
-                SquareArrowButton()
+                SquareArrowButton(navigateBack)
             }
             item {
                 ExpandableInfo(width = 350, surface = {
@@ -125,8 +147,14 @@ fun BackButtonContainer(
 fun RecipeImageContainer(
     model : RecipeDataModel
 ){
-    Column(modifier = Modifier.background(Color.Transparent),
-        verticalArrangement = Arrangement.Top
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    Column(
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier
+            .background(Color.Transparent)
+            .heightIn(0.dp, (screenHeight * 0.3).toInt().dp)
+
     ) {
         Image(
             painter = painterResource(id = model.picture),
@@ -145,7 +173,7 @@ fun RecipeImageContainer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(35.dp)
-                        .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xBF)),
+                        .background(colorResource(id = R.color.lightwhite)),
                     textAlign = TextAlign.Center
                 )
             }
@@ -161,24 +189,26 @@ fun StartCookingContainer(
     val ingredients = model.ingredients
     Column(
         modifier = Modifier
-            .height(40.dp)
+            .height(50.dp)
             .fillMaxWidth()
-            .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB))
+            .background(colorResource(id = R.color.lightwhite))
             .border(
                 1.dp,
-                Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
+                colorResource(id = R.color.turqoise),
             )
     ){
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ){
-            Text(text = stringResource(R.string.ingridients) + ":" + ingredients.size,
+            Text(text = stringResource(R.string.ingr) + ":" + ingredients.size,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 10.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 15.sp
             )
             Button(
                 onClick = { /*TODO*/ },
@@ -186,7 +216,7 @@ fun StartCookingContainer(
                     .weight(2f)
                     .fillMaxHeight(),
                 colors = ButtonColors(
-                    Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xFF),
+                    colorResource(id = R.color.lightwhite),
                     Color.Black, Color.White, Color.Black),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
@@ -198,7 +228,8 @@ fun StartCookingContainer(
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 10.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 15.sp
             )
         }
     }
@@ -208,45 +239,50 @@ fun StartCookingContainer(
 fun AddCollectionButtons(){
     Column(
         modifier = Modifier
-            .padding(15.dp)
+            .padding(horizontal = 15.dp)
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(30.dp)
                 .clip(shape = RoundedCornerShape(10.dp))
                 .border(
                     2.dp,
-                    Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
+                    colorResource(id = R.color.mediumcyan),
                     shape = RoundedCornerShape(10.dp)
                 )
 
         ) {
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
-                colors = ButtonColors(Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonColors(
+                    colorResource(id = R.color.mediumcyan),
                     Color.White,
                     Color.White,
                     Color.Black),
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp)
+
             ) {
                 Text(
                     stringResource(R.string.add_to_favourite),
-                    fontSize = 12.sp
+                    maxLines = 1,
+                    fontSize = 15.sp
                 )
             }
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
+                contentPadding = PaddingValues(0.dp),
                 colors = ButtonColors(Color.White, Color.Gray, Color.White, Color.Black),
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp)
             ) {
                 Text(
                     stringResource(R.string.add_to_playlist),
-                    fontSize = 12.sp
+                    maxLines = 1,
+                    fontSize = 15.sp,
                 )
             }
         }
@@ -278,14 +314,14 @@ fun TextContainer(
         LazyColumn(
             modifier = Modifier
                 .background(
-                    Color(red = 0xE4, blue = 0xFE, green = 0xFA, alpha = 0xFF),
+                    colorResource(id = R.color.strange),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
                 .height(280.dp)
                 .border(
                     1.dp,
-                    Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
+                    colorResource(id = R.color.turqoise),
                     shape = RoundedCornerShape(20.dp)
                 ),
 
@@ -338,27 +374,38 @@ fun RatingContainer(
 
 
 @Composable
-fun RecipeScreen() {
-    val lightWhite =  Color(red = 0xFC, green = 0xFC, blue = 0xFC)
-    val viewModel: RecipeScreenViewModel = viewModel()
+fun RecipeScreen(
+    navigateToRoute: (String) -> Unit,
+    navigateBack : () -> Unit
+) {
+    val viewModel: RecipeScreenViewModel = hiltViewModel()
     viewModel.getRecipe()
     val model = viewModel.recipe.value
 
+    Scaffold(
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
+    ) {padding ->
     Column(modifier = Modifier
-            .fillMaxSize()
-            .background(lightWhite)
+        .fillMaxSize()
+        .background(colorResource(id = R.color.background))
+        .padding(padding)
         ) {
-            RecipeImageContainer(model)
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                RatingContainer(model)
-                TextContainer(model)
-                AddCollectionButtons()
-                StartCookingContainer(model)
+        Box{
+            Column{
+                RecipeImageContainer(model)
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    RatingContainer(model)
+                    TextContainer(model)
+                    AddCollectionButtons()
+                    StartCookingContainer(model)
+                }
+            }
+            BackButtonContainer(model, navigateBack)
             }
         }
-        BackButtonContainer(model)
     }
+}

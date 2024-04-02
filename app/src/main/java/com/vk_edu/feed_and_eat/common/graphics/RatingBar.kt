@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.GenericShape
@@ -51,6 +52,7 @@ private fun RatingStar(
         modifier = Modifier
             .fillMaxHeight()
             .aspectRatio(1f)
+            .heightIn(0.dp, 25.dp)
             .clip(starShape)
     ) {
         Canvas(modifier = Modifier.size(maxHeight)) {
@@ -118,7 +120,9 @@ fun RatingBarPres(rating : Double) {
     ) {
         RatingBar(
             rating = rating.toFloat(),
-            modifier = Modifier.height(25.dp)
+            modifier = Modifier
+                .height(25.dp)
+//                .heightIn(0.dp, 25.dp)
         )
 
     }
