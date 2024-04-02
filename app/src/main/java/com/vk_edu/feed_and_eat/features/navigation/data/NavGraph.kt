@@ -60,7 +60,7 @@ fun NavGraph(
             InProgressScreen(navigateToRoute)
         }
         composable(BottomScreen.ProfileScreen.route){
-            ProfileScreen (navigateToRoute)
+            ProfileScreen(navigateToRoute)
         }
         composable(Screen.LoginScreen.route){
             LoginScreen(
@@ -70,9 +70,7 @@ fun NavGraph(
         }
         composable(Screen.RegisterScreen.route){
             RegisterScreen(
-                context,
-                { navController.navigate(BottomScreen.HomeScreen.route) },
-                { navController.navigate(Screen.LoginScreen.route) }
+                navigateToRoute
             )
         }
         composable(Screen.NewRecipeScreen.route){
