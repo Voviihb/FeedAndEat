@@ -314,7 +314,7 @@ fun TextContainer(
         LazyColumn(
             modifier = Modifier
                 .background(
-                    colorResource(id = R.color.strange),
+                    colorResource(id = R.color.dimcyan),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
