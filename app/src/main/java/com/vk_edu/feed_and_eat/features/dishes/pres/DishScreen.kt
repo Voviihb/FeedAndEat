@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
-import kotlin.random.Random
 
 @Composable
 fun DishScreen() {
@@ -43,7 +42,7 @@ fun DishScreen() {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    viewModel.postDish("Banana ${Random.nextInt(0, 100)}", 15, 10)
+                    viewModel.loadRecipes()
                 }) {
                     Column(
                         modifier = Modifier
@@ -51,27 +50,14 @@ fun DishScreen() {
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Post banana", fontSize = 24.sp)
-                    }
-                }
-
-                Button(onClick = {
-                    viewModel.loadDishes()
-                }) {
-                    Column(
-                        modifier = Modifier
-                            .width(100.dp)
-                            .padding(vertical = 4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "Load bananas", fontSize = 24.sp)
+                        Text(text = "Load dishes", fontSize = 24.sp)
                     }
                 }
             }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(viewModel.dishesList) { dish ->
                     Text(
-                        text = "id = ${dish.id}, name = ${dish.name}, rating = ${dish.rating}",
+                        text = dish.toString(),
                         color = Color.Black,
                         fontSize = 16.sp
                     )
