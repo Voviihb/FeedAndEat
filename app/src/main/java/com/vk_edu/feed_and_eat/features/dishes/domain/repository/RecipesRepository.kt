@@ -11,6 +11,5 @@ interface RecipesRepository {
         prevDocument: DocumentSnapshot?
     ): Flow<Response<Pair<List<Recipe>, DocumentSnapshot?>>>
 
-    fun loadRecipeByName(name: String): Flow<Response<Recipe>>
-
+    fun loadRecipeById(id: String): Flow<Response<Recipe?>>
 }

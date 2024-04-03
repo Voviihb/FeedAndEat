@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,8 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DishScreenViewModel @Inject constructor(
-    private val _dishesRepo: RecipesRepoImpl
+class RecipesScreenViewModel @Inject constructor(
+    private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -24,35 +23,59 @@ class DishScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private val _isPostSuccess = mutableStateOf<Boolean>(false)
-    val isPostSuccess: State<Boolean> = _isPostSuccess
-
     private val _isLoadSuccess = mutableStateOf<Boolean>(false)
     val isLoadSuccess: State<Boolean> = _isLoadSuccess
 
-    private val _dishesList = mutableStateListOf<Recipe>()
-    val dishesList: List<Recipe> = _dishesList
+    private val _recipesList = mutableStateListOf<Recipe>()
+    val recipesList: List<Recipe> = _recipesList
 
     private var _prevDocument: DocumentSnapshot? = null
 
     fun loadRecipes() {
         viewModelScope.launch {
             try {
-                _dishesRepo.loadRecipes(prevDocument = _prevDocument).collect { response ->
+                _recipesRepo.loadRecipes(prevDocument = _prevDocument).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            if (_dishesList.isNotEmpty()) {
-                                _dishesList.clear()
+                            /* TODO remove list clear if needed */
+                            if (_recipesList.isNotEmpty()) {
+                                _recipesList.clear()
                             }
-                            _dishesList += response.data.first
+                            _recipesList += response.data.first
                             _prevDocument = response.data.second
-                            Log.d("taaag", _prevDocument.toString())
                         }
 
                         is Response.Failure -> {
                             onError(response.e)
-                            Log.d("taag", response.e.toString())
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
+    fun loadRecipeById(id: String) {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.loadRecipeById(id).collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            if (_recipesList.isNotEmpty()) {
+                                _recipesList.clear()
+                            }
+                            if (response.data != null) {
+                                _recipesList += response.data
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
                         }
                     }
                 }

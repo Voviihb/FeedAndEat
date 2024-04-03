@@ -20,6 +20,11 @@ import javax.inject.Singleton
 class RecipesRepoImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : RecipesRepository {
+    /**
+     * Loads all recipes with pagination, order by DocID
+     * @param count how many items to load
+     * @param prevDocument is needed to calculate offset for pagination
+     * */
     override fun loadRecipes(
         count: Long,
         prevDocument: DocumentSnapshot?
@@ -49,7 +54,13 @@ class RecipesRepoImpl @Inject constructor(
         )
     }.flowOn(Dispatchers.IO)
 
-    override fun loadRecipeByName(name: String): Flow<Response<Recipe>> {
-        TODO("Not yet implemented")
-    }
+    /**
+     * Loads one recipe with doc Id provided, if document exists
+     * @param id document ID
+     * */
+    override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
+        val document = db.collection("recipes")
+            .document(id).get().await()
+        return@repoTryCatchBlock document.toObject<Recipe>()
+    }.flowOn(Dispatchers.IO)
 }

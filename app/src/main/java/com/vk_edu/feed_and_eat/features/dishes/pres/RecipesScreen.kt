@@ -25,8 +25,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
 
 @Composable
-fun DishScreen() {
-    val viewModel: DishScreenViewModel = viewModel()
+fun RecipesScreen() {
+    val viewModel: RecipesScreenViewModel = viewModel()
     val errorMsg by viewModel.errorMessage
 
     Box(
@@ -50,12 +50,25 @@ fun DishScreen() {
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Load dishes", fontSize = 24.sp)
+                        Text(text = "Load recipes", fontSize = 24.sp)
+                    }
+                }
+
+                Button(onClick = {
+                    viewModel.loadRecipeById(id = "015Dlj0j8AecAY4JhVbb")
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Load one recipe", fontSize = 24.sp)
                     }
                 }
             }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(viewModel.dishesList) { dish ->
+                items(viewModel.recipesList) { dish ->
                     Text(
                         text = dish.toString(),
                         color = Color.Black,
@@ -64,7 +77,5 @@ fun DishScreen() {
                 }
             }
         }
-
-
     }
 }
