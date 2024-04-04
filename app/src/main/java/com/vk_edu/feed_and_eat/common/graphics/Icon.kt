@@ -45,4 +45,3 @@ fun previewIcon() {
         SmallIcon(painter = painterResource(R.drawable.delete), color = FadedTurquoise)
     }
 }
-

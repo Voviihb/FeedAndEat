@@ -59,4 +59,5 @@
     <string name="icon">Icon</string>
     <string name="small_ingredients">Ingr.:</string>
     <string name="steps">Steps:</string>
+    <string name="searchLabel">Search</string>
 </resources>

@@ -35,9 +35,9 @@ fun DishCard(link: String,
              rating: Double, cooked: Int,
              modifier: Modifier = Modifier) {
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardColors(White, White, White, White),
-        modifier = modifier.shadow(16.dp, RoundedCornerShape(24.dp)),
+        modifier = modifier.shadow(16.dp, RoundedCornerShape(16.dp)),
         onClick = {}
     ) {
         Column {
@@ -73,16 +73,23 @@ fun DishCard(link: String,
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(8.dp, 2.dp, 0.dp, 0.dp)
+                    modifier = Modifier.padding(8.dp, 0.dp, 0.dp, 0.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         RatingBar(rating.toFloat(), 1, modifier = Modifier.height(24.dp))
-                        DarkText(text = rating.toString(), fontSize = SmallText)
+                        DarkText(
+                            text = rating.toString(),
+                            fontSize = SmallText,
+                            modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
+                        )
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
+                    ) {
                         SmallIcon(painter = painterResource(R.drawable.delete), color = Gray)
                         DarkText(text = cooked.toString(), fontSize = SmallText)
                     }
@@ -91,7 +98,7 @@ fun DishCard(link: String,
                     shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 0.dp),
                     colors = ButtonColors(DarkTurquoise, DarkTurquoise, DarkTurquoise, DarkTurquoise),
                     contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(48.dp, 36.dp),
+                    modifier = Modifier.size(44.dp, 36.dp),
                     onClick = {}
                 ) {
                     SmallIcon(painter = painterResource(R.drawable.delete), color = White)
