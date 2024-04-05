@@ -26,21 +26,18 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 
@@ -49,7 +46,9 @@ fun ProfileScreen(
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
     val profileInfo by viewModel.profileState
-    val settingsChoice by viewModel.settingsState
+    val selectedThemeOption by viewModel.selectedTheme
+    val selectedProfileOption by viewModel.selectedProfileType
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -66,9 +65,9 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AboutMeBlock(profileInfo, viewModel)
-                SaveInfoButton()
-                LogoutButton()
-                SettingsBlock()
+                SaveInfoButton(viewModel = viewModel)
+                LogoutButton(viewModel = viewModel)
+                SettingsBlock(viewModel, selectedThemeOption, selectedProfileOption)
             }
 
         }
@@ -80,7 +79,7 @@ private fun UserInfoBlock(profileInfo: Profile) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Image(
             painter = painterResource(id = R.drawable.user_default_icon),
-            contentDescription = "User profile icon",
+            contentDescription = stringResource(R.string.user_profile_icon),
             modifier = Modifier.size(100.dp)
         )
         Column(
@@ -92,7 +91,11 @@ private fun UserInfoBlock(profileInfo: Profile) {
                     .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "E-Mail:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+                Text(
+                    text = stringResource(R.string.e_mail),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Normal
+                )
                 Text(
                     text = profileInfo.email,
                     fontSize = 24.sp,
@@ -105,7 +108,7 @@ private fun UserInfoBlock(profileInfo: Profile) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Никнейм:",
+                    text = stringResource(R.string.nickname),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Normal
                 )
@@ -126,7 +129,11 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = "Обо мне:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+        Text(
+            text = stringResource(R.string.about_me),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Normal
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -156,7 +163,7 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                     unfocusedTextColor = Color.Black,
                     disabledTextColor = Color.Black,
                 ),
-                label = { Text("Введите желаемую информацию о себе") },
+                label = { Text(stringResource(R.string.enter_information_about_yourself)) },
                 textStyle = TextStyle(fontSize = 20.sp)
             )
         }
@@ -165,9 +172,9 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
 }
 
 @Composable
-private fun SaveInfoButton() {
+private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { viewModel.saveUserData() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.light_cyan_fae),
@@ -189,16 +196,20 @@ private fun SaveInfoButton() {
                 .padding(vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Сохранить информацию", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(R.string.save_information),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
 
     }
 }
 
 @Composable
-private fun LogoutButton() {
+private fun LogoutButton(viewModel: ProfileScreenViewModel) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { viewModel.logout() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = Color.Red,
@@ -213,24 +224,33 @@ private fun LogoutButton() {
                 .padding(vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Выйти из аккаунта", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+            Text(stringResource(R.string.logout), fontSize = 24.sp, fontWeight = FontWeight.Medium)
         }
     }
 }
 
 @Composable
-private fun SettingsBlock() {
-    val themes = listOf("Светлая", "Темная", "Как в системе")
-    val (selectedThemeOption, onThemeOptionSelected) = remember { mutableStateOf(themes[0]) }
-    val profileType = listOf("Открытый", "Закрытый")
-    val (selectedProfileOption, onProfileOptionSelected) = remember { mutableStateOf(profileType[0]) }
+private fun SettingsBlock(
+    viewModel: ProfileScreenViewModel,
+    selectedThemeOption: ThemeSelection,
+    selectedProfileOption: ProfileType
+) {
+    val themes = mapOf(
+        ThemeSelection.LIGHT to stringResource(R.string.light_theme),
+        ThemeSelection.DARK to stringResource(R.string.dark_theme),
+        ThemeSelection.AS_SYSTEM to stringResource(R.string.as_system_theme)
+    )
+    val profileTypes = mapOf(
+        ProfileType.PUBLIC to stringResource(R.string.public_profile),
+        ProfileType.PRIVATE to stringResource(R.string.private_profile)
+    )
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "Настройки:",
+            text = stringResource(R.string.settings),
             fontSize = 24.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(vertical = 8.dp)
@@ -239,19 +259,23 @@ private fun SettingsBlock() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Тема:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+            Text(
+                text = stringResource(R.string.theme),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Normal
+            )
             Column(
                 Modifier
                     .selectableGroup()
                     .width(200.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                themes.forEach { element ->
+                viewModel.themes.forEach { element ->
                     Row(verticalAlignment = Alignment.CenterVertically)
                     {
                         RadioButton(
                             selected = (element == selectedThemeOption),
-                            onClick = { onThemeOptionSelected(element) },
+                            onClick = { viewModel.onThemeOptionSelected(element) },
                             colors = RadioButtonColors(
                                 selectedColor = Color.Black,
                                 unselectedColor = Color.Black,
@@ -259,7 +283,7 @@ private fun SettingsBlock() {
                                 disabledUnselectedColor = Color.Black
                             )
                         )
-                        Text(text = element, fontSize = 20.sp)
+                        Text(text = themes[element].toString(), fontSize = 20.sp)
                     }
                 }
             }
@@ -269,19 +293,23 @@ private fun SettingsBlock() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Профиль:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+            Text(
+                text = stringResource(R.string.profile),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Normal
+            )
             Column(
                 Modifier
                     .selectableGroup()
                     .width(200.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                profileType.forEach { element ->
+                viewModel.profileType.forEach { element ->
                     Row(verticalAlignment = Alignment.CenterVertically)
                     {
                         RadioButton(
                             selected = (element == selectedProfileOption),
-                            onClick = { onProfileOptionSelected(element) },
+                            onClick = { viewModel.onProfileOptionSelected(element) },
                             colors = RadioButtonColors(
                                 selectedColor = Color.Black,
                                 unselectedColor = Color.Black,
@@ -289,7 +317,7 @@ private fun SettingsBlock() {
                                 disabledUnselectedColor = Color.Black
                             )
                         )
-                        Text(text = element, fontSize = 20.sp)
+                        Text(text = profileTypes[element].toString(), fontSize = 20.sp)
                     }
                 }
             }

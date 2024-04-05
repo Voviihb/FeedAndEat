@@ -7,5 +7,3 @@ enum class ProfileType {
 enum class ThemeSelection {
     LIGHT, DARK, AS_SYSTEM
 }
-
-data class Settings(val themeSelection: ThemeSelection ,val profileType: ProfileType)

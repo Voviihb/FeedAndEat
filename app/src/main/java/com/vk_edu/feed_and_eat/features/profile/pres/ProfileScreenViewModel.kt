@@ -16,8 +16,14 @@ class ProfileScreenViewModel @Inject constructor(
     private val _profileState = mutableStateOf(Profile("", "", "", ""))
     val profileState: State<Profile> = _profileState
 
-    private val _settingsState = mutableStateOf(Settings(ThemeSelection.LIGHT, ProfileType.PUBLIC))
-    val settingsState: State<Settings> = _settingsState
+    val themes = listOf(ThemeSelection.LIGHT, ThemeSelection.DARK, ThemeSelection.AS_SYSTEM)
+    private val _selectedTheme = mutableStateOf(themes[0])
+    val selectedTheme: State<ThemeSelection> = _selectedTheme
+
+    val profileType = listOf(ProfileType.PUBLIC, ProfileType.PRIVATE)
+    private val _selectedProfileType = mutableStateOf(profileType[0])
+    val selectedProfileType: State<ProfileType> = _selectedProfileType
+
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -44,11 +50,28 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
+    fun logout() {
+        /* TODO copy impl from LoginScreenViewModel */
+    }
+
+    fun saveUserData() {
+        /* TODO make after merge with feature_DataStore */
+    }
+
     fun aboutMeChanged(value: String) {
         _profileState.value = _profileState.value.copy(
             aboutMe = value
         )
     }
+
+    fun onThemeOptionSelected(theme: ThemeSelection) {
+        _selectedTheme.value = theme
+    }
+
+    fun onProfileOptionSelected(profileType: ProfileType) {
+        _selectedProfileType.value = profileType
+    }
+
 
     private fun onError(message: Exception?) {
         _errorMessage.value = message

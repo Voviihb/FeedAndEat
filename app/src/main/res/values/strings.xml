@@ -37,4 +37,19 @@
     <string name="exception_occured">Произошла ошибка!</string>
     <string name="password_differs">Введенные пароли отличаются!</string>
     <string name="authenticated">Authenticated!</string>
+    <string name="user_profile_icon">User profile icon</string>
+    <string name="e_mail">E-Mail:</string>
+    <string name="nickname">Никнейм:</string>
+    <string name="about_me">Обо мне:</string>
+    <string name="enter_information_about_yourself">Введите желаемую информацию о себе</string>
+    <string name="save_information">Сохранить информацию</string>
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="light_theme">Светлая</string>
+    <string name="dark_theme">Темная</string>
+    <string name="as_system_theme">Как в системе</string>
+    <string name="public_profile">Открытый</string>
+    <string name="private_profile">Закрытый</string>
+    <string name="settings">Настройки:</string>
+    <string name="theme">Тема:</string>
+    <string name="profile">Профиль:</string>
 </resources>
