@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
@@ -42,23 +43,8 @@ import com.vk_edu.feed_and_eat.ui.theme.LargeText
 import com.vk_edu.feed_and_eat.ui.theme.LightTurquoise
 import com.vk_edu.feed_and_eat.ui.theme.White
 
-
-data class CardData(val link: String, val ingredients: Int, val steps: Int,
-                    val name: String, val rating: Double, val cooked: Int)
-
 @Composable
-fun HomeScreen() {
-    val elements = List(8) {
-        CardData(
-            link = "https://img.spoonacular.com/recipes/641732-556x370.jpg",
-            ingredients = 15,
-            steps = 10,
-            name = "Dulce De Leche Swi Amaretto Frozen Yogurt",
-            rating = 3.0,
-            cooked = 156
-        )
-    }
-
+fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -99,7 +85,9 @@ fun HomeScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             BoldText(text = stringResource(R.string.title1), fontSize = ExtraLargeText)
-            val cardData = elements[0]
+
+            viewModel.getCardTitle1()
+            val cardData = viewModel.cardTitle1.value
             DishCard(
                 link = cardData.link,
                 ingredients = cardData.ingredients,
@@ -131,7 +119,8 @@ fun HomeScreen() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(12.dp, 0.dp)
             ) {
-                items(elements) { cardData ->
+                viewModel.getCardsTitle2()
+                items(viewModel.cardsTitle2) { cardData ->
                     DishCard(
                         link = cardData.link,
                         ingredients = cardData.ingredients,
@@ -158,7 +147,8 @@ fun HomeScreen() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(12.dp, 0.dp)
             ) {
-                items(elements) { cardData ->
+                viewModel.getCardsTitle3()
+                items(viewModel.cardsTitle3) { cardData ->
                     DishCard(
                         link = cardData.link,
                         ingredients = cardData.ingredients,
@@ -185,7 +175,8 @@ fun HomeScreen() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(12.dp, 0.dp)
             ) {
-                items(elements) { cardData ->
+                viewModel.getCardsTitle4()
+                items(viewModel.cardsTitle4) { cardData ->
                     DishCard(
                         link = cardData.link,
                         ingredients = cardData.ingredients,
