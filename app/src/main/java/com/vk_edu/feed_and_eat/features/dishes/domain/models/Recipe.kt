@@ -12,7 +12,7 @@ data class Ingredient(
 @IgnoreExtraProperties
 data class Instruction(
     val paragraph: String? = null,
-    val timers: ArrayList<Timer>? = null
+    val timers: List<Timer>? = null
 )
 
 @IgnoreExtraProperties
@@ -28,12 +28,15 @@ data class Nutrients(
 data class Recipe(
     val name: String? = null,
     val image: String? = null,
-    val instructions: ArrayList<Instruction>? = null,
+    val instructions: List<Instruction>? = null,
     val servings: Servings? = null,
-    val ingredients: ArrayList<Ingredient>? = null,
-    val tags: ArrayList<String>? = null,
+    val ingredients: List<Ingredient>? = null,
+    val tags: List<String>? = null,
     val nutrients: Nutrients? = null,
-    val author: Int = 0
+    val author: Int? = null,
+    val rating: Double? = null,
+    val cooked: Int? = null,
+    val reviews: List<Review>? = null
 )
 
 @IgnoreExtraProperties
@@ -48,5 +51,12 @@ data class Timer(
     val lowerLimit: Int? = null,
     val upperLimit: Int? = null,
     val number: Int? = null
+)
+
+@IgnoreExtraProperties
+data class Review(
+    val author: Int? = null,
+    val mark: Double? = null,
+    val message: String? = null
 )
 

@@ -29,8 +29,15 @@ class RecipesScreenViewModel @Inject constructor(
     private val _recipesList = mutableStateListOf<Recipe>()
     val recipesList: List<Recipe> = _recipesList
 
+    /**
+     * Stores last seen document. Is used to calculate offset for pagination
+     * */
     private var _prevDocument: DocumentSnapshot? = null
 
+    /**
+     * Loads all recipes with pagination, order by DocID. Returns new collection every call.
+     * Uses loadRecipes() from repo
+     * */
     fun loadRecipes() {
         viewModelScope.launch {
             try {
@@ -59,6 +66,9 @@ class RecipesScreenViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Loads one recipe by its id. Uses loadRecipeById(id) from repo
+     * */
     fun loadRecipeById(id: String) {
         viewModelScope.launch {
             try {
