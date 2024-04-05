@@ -25,6 +25,8 @@ class AuthRepoImpl @Inject constructor(
 
     override fun getUserId(): String? = auth.currentUser?.uid
 
+    override fun getUserEmail(): String? = auth.currentUser?.email
+
     override fun firebaseSignInAnonymously(): Flow<Response<AuthResult>> =
         repoTryCatchBlock { auth.signInAnonymously().await() }.flowOn(Dispatchers.IO)
 

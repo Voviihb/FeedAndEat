@@ -11,6 +11,8 @@ interface AuthRepository {
 
     fun getUserId(): String?
 
+    fun getUserEmail(): String?
+
     fun firebaseSignInAnonymously(): Flow<Response<AuthResult>>
 
     fun firebaseSignUp(email: String, password: String, login: String): Flow<Response<Void>>

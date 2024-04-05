@@ -40,10 +40,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    viewModel: ProfileScreenViewModel = hiltViewModel()
+) {
+    val profileInfo by viewModel.profileState
+    val settingsChoice by viewModel.settingsState
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,12 +60,12 @@ fun ProfileScreen() {
                 .fillMaxSize()
                 .padding(16.dp),
         ) {
-            UserInfoBlock()
+            UserInfoBlock(profileInfo)
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AboutMeBlock()
+                AboutMeBlock(profileInfo, viewModel)
                 SaveInfoButton()
                 LogoutButton()
                 SettingsBlock()
@@ -70,7 +76,7 @@ fun ProfileScreen() {
 }
 
 @Composable
-private fun UserInfoBlock() {
+private fun UserInfoBlock(profileInfo: Profile) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Image(
             painter = painterResource(id = R.drawable.user_default_icon),
@@ -86,9 +92,9 @@ private fun UserInfoBlock() {
                     .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Имя:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
+                Text(text = "E-Mail:", fontSize = 24.sp, fontWeight = FontWeight.Normal)
                 Text(
-                    text = "Test test",
+                    text = profileInfo.email,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Right
@@ -104,7 +110,7 @@ private fun UserInfoBlock() {
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = "Test testgdfg",
+                    text = profileInfo.nickname,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Right
@@ -116,8 +122,7 @@ private fun UserInfoBlock() {
 }
 
 @Composable
-private fun AboutMeBlock() {
-    var text by remember { mutableStateOf("") }
+private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -137,8 +142,8 @@ private fun AboutMeBlock() {
 
         ) {
             TextField(
-                value = text,
-                onValueChange = { text = it },
+                value = profileInfo.aboutMe,
+                onValueChange = { viewModel.aboutMeChanged(it) },
                 modifier = Modifier.fillMaxSize(),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = colorResource(id = R.color.light_cyan_fae),
@@ -259,6 +264,7 @@ private fun SettingsBlock() {
                 }
             }
         }
+        /* TODO change vertical padding*/
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
