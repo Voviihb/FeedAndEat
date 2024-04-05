@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -84,7 +85,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
             columnWidthDp = columnWidthDp
         )
 
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(12.dp))
     }
 }
 
@@ -104,17 +105,15 @@ fun SearchCard(modifier: Modifier = Modifier) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp, 0.dp, 8.dp, 0.dp)
             ) {
-                LightText(
-                    text = stringResource(R.string.searchLabel),
-                    fontSize = LargeText,
-                    modifier = Modifier.padding(16.dp, 0.dp)
-                )
+                LightText(text = stringResource(R.string.searchLabel), fontSize = LargeText)
                 LargeIcon(
-                    painter = painterResource(R.drawable.delete),
+                    painter = painterResource(R.drawable.search_icon),
                     color = colorResource(R.color.medium_cyan),
-                    modifier = Modifier.padding(4.dp, 0.dp)
+                    modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                 )
             }
         }

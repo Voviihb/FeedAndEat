@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
+import com.vk_edu.feed_and_eat.ui.theme.SmallIconSize
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 @Composable
@@ -74,14 +75,14 @@ fun DishCard(link: String,
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(8.dp, 0.dp, 0.dp, 0.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.padding(8.dp, 2.dp, 0.dp, 0.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        RatingBar(rating.toFloat(), 1, modifier = Modifier.height(24.dp))
+                        RatingBar(rating.toFloat(), 1, modifier = Modifier.height(SmallIconSize))
                         DarkText(
                             text = rating.toString(),
                             fontSize = SmallText,
@@ -90,10 +91,14 @@ fun DishCard(link: String,
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
-                        SmallIcon(painter = painterResource(R.drawable.delete), color = colorResource(R.color.gray))
-                        DarkText(text = cooked.toString(), fontSize = SmallText)
+                        SmallIcon(painter = painterResource(R.drawable.cooked_icon), color = colorResource(R.color.gray))
+                        DarkText(
+                            text = cooked.toString(),
+                            fontSize = SmallText,
+                            modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
+                        )
                     }
                 }
                 Button(
@@ -104,7 +109,7 @@ fun DishCard(link: String,
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {}
                 ) {
-                    SmallIcon(painter = painterResource(R.drawable.delete), color = colorResource(R.color.white))
+                    SmallIcon(painter = painterResource(R.drawable.like_icon), color = colorResource(R.color.white))
                 }
             }
         }
