@@ -35,13 +35,3 @@ fun LargeIcon(painter: Painter, color: Color, modifier: Modifier = Modifier) {
         modifier = modifier.size(LargeIcon)
     )
 }
-
-
-@Preview(showSystemUi = true)
-@Composable
-fun previewIcon() {
-    Column {
-        LargeIcon(painter = painterResource(R.drawable.delete), color = DarkTurquoise)
-        SmallIcon(painter = painterResource(R.drawable.delete), color = FadedTurquoise)
-    }
-}

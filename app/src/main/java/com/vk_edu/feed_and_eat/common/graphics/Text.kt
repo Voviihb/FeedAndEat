@@ -52,13 +52,3 @@ fun BoldText(text: String, fontSize: TextUnit, lineHeight: TextUnit = TextUnit.U
         modifier = modifier
     )
 }
-
-@Preview(showSystemUi = true)
-@Composable
-fun previewText() {
-    Column {
-        BoldText("Hello,vdfbdfbrgfnrgtnythjyhumytmytytnygtnytnytgnytnythmhmygh World!", ExtraLargeText)
-        LightText("Hello, World!", SmallText)
-        DarkText("Hello, World!", SmallText)
-    }
-}

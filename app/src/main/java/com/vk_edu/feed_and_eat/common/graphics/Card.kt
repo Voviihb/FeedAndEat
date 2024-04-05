@@ -33,18 +33,21 @@ fun DishCard(link: String,
              ingredients: Int,
              steps: Int, name: String,
              rating: Double, cooked: Int,
-             modifier: Modifier = Modifier) {
+             modifier: Modifier = Modifier,
+             largeCard: Boolean = false) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardColors(White, White, White, White),
-        modifier = modifier.shadow(16.dp, RoundedCornerShape(16.dp)),
+        modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
         onClick = {}
     ) {
         Column {
             DishImage(link = link, modifier = Modifier.fillMaxWidth())
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
-                modifier = Modifier.padding(8.dp, 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp, 4.dp)
             ) {
                 BoldText(
                     text = name,
@@ -52,14 +55,14 @@ fun DishCard(link: String,
                     lineHeight = SmallText,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Row (
+                Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     LightText(
-                        text = stringResource(R.string.small_ingredients) + " $ingredients",
-                        fontSize = ExtraSmallText
-                    )
+                        text = (if (largeCard) stringResource(R.string.ingredients)
+                        else stringResource(R.string.small_ingredients)) + " $ingredients",
+                        fontSize = ExtraSmallText)
                     LightText(
                         text = stringResource(R.string.steps) + " $steps",
                         fontSize = ExtraSmallText
@@ -98,7 +101,7 @@ fun DishCard(link: String,
                     shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 0.dp),
                     colors = ButtonColors(DarkTurquoise, DarkTurquoise, DarkTurquoise, DarkTurquoise),
                     contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(44.dp, 36.dp),
+                    modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {}
                 ) {
                     SmallIcon(painter = painterResource(R.drawable.delete), color = White)

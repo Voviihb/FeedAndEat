@@ -58,6 +58,11 @@
     <string name="imageDescription">Image of this dish</string>
     <string name="icon">Icon</string>
     <string name="small_ingredients">Ingr.:</string>
+    <string name="ingredients">Ingredients:</string>
     <string name="steps">Steps:</string>
     <string name="searchLabel">Search</string>
+    <string name="title1">Recipe of the day</string>
+    <string name="title2">Top of the week</string>
+    <string name="title3">Recipes for you</string>
+    <string name="title4">Popular dietary</string>
 </resources>
