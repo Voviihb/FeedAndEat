@@ -20,9 +20,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import com.vk_edu.feed_and_eat.ui.theme.Gray
-import com.vk_edu.feed_and_eat.ui.theme.Yellow
+import com.vk_edu.feed_and_eat.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -40,7 +40,7 @@ fun RatingBar(
                 step.rem(realRating) < 1 -> realRating - (step - 1f)
                 else -> 0f
             }
-            RatingStar(stepRating, Yellow, Gray)
+            RatingStar(stepRating, colorResource(R.color.yellow), colorResource(R.color.gray))
         }
     }
 }

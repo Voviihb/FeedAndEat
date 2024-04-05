@@ -59,11 +59,11 @@ fun onSelect(
     list2: MutableList<Int>,
     str: String?
 ): Boolean {
-    list1.replaceAll { R.color.lightcyan }
+    list1.replaceAll { R.color.light_cyan }
     list2.replaceAll { 40 }
     for (index in 0..4) {
         if (BarScreens[index].route == str) {
-            list1[index] = R.color.mediumcyan
+            list1[index] = R.color.medium_cyan
             list2[index] = 45
         }
     }
@@ -78,7 +78,7 @@ fun NavBar(viewModel: NavBarViewModel = hiltViewModel()) {
         mutableStateOf(true)
     }
     val bottomBarColors = rememberSaveable {
-        mutableStateOf(MutableList(5) { R.color.lightcyan })
+        mutableStateOf(MutableList(5) { R.color.light_cyan })
     }
     val bottomBarIcons = rememberSaveable {
         mutableStateOf(MutableList(5) { 40 })
@@ -138,8 +138,8 @@ fun NavBar(viewModel: NavBarViewModel = hiltViewModel()) {
                                         )
                                     }
                                 },
-                                selectedContentColor = colorResource(id = R.color.mediumcyan),
-                                unselectedContentColor = colorResource(id = R.color.lightcyan),
+                                selectedContentColor = colorResource(id = R.color.medium_cyan),
+                                unselectedContentColor = colorResource(id = R.color.light_cyan),
                                 selected = onSelect(
                                     bottomBarColors.value,
                                     bottomBarIcons.value,

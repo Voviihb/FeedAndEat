@@ -17,16 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.ui.theme.DarkTurquoise
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
-import com.vk_edu.feed_and_eat.ui.theme.Gray
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
-import com.vk_edu.feed_and_eat.ui.theme.White
 
 @Composable
 fun DishCard(link: String,
@@ -37,7 +35,8 @@ fun DishCard(link: String,
              largeCard: Boolean = false) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardColors(White, White, White, White),
+        colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
+            colorResource(R.color.white), colorResource(R.color.white)),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
         onClick = {}
     ) {
@@ -93,18 +92,19 @@ fun DishCard(link: String,
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
                     ) {
-                        SmallIcon(painter = painterResource(R.drawable.delete), color = Gray)
+                        SmallIcon(painter = painterResource(R.drawable.delete), color = colorResource(R.color.gray))
                         DarkText(text = cooked.toString(), fontSize = SmallText)
                     }
                 }
                 Button(
                     shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 0.dp),
-                    colors = ButtonColors(DarkTurquoise, DarkTurquoise, DarkTurquoise, DarkTurquoise),
+                    colors = ButtonColors(colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan),
+                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {}
                 ) {
-                    SmallIcon(painter = painterResource(R.drawable.delete), color = White)
+                    SmallIcon(painter = painterResource(R.drawable.delete), color = colorResource(R.color.white))
                 }
             }
         }

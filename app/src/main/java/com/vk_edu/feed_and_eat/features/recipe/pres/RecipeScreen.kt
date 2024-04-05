@@ -61,7 +61,7 @@ fun InfoSurface(
             .width(surfaceWidth.dp)
             .border(
                 2.dp,
-                colorResource(id = R.color.turqoise),
+                colorResource(id = R.color.dark_cyan),
                 shape = RoundedCornerShape(10.dp)
             )
             .clip(shape = RoundedCornerShape(10.dp))
@@ -170,7 +170,7 @@ fun RecipeImageContainer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(35.dp)
-                        .background(colorResource(id = R.color.lightwhite)),
+                        .background(colorResource(id = R.color.pale_cyan)),
                     textAlign = TextAlign.Center
                 )
             }
@@ -188,10 +188,10 @@ fun StartCookingContainer(
         modifier = Modifier
             .height(50.dp)
             .fillMaxWidth()
-            .background(colorResource(id = R.color.lightwhite))
+            .background(colorResource(id = R.color.pale_cyan))
             .border(
                 1.dp,
-                colorResource(id = R.color.turqoise),
+                colorResource(id = R.color.dark_cyan),
             )
     ){
         Row(
@@ -213,7 +213,7 @@ fun StartCookingContainer(
                     .weight(2f)
                     .fillMaxHeight(),
                 colors = ButtonColors(
-                    colorResource(id = R.color.lightwhite),
+                    colorResource(id = R.color.pale_cyan),
                     Color.Black, Color.White, Color.Black),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
@@ -246,7 +246,7 @@ fun AddCollectionButtons(){
                 .clip(shape = RoundedCornerShape(10.dp))
                 .border(
                     2.dp,
-                    colorResource(id = R.color.mediumcyan),
+                    colorResource(id = R.color.medium_cyan),
                     shape = RoundedCornerShape(10.dp)
                 )
 
@@ -255,7 +255,7 @@ fun AddCollectionButtons(){
                 shape = RectangleShape,
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonColors(
-                    colorResource(id = R.color.mediumcyan),
+                    colorResource(id = R.color.medium_cyan),
                     Color.White,
                     Color.White,
                     Color.Black),
@@ -311,14 +311,14 @@ fun TextContainer(
         LazyColumn(
             modifier = Modifier
                 .background(
-                    colorResource(id = R.color.strange),
+                    colorResource(id = R.color.white_cyan),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
                 .height(280.dp)
                 .border(
                     1.dp,
-                    colorResource(id = R.color.turqoise),
+                    colorResource(id = R.color.dark_cyan),
                     shape = RoundedCornerShape(20.dp)
                 ),
 
@@ -380,7 +380,7 @@ fun RecipeScreen(
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .background(colorResource(id = R.color.background))
+        .background(colorResource(id = R.color.white))
         ) {
         Box{
             Column{
