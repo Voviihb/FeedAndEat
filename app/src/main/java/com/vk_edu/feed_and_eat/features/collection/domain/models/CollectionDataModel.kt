@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.collection.data.models
+package com.vk_edu.feed_and_eat.features.collection.domain.models
 
 import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 

@@ -28,9 +28,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.collection.data.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import java.lang.Integer.min
@@ -97,11 +96,14 @@ fun SingleCollection(collection: Compilation){
 
 @Composable
 fun CollectionScreen(
-    navigateToRoute : (String) -> Unit
+    navigateToRoute : (String) -> Unit,
+    viewModel : CollectionScreenViewModel
 ) {
-    val viewModel : CollectionScreenViewModel = hiltViewModel()
-    viewModel.getCollectionViewModel()
-    val collectionList = viewModel.mutableCollection.value.compilations
+    if (viewModel.collection.value.compilations.isEmpty()){
+        viewModel.getCollectionViewModel()
+    }
+
+    val collectionList = viewModel.collection.value.compilations
     Log.d("TAG", collectionList.toString())
 
     Scaffold(

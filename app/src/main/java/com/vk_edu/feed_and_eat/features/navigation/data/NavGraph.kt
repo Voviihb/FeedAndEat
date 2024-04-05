@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
+import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreenViewModel
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
 import com.vk_edu.feed_and_eat.features.login.pres.RegisterScreen
@@ -54,7 +56,8 @@ fun NavGraph(
             SearchScreen(navigateToRoute)
         }
         composable(BottomScreen.CollectionScreen.route){
-            CollectionScreen(navigateToRoute)
+            val viewModel : CollectionScreenViewModel = hiltViewModel()
+            CollectionScreen(navigateToRoute, viewModel)
         }
         composable(BottomScreen.InProgressScreen.route){
             InProgressScreen(navigateToRoute)
