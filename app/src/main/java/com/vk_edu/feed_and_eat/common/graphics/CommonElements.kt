@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,28 +25,29 @@ import com.vk_edu.feed_and_eat.R
 
 @Composable
 fun SquareArrowButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onclick: () -> Unit = {},
 ){
-    val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
-        onClick = onclick,
+        onClick = { onClick() },
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
         colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
-            .border(2.dp,
-                color = turquoise,
-                shape = RoundedCornerShape(5.dp))
+            .border(
+                2.dp,
+                color = colorResource(id = R.color.turqoise),
+                shape = RoundedCornerShape(5.dp)
+            )
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
     ){
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
             contentDescription = stringResource(id = R.string.back),
-            tint = turquoise,
+            tint = colorResource(id = R.color.turqoise),
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
@@ -53,12 +55,12 @@ fun SquareArrowButton(
     }
 }
 
+
 @Composable
 fun InfoSquareButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ){
-    val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
@@ -69,14 +71,16 @@ fun InfoSquareButton(
             .width(60.dp)
             .background(Color.White, shape = RoundedCornerShape(5.dp))
             .clip(shape = RoundedCornerShape(5.dp))
-            .border(2.dp,
-                color = turquoise,
-                shape = RoundedCornerShape(5.dp)),
+            .border(
+                2.dp,
+                color = colorResource(id = R.color.turqoise),
+                shape = RoundedCornerShape(5.dp)
+            ),
     ){
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = stringResource(id = R.string.info),
-            tint = turquoise,
+            tint = colorResource(id = R.color.turqoise),
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
