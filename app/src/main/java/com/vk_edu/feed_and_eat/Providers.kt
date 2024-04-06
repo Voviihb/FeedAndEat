@@ -25,12 +25,14 @@ object AuthProvider {
 }
 
 @Module
-@InstallIn (SingletonComponent::class)
+@InstallIn(SingletonComponent::class)
 object FireStoreProvider {
     @Provides
     @Singleton
     fun provideFireStore(): FirebaseFirestore {
         return Firebase.firestore
+    }
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
