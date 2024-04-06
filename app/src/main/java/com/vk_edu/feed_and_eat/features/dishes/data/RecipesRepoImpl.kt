@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
@@ -28,14 +29,14 @@ class RecipesRepoImpl @Inject constructor(
     override fun loadRecipes(
         count: Long,
         prevDocument: DocumentSnapshot?
-    ): Flow<Response<Pair<List<Recipe>, DocumentSnapshot?>>> = repoTryCatchBlock {
+    ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         val snapshot = if (prevDocument != null) {
-            db.collection("recipes")
+            db.collection(RECIPES_COLLECTION)
                 .orderBy(FieldPath.documentId())
                 .startAfter(prevDocument)
                 .limit(count).get().await()
         } else {
-            db.collection("recipes")
+            db.collection(RECIPES_COLLECTION)
                 .orderBy(FieldPath.documentId())
                 .limit(count).get().await()
         }
@@ -48,19 +49,20 @@ class RecipesRepoImpl @Inject constructor(
         }
 
         val lastDocument = snapshot.documents[snapshot.size() - 1]
-        return@repoTryCatchBlock Pair<List<Recipe>, DocumentSnapshot?>(
+        return@repoTryCatchBlock PaginationResult(
             recipesList.toList<Recipe>(),
             lastDocument
         )
     }.flowOn(Dispatchers.IO)
 
-    /**
-     * Loads one recipe with doc Id provided, if document exists
-     * @param id document ID
-     * */
+
     override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
-        val document = db.collection("recipes")
+        val document = db.collection(RECIPES_COLLECTION)
             .document(id).get().await()
         return@repoTryCatchBlock document.toObject<Recipe>()
     }.flowOn(Dispatchers.IO)
+
+    companion object {
+        private const val RECIPES_COLLECTION = "recipes"
+    }
 }

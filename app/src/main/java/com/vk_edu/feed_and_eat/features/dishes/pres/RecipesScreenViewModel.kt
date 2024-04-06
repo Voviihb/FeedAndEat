@@ -49,8 +49,8 @@ class RecipesScreenViewModel @Inject constructor(
                             if (_recipesList.isNotEmpty()) {
                                 _recipesList.clear()
                             }
-                            _recipesList += response.data.first
-                            _prevDocument = response.data.second
+                            _recipesList += response.data.recipes
+                            _prevDocument = response.data.prevDocument
                         }
 
                         is Response.Failure -> {
@@ -66,9 +66,7 @@ class RecipesScreenViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Loads one recipe by its id. Uses loadRecipeById(id) from repo
-     * */
+
     fun loadRecipeById(id: String) {
         viewModelScope.launch {
             try {
