@@ -28,6 +28,8 @@ class LoginScreenViewModel @Inject constructor(
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
 
+    val currentUserId get() = _authRepo.getUserId()
+
     fun loginWithEmail(navigateToRoute: (String) -> Unit) {
         viewModelScope.launch {
             try {
@@ -38,7 +40,33 @@ class LoginScreenViewModel @Inject constructor(
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            val currentUserId = _authRepo.getCurrentUserId()
+                            val currentUserId = _authRepo.getUserId()
+                            if (currentUserId != null) {
+                                writeUserId(_preferencesManager, currentUserId)
+                                navigateToRoute(BottomScreen.HomeScreen.route)
+                            }
+                        }
+                        is Response.Failure -> onError(response.e)
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+
+    }
+
+    fun signInAnonymously(navigateToRoute: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                _authRepo.firebaseSignInAnonymously()
+                .collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            val currentUserId = _authRepo.getUserId()
                             if (currentUserId != null) {
                                 writeUserId(_preferencesManager, currentUserId)
                                 navigateToRoute(BottomScreen.HomeScreen.route)
