@@ -13,7 +13,7 @@ interface AuthRepository {
 
     fun firebaseSignInAnonymously(): Flow<Response<AuthResult>>
 
-    fun firebaseSignUp(email: String, password: String, login: String): Flow<Response<Void>>
+    fun firebaseSignUp(email: String, password: String, login: String): Flow<Response<Void?>>
 
     fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>>
 

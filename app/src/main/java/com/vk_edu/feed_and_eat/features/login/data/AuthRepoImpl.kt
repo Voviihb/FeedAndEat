@@ -33,13 +33,13 @@ class AuthRepoImpl @Inject constructor(
         email: String,
         password: String,
         login: String
-    ): Flow<Response<Void>> =
+    ): Flow<Response<Void?>> =
         repoTryCatchBlock {
             auth.createUserWithEmailAndPassword(email, password).await()
             val profileUpdates = userProfileChangeRequest {
                 displayName = login
             }
-            auth.currentUser!!.updateProfile(profileUpdates).await()
+            auth.currentUser?.updateProfile(profileUpdates)?.await()
         }
             .flowOn(Dispatchers.IO)
 
