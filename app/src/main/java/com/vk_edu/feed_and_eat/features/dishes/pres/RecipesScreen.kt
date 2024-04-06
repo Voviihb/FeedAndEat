@@ -28,6 +28,7 @@ import com.vk_edu.feed_and_eat.R
 fun RecipesScreen() {
     val viewModel: RecipesScreenViewModel = viewModel()
     val errorMsg by viewModel.errorMessage
+    val recipesList by viewModel.recipesList
 
     Box(
         modifier = Modifier
@@ -54,8 +55,9 @@ fun RecipesScreen() {
                     }
                 }
 
+                /* Test data  */
                 Button(onClick = {
-                    viewModel.loadRecipeById(id = "015Dlj0j8AecAY4JhVbb")
+                    viewModel.loadRecipeById(id = "016VAjdUxDHSfAagMB2k")
                 }) {
                     Column(
                         modifier = Modifier
@@ -68,7 +70,7 @@ fun RecipesScreen() {
                 }
             }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(viewModel.recipesList) { dish ->
+                items(recipesList) { dish ->
                     Text(
                         text = dish.toString(),
                         color = Color.Black,

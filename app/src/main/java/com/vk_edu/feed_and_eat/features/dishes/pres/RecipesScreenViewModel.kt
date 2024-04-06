@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.dishes.pres
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,8 +25,8 @@ class RecipesScreenViewModel @Inject constructor(
     private val _isLoadSuccess = mutableStateOf<Boolean>(false)
     val isLoadSuccess: State<Boolean> = _isLoadSuccess
 
-    private val _recipesList = mutableStateListOf<Recipe>()
-    val recipesList: List<Recipe> = _recipesList
+    private val _recipesList = mutableStateOf(listOf<Recipe>())
+    val recipesList: State<List<Recipe>> = _recipesList
 
     /**
      * Stores last seen document. Is used to calculate offset for pagination
@@ -45,11 +44,7 @@ class RecipesScreenViewModel @Inject constructor(
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            /* TODO remove list clear if needed */
-                            if (_recipesList.isNotEmpty()) {
-                                _recipesList.clear()
-                            }
-                            _recipesList += response.data.recipes
+                            _recipesList.value += response.data.recipes
                             _prevDocument = response.data.prevDocument
                         }
 
@@ -74,11 +69,8 @@ class RecipesScreenViewModel @Inject constructor(
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            if (_recipesList.isNotEmpty()) {
-                                _recipesList.clear()
-                            }
                             if (response.data != null) {
-                                _recipesList += response.data
+                                _recipesList.value = listOf(response.data)
                             }
                         }
 
