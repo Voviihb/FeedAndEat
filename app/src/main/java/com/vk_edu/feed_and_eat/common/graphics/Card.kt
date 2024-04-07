@@ -39,7 +39,7 @@ fun DishCard(link: String,
         colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
             colorResource(R.color.white), colorResource(R.color.white)),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
-        onClick = {}
+        onClick = { /* TODO add function */ }
     ) {
         Column {
             DishImage(link = link, modifier = Modifier.fillMaxWidth())
@@ -82,7 +82,7 @@ fun DishCard(link: String,
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        RatingBar(rating.toFloat(), 1, modifier = Modifier.height(SmallIconSize))
+                        RatingBar(rating.toFloat(), stars = 1, modifier = Modifier.height(SmallIconSize))
                         DarkText(
                             text = rating.toString(),
                             fontSize = SmallText,
@@ -107,7 +107,7 @@ fun DishCard(link: String,
                         colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
-                    onClick = {}
+                    onClick = { /* TODO add function */ }
                 ) {
                     SmallIcon(painter = painterResource(R.drawable.like_icon), color = colorResource(R.color.white))
                 }

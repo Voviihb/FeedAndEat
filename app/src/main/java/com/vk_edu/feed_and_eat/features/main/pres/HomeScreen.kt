@@ -42,7 +42,7 @@ import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
-import com.vk_edu.feed_and_eat.features.main.data.models.CardDataModel
+import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
@@ -56,7 +56,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         SearchCard()
 
         viewModel.getCardTitle1()
-        val cardData = viewModel.cardTitle1.value
+        val cardData = viewModel.largeCardData.value
         LargeCard(cardData = cardData)
 
         val localDensity = LocalDensity.current
@@ -64,7 +64,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         viewModel.getCardsTitle2()
         CardsRow(
             title = stringResource(R.string.title2),
-            cards = viewModel.cardsTitle2,
+            cards = viewModel.cardsDataOfRow1,
             columnWidthDp = columnWidthDp,
             modifier = Modifier.onGloballyPositioned { coordinates ->
                 columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
@@ -74,14 +74,14 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         viewModel.getCardsTitle3()
         CardsRow(
             title = stringResource(R.string.title3),
-            cards = viewModel.cardsTitle3,
+            cards = viewModel.cardsDataOfRow2,
             columnWidthDp = columnWidthDp
         )
 
         viewModel.getCardsTitle4()
         CardsRow(
             title = stringResource(R.string.title4),
-            cards = viewModel.cardsTitle4,
+            cards = viewModel.cardsDataOfRow3,
             columnWidthDp = columnWidthDp
         )
 
@@ -100,7 +100,7 @@ fun SearchCard(modifier: Modifier = Modifier) {
                 .height(52.dp)
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
-            onClick = {}
+            onClick = { /* TODO add function */ }
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

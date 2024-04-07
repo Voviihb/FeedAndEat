@@ -29,8 +29,10 @@ import kotlin.math.sin
 @Composable
 fun RatingBar(
     rating: Float,
+    modifier: Modifier = Modifier,
     stars: Int = 5,
-    modifier: Modifier = Modifier
+    ratingColor: Color = colorResource(R.color.yellow),
+    backgroundColor: Color = colorResource(R.color.gray)
 ) {
     val realRating = rating * stars / 5
     Row(modifier = modifier.wrapContentSize()) {
@@ -40,7 +42,7 @@ fun RatingBar(
                 step.rem(realRating) < 1 -> realRating - (step - 1f)
                 else -> 0f
             }
-            RatingStar(stepRating, colorResource(R.color.yellow), colorResource(R.color.gray))
+            RatingStar(stepRating, ratingColor, backgroundColor)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.main.data.models
+package com.vk_edu.feed_and_eat.features.main.domain.models
 
 data class CardDataModel (
     val link: String = "",
