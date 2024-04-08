@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.main.data.repository.HomeRepository
+import com.vk_edu.feed_and_eat.features.main.domain.repository.HomeRepoInter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor() : ViewModel() {
-    private val repo = HomeRepository()
+    private val repo: HomeRepoInter = HomeRepository()
 
     private val privateLargeCardData = mutableStateOf(CardDataModel())
     var largeCardData: State<CardDataModel> = privateLargeCardData
