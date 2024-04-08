@@ -92,4 +92,8 @@ class RecipesScreenViewModel @Inject constructor(
         _errorMessage.value = message
         _loading.value = false
     }
+
+    init {
+//        loadRecipeById(id = "016VAjdUxDHSfAagMB2k")
+    }
 }

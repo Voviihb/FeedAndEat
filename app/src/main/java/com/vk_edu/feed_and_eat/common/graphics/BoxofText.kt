@@ -32,7 +32,7 @@ fun TextBox(text : String){
 }
 
 @Composable
-fun BoxofText(bigText : List<String>){
+fun BoxofText(bigText : List<String?>){
     val turquoise = Color(red = 0x00, green = 0xB6, blue = 0xBB)
     val lightBlue = Color(red = 0xCF, green = 0xFF, blue = 0xFC)
     LazyVerticalStaggeredGrid(
@@ -49,7 +49,7 @@ fun BoxofText(bigText : List<String>){
         for (item in bigText){
             item{
                 TextBox(
-                    text = item
+                    text = item ?: ""
                 )
             }
 

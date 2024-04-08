@@ -14,6 +14,7 @@
     <string name="fats">Жиры</string>
     <string name="proteins">Белки</string>
     <string name="carbons">Углеводы</string>
+    <string name="sugar">Сахар</string>
     <string name="gramm">гр</string>
     <string name="info">информация</string>
     <string name="image">так выглядит рецепт</string>
