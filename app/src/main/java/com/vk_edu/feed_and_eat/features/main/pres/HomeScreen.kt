@@ -21,10 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -55,34 +51,32 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
     ) {
         SearchCard()
 
-        viewModel.getCardTitle1()
-        val cardData = viewModel.largeCardData.value
-        LargeCard(cardData = cardData)
+        viewModel.getLargeCardData()
+        LargeCard(cardData = viewModel.largeCardData)
 
         val localDensity = LocalDensity.current
-        var columnWidthDp by remember { mutableStateOf(0.dp) }
-        viewModel.getCardsTitle2()
+        viewModel.getCardsDataOfRow1()
         CardsRow(
             title = stringResource(R.string.title2),
             cards = viewModel.cardsDataOfRow1,
-            columnWidthDp = columnWidthDp,
+            columnWidthDp = viewModel.columnWidthDp,
             modifier = Modifier.onGloballyPositioned { coordinates ->
-                columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
+                viewModel.columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
             }
         )
 
-        viewModel.getCardsTitle3()
+        viewModel.getCardsDataOfRow2()
         CardsRow(
             title = stringResource(R.string.title3),
             cards = viewModel.cardsDataOfRow2,
-            columnWidthDp = columnWidthDp
+            columnWidthDp = viewModel.columnWidthDp
         )
 
-        viewModel.getCardsTitle4()
+        viewModel.getCardsDataOfRow3()
         CardsRow(
             title = stringResource(R.string.title4),
             cards = viewModel.cardsDataOfRow3,
-            columnWidthDp = columnWidthDp
+            columnWidthDp = viewModel.columnWidthDp
         )
 
         Spacer(modifier = Modifier.size(12.dp))

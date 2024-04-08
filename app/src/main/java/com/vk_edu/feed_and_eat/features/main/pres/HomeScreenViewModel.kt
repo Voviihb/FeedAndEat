@@ -1,8 +1,11 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
@@ -17,7 +20,7 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     private val repo: HomeRepoInter = HomeRepository()
 
     private val privateLargeCardData = mutableStateOf(CardDataModel())
-    var largeCardData: State<CardDataModel> = privateLargeCardData
+    var largeCardData: CardDataModel by privateLargeCardData
 
     private val privateCardsDataOfRow1 = mutableStateListOf<CardDataModel>()
     var cardsDataOfRow1: List<CardDataModel> = privateCardsDataOfRow1
@@ -28,30 +31,72 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     private val privateCardsDataOfRow3 = mutableStateListOf<CardDataModel>()
     var cardsDataOfRow3: List<CardDataModel> = privateCardsDataOfRow3
 
-    fun getCardTitle1() {
+    private val privateColumnWidthDp = mutableStateOf(0.dp)
+    var columnWidthDp: Dp by privateColumnWidthDp
+
+    private val _loading = mutableStateOf(false)
+    val loading: Boolean by _loading
+
+    private val _errorMessage = mutableStateOf<Exception?>(null)
+    val errorMessage: Exception? by _errorMessage
+
+    fun getLargeCardData() {
         viewModelScope.launch {
-            privateLargeCardData.value = repo.getLargeCardData()
+            try {
+                _loading.value = true
+                privateLargeCardData.value = repo.getLargeCardData()
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
         }
     }
 
-    fun getCardsTitle2() {
+    fun getCardsDataOfRow1() {
         viewModelScope.launch {
-            privateCardsDataOfRow1.clear()
-            privateCardsDataOfRow1.addAll(repo.getCardsDataOfRow1())
+            try {
+                _loading.value = true
+                privateCardsDataOfRow1.clear()
+                privateCardsDataOfRow1.addAll(repo.getCardsDataOfRow1())
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
         }
     }
 
-    fun getCardsTitle3() {
+    fun getCardsDataOfRow2() {
         viewModelScope.launch {
-            privateCardsDataOfRow2.clear()
-            privateCardsDataOfRow2.addAll(repo.getCardsDataOfRow2())
+            try {
+                _loading.value = true
+                privateCardsDataOfRow2.clear()
+                privateCardsDataOfRow2.addAll(repo.getCardsDataOfRow2())
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
         }
     }
 
-    fun getCardsTitle4() {
+    fun getCardsDataOfRow3() {
         viewModelScope.launch {
-            privateCardsDataOfRow3.clear()
-            privateCardsDataOfRow3.addAll(repo.getCardsDataOfRow3())
+            try {
+                _loading.value = true
+                privateCardsDataOfRow3.clear()
+                privateCardsDataOfRow3.addAll(repo.getCardsDataOfRow3())
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
         }
+    }
+
+    private fun onError(message: Exception?) {
+        _errorMessage.value = message
+        _loading.value = false
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 }
