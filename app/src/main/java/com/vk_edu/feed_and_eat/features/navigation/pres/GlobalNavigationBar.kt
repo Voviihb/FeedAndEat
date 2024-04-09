@@ -35,10 +35,10 @@ fun GlobalNavigationBar(
         BottomScreen.InProgressScreen,
         BottomScreen.ProfileScreen
     )
-    val bottomBarData = MutableList(5){BottomData(R.color.lightcyan, 40)}
+    val bottomBarData = MutableList(5){BottomData(R.color.light_cyan, 40)}
     val currentIndex = barScreens.map { it.route }.indexOf(currentDestination)
     if (currentIndex < bottomBarData.size){
-        bottomBarData[currentIndex] = BottomData(R.color.mediumcyan, 45)
+        bottomBarData[currentIndex] = BottomData(R.color.medium_cyan, 45)
     }
 
     BottomNavigation(
@@ -67,8 +67,8 @@ fun GlobalNavigationBar(
                         )
                     }
                 },
-                selectedContentColor = colorResource(id = R.color.mediumcyan),
-                unselectedContentColor = colorResource(id = R.color.lightcyan),
+                selectedContentColor = colorResource(id = R.color.medium_cyan),
+                unselectedContentColor = colorResource(id = R.color.light_cyan),
                 selected = true,
                 onClick = {
                     navigateToRoute(barScreens[index].route)

@@ -5,7 +5,6 @@
     <string name="add_to_favourite">Добавить в любимое</string>
     <string name="add_to_playlist">Добавить в подборку</string>
     <string name="ingr">Ингр</string>
-    <string name="steps">Шагов</string>
     <string name="start_cooking">Начать готовить</string>
     <string name="ingridients">Ингредиенты</string>
     <string name="tags">Теги</string>
@@ -55,6 +54,15 @@
     <string name="RegisterScreen">RegisterScreen</string>
     <string name="RecipeScreen">RecipeScreen</string>
     <string name="inProgressScreen">inProgressScreen</string>
-<!--    collection names-->
-    <string name="recipes">Рецептов</string>
+<!-- card -->
+    <string name="imageDescription">Image of this dish</string>
+    <string name="icon">Icon</string>
+    <string name="small_ingredients">Ingr.:</string>
+    <string name="ingredients">Ingredients:</string>
+    <string name="steps">Steps:</string>
+    <string name="searchLabel">Search</string>
+    <string name="title1">Recipe of the day</string>
+    <string name="title2">Top of the week</string>
+    <string name="title3">Recipes for you</string>
+    <string name="title4">Popular dietary</string>
 </resources>
