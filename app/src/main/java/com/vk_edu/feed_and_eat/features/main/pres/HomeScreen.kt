@@ -59,9 +59,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         CardsRow(
             title = stringResource(R.string.title2),
             cards = viewModel.cardsDataOfRow1.value,
-            columnWidthDp = viewModel.columnWidthDp,
+            columnWidthDp = viewModel.columnWidthDp.value,
             modifier = Modifier.onGloballyPositioned { coordinates ->
-                viewModel.columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
+                viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
             }
         )
 
@@ -69,14 +69,14 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         CardsRow(
             title = stringResource(R.string.title3),
             cards = viewModel.cardsDataOfRow2.value,
-            columnWidthDp = viewModel.columnWidthDp
+            columnWidthDp = viewModel.columnWidthDp.value
         )
 
         viewModel.getCardsDataOfRow3()
         CardsRow(
             title = stringResource(R.string.title4),
             cards = viewModel.cardsDataOfRow3.value,
-            columnWidthDp = viewModel.columnWidthDp
+            columnWidthDp = viewModel.columnWidthDp.value
         )
 
         Spacer(modifier = Modifier.size(12.dp))
