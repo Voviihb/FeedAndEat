@@ -27,6 +27,8 @@ class RegisterScreenViewModel @Inject constructor(
     val errorMessage: State<Exception?> = _errorMessage
 
     val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
+    val currentUserId get() = _authRepo.getUserId()
+
 
     fun registerUserWithEmail(navigateToRoute: (String) -> Unit) {
         viewModelScope.launch {
@@ -34,12 +36,13 @@ class RegisterScreenViewModel @Inject constructor(
                 try {
                     _authRepo.firebaseSignUp(
                         _registerFormState.value.email,
-                        _registerFormState.value.password
+                        _registerFormState.value.password,
+                        _registerFormState.value.login
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-                                val currentUserId = _authRepo.getCurrentUserId()
+                                val currentUserId = _authRepo.getUserId()
                                 if (currentUserId != null) {
                                     writeUserId(_preferencesManager, currentUserId)
                                     navigateToRoute(BottomScreen.HomeScreen.route)
