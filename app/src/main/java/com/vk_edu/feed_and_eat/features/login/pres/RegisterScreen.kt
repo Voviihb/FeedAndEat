@@ -58,12 +58,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun RegisterScreen(
-    navigateToHome: () -> Unit,
-    navigateToLogin: () -> Unit,
+    navigateToRoute: (String) -> Unit,
     viewModel: RegisterScreenViewModel = hiltViewModel()
 ) {
     val registerForm by viewModel.registerFormState
@@ -159,7 +159,7 @@ fun RegisterScreen(
                 SignUpButton(
                     onClickFunc = {
                         viewModel.registerUserWithEmail(
-                            navigateToHome
+                            navigateToRoute
                         )
                     },
                     loadingState = viewModel.loading
@@ -175,7 +175,7 @@ fun RegisterScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        LoginButton(modifier = modifier, navigateToLogin)
+        LoginButton(modifier = modifier, navigateToRoute)
     }
 }
 
@@ -510,11 +510,10 @@ private fun SignUpButton(onClickFunc: () -> Unit, loadingState: State<Boolean>) 
 @Composable
 private fun LoginButton(
     modifier: Modifier,
-    navigateToLogin: () -> Unit,
+    navigateToRoute: (String) -> Unit,
 ) {
-    val destination = stringResource(id = R.string.LoginScreen)
     Button(
-        onClick = navigateToLogin,
+        onClick = { navigateToRoute(Screen.LoginScreen.route) },
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

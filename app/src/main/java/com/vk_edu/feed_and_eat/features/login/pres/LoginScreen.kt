@@ -1,5 +1,7 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -57,20 +59,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun LoginScreen(
-    navigateToHome: () -> Unit,
-    navigateToRegister: () -> Unit,
-    viewModel: LoginScreenViewModel = hiltViewModel()
+    context: Context,
+    navigateToRoute : (String) -> Unit,
 ) {
+    val viewModel: LoginScreenViewModel = hiltViewModel()
     val loginForm by viewModel.loginFormState
     val errorMsg by viewModel.errorMessage
 
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val destination = stringResource(id = R.string.ProfileScreen)
 
     Box(
         modifier = Modifier
@@ -138,10 +141,7 @@ fun LoginScreen(
                     keyboardController = keyboardController
                 )
 
-                LoginButton(
-                    onClickFunc = { viewModel.loginWithEmail(navigateToHome) },
-                    loadingState = viewModel.loading
-                )
+                LoginButton(viewModel = viewModel, navigateToRoute)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -150,11 +150,7 @@ fun LoginScreen(
                     color = colorResource(id = R.color.white)
                 )
 
-                NoAuthLoginButton(
-                    onClickFunc = { viewModel.logout() }, /* TODO replace it after merge! */
-                    navigateToHome
-                    /* TODO pass nav func to VM after merge with feature_firebaseDatastore */
-                )
+                NoAuthLoginButton(viewModel = viewModel, navigateToRoute)
 
             }
         }
@@ -166,10 +162,17 @@ fun LoginScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        RegisterButton(modifier = modifier, navigateToRegister)
+        RegisterButton(viewModel = viewModel, modifier = modifier) { navigateToRoute(Screen.RegisterScreen.route) }
 
     }
 
+    LaunchedEffect(Unit) {
+        if (viewModel.isUserAuthenticated) {
+            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
+                .show()
+            navigateToRoute(BottomScreen.HomeScreen.route)
+        }
+    }
 }
 
 @Composable
@@ -333,12 +336,12 @@ private fun PasswordField(
 
 @Composable
 private fun LoginButton(
-    onClickFunc: () -> Unit,
-    loadingState: State<Boolean>
+    viewModel: LoginScreenViewModel,
+    navigateToRoute : (String) -> Unit
 ) {
-    val loading by loadingState
+    val loading by viewModel.loading
     Button(
-        onClick = onClickFunc,
+        onClick = {viewModel.loginWithEmail(navigateToRoute)},
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -374,14 +377,11 @@ private fun LoginButton(
 
 @Composable
 private fun NoAuthLoginButton(
-    onClickFunc: () -> Unit,
-    navigateToHome: () -> Unit
-) {
+    viewModel: LoginScreenViewModel,
+    navigateToRoute : (String) -> Unit
+    ) {
     Button(
-        onClick = {
-            onClickFunc()
-            navigateToHome()
-        },
+        onClick = {navigateToRoute(BottomScreen.HomeScreen.route)},
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -403,12 +403,12 @@ private fun NoAuthLoginButton(
 
 @Composable
 private fun RegisterButton(
+    viewModel: LoginScreenViewModel,
     modifier: Modifier,
-    navigateToRegister: () -> Unit,
+    navigateToRoute : (String) -> Unit,
 ) {
-    val destination = stringResource(id = R.string.RegisterScreen)
     Button(
-        onClick = navigateToRegister,
+        onClick = { navigateToRoute(Screen.RegisterScreen.route) },
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

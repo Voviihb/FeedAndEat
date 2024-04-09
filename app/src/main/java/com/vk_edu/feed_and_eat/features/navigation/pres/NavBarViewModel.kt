@@ -12,6 +12,6 @@ class NavBarViewModel @Inject constructor(
 ) : ViewModel() {
     fun getStartDestination(): String {
         val data = getCurrentUserId(_preferencesManager)
-        return if (data != null) Screen.HomeScreen.route else Screen.LoginScreen.route
+        return if (data != null) BottomScreen.HomeScreen.route else Screen.LoginScreen.route
     }
 }
