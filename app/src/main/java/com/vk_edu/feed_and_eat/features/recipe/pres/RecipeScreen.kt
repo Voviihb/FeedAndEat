@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,8 @@ import com.vk_edu.feed_and_eat.common.graphics.BoxofText
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 
 
@@ -372,31 +375,37 @@ fun RatingContainer(
 
 @Composable
 fun RecipeScreen(
-    viewModel: RecipeScreenViewModel = hiltViewModel(),
+    navigateToRoute: (String) -> Unit,
     navigateBack : () -> Unit
 ) {
+    val viewModel: RecipeScreenViewModel = hiltViewModel()
     viewModel.getRecipe()
     val model = viewModel.recipe.value
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(colorResource(id = R.color.white))
+    Scaffold(
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
+    ) {padding ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.white))
+            .padding(padding)
         ) {
-        Box{
-            Column{
-                RecipeImageContainer(model)
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    RatingContainer(model)
-                    TextContainer(model)
-                    AddCollectionButtons()
-                    StartCookingContainer(model)
+            Box{
+                Column{
+                    RecipeImageContainer(model)
+                    Column(
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        RatingContainer(model)
+                        TextContainer(model)
+                        AddCollectionButtons()
+                        StartCookingContainer(model)
+                    }
                 }
+                BackButtonContainer(model, navigateBack)
             }
-            BackButtonContainer(model, navigateBack)
         }
     }
 }

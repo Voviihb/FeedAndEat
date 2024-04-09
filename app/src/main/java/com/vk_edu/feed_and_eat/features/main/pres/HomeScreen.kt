@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,47 +40,56 @@ import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .background(colorResource(R.color.pale_cyan))
-    ) {
-        SearchCard()
+fun HomeScreen(navigateToRoute : (String) -> Unit) {
+    val viewModel: HomeScreenViewModel = hiltViewModel()
 
-        viewModel.getLargeCardData()
-        LargeCard(cardData = viewModel.largeCardData.value)
+    Scaffold(
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .background(colorResource(R.color.pale_cyan))
+                .padding(padding)
+        ) {
+            SearchCard()
 
-        val localDensity = LocalDensity.current
-        viewModel.getCardsDataOfRow1()
-        CardsRow(
-            title = stringResource(R.string.title2),
-            cards = viewModel.cardsDataOfRow1.value,
-            columnWidthDp = viewModel.columnWidthDp.value,
-            modifier = Modifier.onGloballyPositioned { coordinates ->
-                viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
-            }
-        )
+            viewModel.getLargeCardData()
+            LargeCard(cardData = viewModel.largeCardData.value)
 
-        viewModel.getCardsDataOfRow2()
-        CardsRow(
-            title = stringResource(R.string.title3),
-            cards = viewModel.cardsDataOfRow2.value,
-            columnWidthDp = viewModel.columnWidthDp.value
-        )
+            val localDensity = LocalDensity.current
+            viewModel.getCardsDataOfRow1()
+            CardsRow(
+                title = stringResource(R.string.title2),
+                cards = viewModel.cardsDataOfRow1.value,
+                columnWidthDp = viewModel.columnWidthDp.value,
+                modifier = Modifier.onGloballyPositioned { coordinates ->
+                    viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
+                }
+            )
 
-        viewModel.getCardsDataOfRow3()
-        CardsRow(
-            title = stringResource(R.string.title4),
-            cards = viewModel.cardsDataOfRow3.value,
-            columnWidthDp = viewModel.columnWidthDp.value
-        )
+            viewModel.getCardsDataOfRow2()
+            CardsRow(
+                title = stringResource(R.string.title3),
+                cards = viewModel.cardsDataOfRow2.value,
+                columnWidthDp = viewModel.columnWidthDp.value
+            )
 
-        Spacer(modifier = Modifier.size(12.dp))
+            viewModel.getCardsDataOfRow3()
+            CardsRow(
+                title = stringResource(R.string.title4),
+                cards = viewModel.cardsDataOfRow3.value,
+                columnWidthDp = viewModel.columnWidthDp.value
+            )
+
+            Spacer(modifier = Modifier.size(12.dp))
+        }
     }
 }
 
