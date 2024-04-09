@@ -52,13 +52,13 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         SearchCard()
 
         viewModel.getLargeCardData()
-        LargeCard(cardData = viewModel.largeCardData)
+        LargeCard(cardData = viewModel.largeCardData.value)
 
         val localDensity = LocalDensity.current
         viewModel.getCardsDataOfRow1()
         CardsRow(
             title = stringResource(R.string.title2),
-            cards = viewModel.cardsDataOfRow1,
+            cards = viewModel.cardsDataOfRow1.value,
             columnWidthDp = viewModel.columnWidthDp,
             modifier = Modifier.onGloballyPositioned { coordinates ->
                 viewModel.columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
@@ -68,14 +68,14 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
         viewModel.getCardsDataOfRow2()
         CardsRow(
             title = stringResource(R.string.title3),
-            cards = viewModel.cardsDataOfRow2,
+            cards = viewModel.cardsDataOfRow2.value,
             columnWidthDp = viewModel.columnWidthDp
         )
 
         viewModel.getCardsDataOfRow3()
         CardsRow(
             title = stringResource(R.string.title4),
-            cards = viewModel.cardsDataOfRow3,
+            cards = viewModel.cardsDataOfRow3.value,
             columnWidthDp = viewModel.columnWidthDp
         )
 
