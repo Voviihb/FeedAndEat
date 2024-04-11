@@ -6,7 +6,9 @@ interface SearchRepoInter {
     suspend fun getCardsData(
         request: String,
         sort: String,
-        filters: HashMap<String, List<String?>>
+        filters: HashMap<String, List<String?>>,
+        page: Int,
+        limit: Int = 20
     ): List<CardDataModel>
 }
 

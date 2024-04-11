@@ -19,7 +19,9 @@ class SearchRepository @Inject constructor() : SearchRepoInter {
     override suspend fun getCardsData(
         request: String,
         sort: String,
-        filters: HashMap<String, List<String?>>
+        filters: HashMap<String, List<String?>>,
+        page: Int,
+        limit: Int
     ): List<CardDataModel> {
         return cards
     }

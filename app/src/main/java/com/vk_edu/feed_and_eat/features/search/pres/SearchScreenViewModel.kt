@@ -17,36 +17,51 @@ import javax.inject.Inject
 class SearchScreenViewModel @Inject constructor() : ViewModel() {
     private val repo: SearchRepoInter = SearchRepository()
 
-    private var request: String = ""
+    private var requestBody: String = ""
     private var sort: String = ""
-    private var filters: HashMap<String, List<String?>> = hashMapOf()
+    private var filters: HashMap<String, List<String?>> = hashMapOf(
+        "includedIngredients" to listOf(),
+        "excludedIngredients" to listOf(),
+        "tags" to listOf(),
+        "calories" to listOf(null, null),
+        "sugar" to listOf(null, null),
+        "protein" to listOf(null, null),
+        "fat" to listOf(null, null),
+        "carbohydrates" to listOf(null, null)
+    )
+    private var page: Int = 1
+
+    private val privateSearchForm = mutableStateOf(SearchForm(""))
+    var searchForm: State<SearchForm> = privateSearchForm
 
     private val privateCardsData = mutableStateOf(mutableListOf<CardDataModel>())
-    var cardsData: State<List<CardDataModel>> = privateCardsData
+    val cardsData: State<List<CardDataModel>> = privateCardsData
 
-    private val _loading = mutableStateOf(false)
-    val loading: State<Boolean> = _loading
+    private val privateLoading = mutableStateOf(false)
+    val loading: State<Boolean> = privateLoading
 
-    private val _errorMessage = mutableStateOf<Exception?>(null)
-    val errorMessage: State<Exception?> = _errorMessage
+    private val privateErrorMessage = mutableStateOf<Exception?>(null)
+    val errorMessage: State<Exception?> = privateErrorMessage
 
-    fun setRequest(newRequest: String) {
+    fun setRequest() {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                request = newRequest
+                privateLoading.value = true
+                requestBody = privateSearchForm.value.requestBody
+                page = 1
                 privateCardsData.value.clear()
+                privateCardsData.value.addAll(repo.getCardsData(requestBody, sort, filters, page))
             } catch (e: Exception) {
                 onError(e)
             }
-            _loading.value = false
+            privateLoading.value = false
         }
     }
 
     private fun getRangeList(range: NutrientRangeModel): List<String?> {
         return listOf(
-            if (range.start == "") null else range.start,
-            if (range.end == "") null else range.end
+            if (range.min == "") null else range.min,
+            if (range.max == "") null else range.max
         )
     }
 
@@ -63,7 +78,7 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                _loading.value = true
+                privateLoading.value = true
 
                 sort = listOf("newness", "rating", "popularity")[sortBy]
                 filters["includedIngredients"] = includedIngredients
@@ -75,32 +90,39 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
                 filters["fat"] = getRangeList(fat)
                 filters["carbohydrates"] = getRangeList(carbohydrates)
 
+                page = 1
                 privateCardsData.value.clear()
+                privateCardsData.value.addAll(repo.getCardsData(requestBody, sort, filters, page))
             } catch (e: Exception) {
                 onError(e)
             }
-            _loading.value = false
+            privateLoading.value = false
         }
     }
 
     fun addCardsData() {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                privateCardsData.value.addAll(repo.getCardsData(request, sort, filters))
+                privateLoading.value = true
+                page += 1
+                privateCardsData.value.addAll(repo.getCardsData(requestBody, sort, filters, page))
             } catch (e: Exception) {
                 onError(e)
             }
-            _loading.value = false
+            privateLoading.value = false
         }
     }
 
+    fun requestBodyChanged(value: String) {
+        privateSearchForm.value = SearchForm(value)
+    }
+
     private fun onError(message: Exception?) {
-        _errorMessage.value = message
-        _loading.value = false
+        privateErrorMessage.value = message
+        privateLoading.value = false
     }
 
     fun clearError() {
-        _errorMessage.value = null
+        privateErrorMessage.value = null
     }
 }
