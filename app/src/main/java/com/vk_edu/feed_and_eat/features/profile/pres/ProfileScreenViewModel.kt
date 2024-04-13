@@ -73,7 +73,7 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
-    fun logout(/*TODO pass navigation func to login*/) {
+    fun logout(/*TODO pass navigation func to login after merge*/) {
         viewModelScope.launch {
             try {
                 _authRepo.signOut().collect { response ->
@@ -83,34 +83,6 @@ class ProfileScreenViewModel @Inject constructor(
                         is Response.Failure -> onError(response.e)
                     }
                 }
-            } catch (e: Exception) {
-                onError(e)
-            }
-            _loading.value = false
-        }
-    }
-
-    /* TODO move this func to registration and invoke it */
-    fun saveUserData() {
-        viewModelScope.launch {
-            try {
-                val userId = _authRepo.getUserId()
-                if (userId != null) {
-                    val data = UserModel(userId = userId)
-                    _usersRepo.saveUserData(userId, data).collect { response ->
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
-                                /* TODO add success flow */
-                            }
-
-                            is Response.Failure -> {
-                                onError(response.e)
-                            }
-                        }
-                    }
-                }
-
             } catch (e: Exception) {
                 onError(e)
             }
