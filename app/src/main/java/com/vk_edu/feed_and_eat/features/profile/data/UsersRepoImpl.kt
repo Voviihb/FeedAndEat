@@ -1,12 +1,18 @@
 package com.vk_edu.feed_and_eat.features.profile.data
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
+import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
+import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,15 +28,36 @@ class UsersRepoImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun saveUserData(userData: HashMap<String, Any>): Flow<Response<Void>> {
-        TODO("Not yet implemented")
-    }
+    override fun saveUserData(
+        userId: String,
+        userData: UserModel
+    ): Flow<Response<Void>> = repoTryCatchBlock {
+        db.collection(USERS_COLLECTION).document(userId).set(userData).await()
+    }.flowOn(Dispatchers.IO)
 
-    override fun saveUserCollection(userId: String, collection: Compilation): Flow<Response<Void>> {
-        TODO("Not yet implemented")
-    }
+    override fun addNewUserCollection(
+        userId: String,
+        collection: Compilation
+    ): Flow<Response<Void>> =
+        repoTryCatchBlock {
+            db.collection(USERS_COLLECTION).document(userId)
+                .update(COLLECTIONS_FIELD, FieldValue.arrayUnion(collection)).await()
+        }.flowOn(Dispatchers.IO)
 
-    override fun addToUserCollection(userId: String, collectionName: String, recipe: Recipe) {
-        TODO("Not yet implemented")
+    override fun addToUserCollection(
+        userId: String,
+        collectionName: String,
+        recipe: RecipeDataModel
+    ): Flow<Response<Void>> = repoTryCatchBlock {
+        val docRef = db.collection(USERS_COLLECTION).document(userId)
+        val document = docRef.get().await()
+        val user = document.toObject<UserModel>()
+        user?.collections?.filter { it.name == collectionName }?.map { it.recipeList += recipe }
+        docRef.update(COLLECTIONS_FIELD, user?.collections).await()
+    }.flowOn(Dispatchers.IO)
+
+    companion object {
+        private const val USERS_COLLECTION = "users"
+        private const val COLLECTIONS_FIELD = "collections"
     }
 }
