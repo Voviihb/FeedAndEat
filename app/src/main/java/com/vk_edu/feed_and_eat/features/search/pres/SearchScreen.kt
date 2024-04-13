@@ -1,12 +1,10 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,7 +15,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Shapes
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -31,13 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
@@ -62,7 +60,7 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
                 .padding(padding)
         ) {
             viewModel.addCardsData()
-            CardsGrid(cardsData = viewModel.cardsData.value)
+            CardsGrid(cardsData = viewModel.cardsData)
 
             SearchCard(viewModel = viewModel)
         }
@@ -73,13 +71,13 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
 fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
     Box(modifier = modifier.padding(12.dp, 12.dp, 12.dp, 20.dp)) {
         Card(
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(26.dp),
             colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
                 colorResource(R.color.white), colorResource(R.color.white)),
             modifier = Modifier
                 .height(52.dp)
                 .fillMaxWidth()
-                .shadow(12.dp, RoundedCornerShape(24.dp)),
+                .shadow(12.dp, RoundedCornerShape(26.dp)),
             onClick = { /* TODO add function */ }
         ) {
             Row(
@@ -89,6 +87,7 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                     .fillMaxSize()
                     .padding(4.dp, 0.dp)
             ) {
+                val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
                     value = viewModel.searchForm.value.requestBody,
                     textStyle = TextStyle(fontSize = LargeText, color = colorResource(R.color.black)),
@@ -108,13 +107,16 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                         cursorColor = colorResource(R.color.black),
                         errorCursorColor = colorResource(R.color.black)
                     ),
-                    modifier = Modifier
-                        .requiredHeight(64.dp)
-                        .onKeyEvent { keyEvent ->
-                            if (keyEvent.key.keyCode == Key.Enter.keyCode)
-                                viewModel.setRequest()
-                            false
-                        },
+                    modifier = Modifier.requiredHeight(64.dp),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            viewModel.setRequest()
+                            keyboardController?.hide()
+                        }
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Search
+                    ),
                     onValueChange = { value -> viewModel.requestBodyChanged(value) }
                 )
                 Button(
@@ -123,7 +125,10 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                         colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(44.dp),
-                    onClick = { viewModel.setRequest() }
+                    onClick = {
+                        viewModel.setRequest()
+                        keyboardController?.hide()
+                    }
                 ) {
                     LargeIcon(
                         painter = painterResource(R.drawable.search_icon),

@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,30 +32,30 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     )
     private var page: Int = 1
 
-    private val privateSearchForm = mutableStateOf(SearchForm(""))
-    var searchForm: State<SearchForm> = privateSearchForm
+    private val _searchForm = mutableStateOf(SearchForm(""))
+    val searchForm: State<SearchForm> = _searchForm
 
-    private val privateCardsData = mutableStateOf(mutableListOf<CardDataModel>())
-    val cardsData: State<List<CardDataModel>> = privateCardsData
+    private val _cardsData = mutableStateListOf<CardDataModel>()
+    val cardsData: List<CardDataModel> = _cardsData
 
-    private val privateLoading = mutableStateOf(false)
-    val loading: State<Boolean> = privateLoading
+    private val _loading = mutableStateOf(false)
+    val loading: State<Boolean> = _loading
 
-    private val privateErrorMessage = mutableStateOf<Exception?>(null)
-    val errorMessage: State<Exception?> = privateErrorMessage
+    private val _errorMessage = mutableStateOf<Exception?>(null)
+    val errorMessage: State<Exception?> = _errorMessage
 
     fun setRequest() {
         viewModelScope.launch {
             try {
-                privateLoading.value = true
-                requestBody = privateSearchForm.value.requestBody
+                _loading.value = true
+                requestBody = _searchForm.value.requestBody
                 page = 1
-                privateCardsData.value.clear()
-                privateCardsData.value.addAll(repo.getCardsData(requestBody, sort, filters, page))
+                _cardsData.clear()
+                _cardsData.addAll(repo.getCardsData(requestBody, sort, filters, page))
             } catch (e: Exception) {
                 onError(e)
             }
-            privateLoading.value = false
+            _loading.value = false
         }
     }
 
@@ -78,7 +79,7 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                privateLoading.value = true
+                _loading.value = true
 
                 sort = listOf("newness", "rating", "popularity")[sortBy]
                 filters["includedIngredients"] = includedIngredients
@@ -91,38 +92,38 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
                 filters["carbohydrates"] = getRangeList(carbohydrates)
 
                 page = 1
-                privateCardsData.value.clear()
-                privateCardsData.value.addAll(repo.getCardsData(requestBody, sort, filters, page))
+                _cardsData.clear()
+                _cardsData.addAll(repo.getCardsData(requestBody, sort, filters, page))
             } catch (e: Exception) {
                 onError(e)
             }
-            privateLoading.value = false
+            _loading.value = false
         }
     }
 
     fun addCardsData() {
         viewModelScope.launch {
             try {
-                privateLoading.value = true
+                _loading.value = true
                 page += 1
-                privateCardsData.value.addAll(repo.getCardsData(requestBody, sort, filters, page))
+                _cardsData.addAll(repo.getCardsData(requestBody, sort, filters, page))
             } catch (e: Exception) {
                 onError(e)
             }
-            privateLoading.value = false
+            _loading.value = false
         }
     }
 
     fun requestBodyChanged(value: String) {
-        privateSearchForm.value = SearchForm(value)
+        _searchForm.value = SearchForm(value)
     }
 
     private fun onError(message: Exception?) {
-        privateErrorMessage.value = message
-        privateLoading.value = false
+        _errorMessage.value = message
+        _loading.value = false
     }
 
     fun clearError() {
-        privateErrorMessage.value = null
+        _errorMessage.value = null
     }
 }

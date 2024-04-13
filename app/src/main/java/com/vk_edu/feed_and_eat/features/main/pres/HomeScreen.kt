@@ -69,9 +69,11 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
                 title = stringResource(R.string.title2),
                 cards = viewModel.cardsDataOfRow1.value,
                 columnWidthDp = viewModel.columnWidthDp.value,
-                modifier = Modifier.onGloballyPositioned { coordinates ->
-                    viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
-                }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
+                    }
             )
 
             viewModel.getCardsDataOfRow2()
@@ -111,14 +113,22 @@ fun SearchCard(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp, 0.dp, 8.dp, 0.dp)
+                    .padding(20.dp, 0.dp, 4.dp, 0.dp)
             ) {
                 LightText(text = stringResource(R.string.searchLabel), fontSize = LargeText)
-                LargeIcon(
-                    painter = painterResource(R.drawable.search_icon),
-                    color = colorResource(R.color.medium_cyan),
-                    modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(colorResource(R.color.medium_cyan), RoundedCornerShape(22.dp))
+                ) {
+                    LargeIcon(
+                        painter = painterResource(R.drawable.search_icon),
+                        color = colorResource(R.color.white),
+                        modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
+                    )
+                }
+
             }
         }
     }
