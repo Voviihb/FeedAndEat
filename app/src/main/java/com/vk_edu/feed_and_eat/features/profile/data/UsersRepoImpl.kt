@@ -20,13 +20,17 @@ import javax.inject.Singleton
 class UsersRepoImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : UsersRepository {
-    override fun getUserData(userId: String): Flow<Response<UserModel>> {
-        TODO("Not yet implemented")
+    override fun getUserData(userId: String): Flow<Response<UserModel?>> = repoTryCatchBlock {
+        val document = db.collection(USERS_COLLECTION).document(userId).get().await()
+        return@repoTryCatchBlock document.toObject<UserModel>()
     }
 
-    override fun getUserCollections(userId: String): Flow<Response<List<Compilation>>> {
-        TODO("Not yet implemented")
-    }
+    override fun getUserCollections(userId: String): Flow<Response<List<Compilation>?>> =
+        repoTryCatchBlock {
+            val document = db.collection(USERS_COLLECTION).document(userId).get().await()
+            val user = document.toObject<UserModel>()
+            return@repoTryCatchBlock user?.collections
+        }
 
     override fun saveUserData(
         userId: String,
@@ -34,6 +38,13 @@ class UsersRepoImpl @Inject constructor(
     ): Flow<Response<Void>> = repoTryCatchBlock {
         db.collection(USERS_COLLECTION).document(userId).set(userData).await()
     }.flowOn(Dispatchers.IO)
+
+    override fun updateUserData(
+        userId: String,
+        userData: HashMap<String, Any?>
+    ): Flow<Response<Void>> = repoTryCatchBlock {
+        db.collection(USERS_COLLECTION).document(userId).update(userData).await()
+    }
 
     override fun addNewUserCollection(
         userId: String,
