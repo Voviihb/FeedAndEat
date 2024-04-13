@@ -99,16 +99,16 @@ class ProfileScreenViewModel @Inject constructor(
                     ProfileType.PRIVATE -> true
                 }
                 val theme = when (_selectedTheme.value) {
-                    ThemeSelection.LIGHT -> "light"
-                    ThemeSelection.DARK -> "dark"
-                    ThemeSelection.AS_SYSTEM -> "system"
+                    ThemeSelection.LIGHT -> LIGHT_VALUE
+                    ThemeSelection.DARK -> DARK_VALUE
+                    ThemeSelection.AS_SYSTEM -> AS_SYSTEM_VALUE
                 }
                 if (userId != null) {
                     val data: HashMap<String, Any?> = hashMapOf(
-                        "avatarUrl" to _profileState.value.avatar,
-                        "aboutMeData" to _profileState.value.aboutMe,
-                        "isProfilePrivate" to profileType,
-                        "themeSettings" to theme
+                        AVATAR_URL_VALUE to _profileState.value.avatar,
+                        ABOUT_ME_VALUE to _profileState.value.aboutMe,
+                        IS_PROFILE_PRIVATE_VALUE to profileType,
+                        THEME_SETTINGS_VALUE to theme
                     )
 
                     _usersRepo.updateUserData(userId, data)
@@ -159,4 +159,14 @@ class ProfileScreenViewModel @Inject constructor(
         _errorMessage.value = null
     }
 
+    companion object {
+        private const val LIGHT_VALUE = "light"
+        private const val DARK_VALUE = "dark"
+        private const val AS_SYSTEM_VALUE = "system"
+
+        private const val AVATAR_URL_VALUE = "avatarUrl"
+        private const val ABOUT_ME_VALUE = "aboutMeData"
+        private const val IS_PROFILE_PRIVATE_VALUE = "isProfilePrivate"
+        private const val THEME_SETTINGS_VALUE = "themeSettings"
+    }
 }
