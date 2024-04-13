@@ -13,4 +13,23 @@ interface RecipesRepository {
     ): Flow<Response<PaginationResult>>
 
     fun loadRecipeById(id: String): Flow<Response<Recipe?>>
+
+    fun filterRecipes(
+        sort: String,
+        limit: Long,
+        offset: Int,
+        includedIngredients: List<String>,
+        excludedIngredients: List<String>,
+        tags: List<String>,
+        caloriesMin: Double,
+        caloriesMax: Double,
+        sugarMin: Double,
+        sugarMax: Double,
+        proteinMin: Double,
+        proteinMax: Double,
+        fatMin: Double,
+        fatMax: Double,
+        carbohydratesMin: Double,
+        carbohydratesMax: Double,
+    ) : Flow<Response<List<Recipe>?>>
 }

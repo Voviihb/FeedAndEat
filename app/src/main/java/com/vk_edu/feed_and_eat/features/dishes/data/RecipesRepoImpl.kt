@@ -1,9 +1,9 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
@@ -60,6 +60,54 @@ class RecipesRepoImpl @Inject constructor(
         val document = db.collection(RECIPES_COLLECTION)
             .document(id).get().await()
         return@repoTryCatchBlock document.toObject<Recipe>()
+    }.flowOn(Dispatchers.IO)
+
+    override fun filterRecipes(
+        sort: String,
+        limit: Long,
+        offset: Int,
+        includedIngredients: List<String>,
+        excludedIngredients: List<String>,
+        tags: List<String>,
+        caloriesMin: Double,
+        caloriesMax: Double,
+        sugarMin: Double,
+        sugarMax: Double,
+        proteinMin: Double,
+        proteinMax: Double,
+        fatMin: Double,
+        fatMax: Double,
+        carbohydratesMin: Double,
+        carbohydratesMax: Double
+    ): Flow<Response<List<Recipe>?>> = repoTryCatchBlock {
+        var query = db.collection(RECIPES_COLLECTION)
+//            .whereArrayContainsAny("tags", tags)
+            .whereGreaterThanOrEqualTo("nutrients.Calories", caloriesMin)
+            .whereLessThanOrEqualTo("nutrients.Calories", caloriesMax)
+            .whereGreaterThanOrEqualTo("nutrients.Carbohydrates", carbohydratesMin)
+            .whereLessThanOrEqualTo("nutrients.Carbohydrates", carbohydratesMax)
+            .whereGreaterThanOrEqualTo("nutrients.Fat", fatMin)
+            .whereLessThanOrEqualTo("nutrients.Fat", fatMax)
+            .whereGreaterThanOrEqualTo("nutrients.Protein", proteinMin)
+            .whereLessThanOrEqualTo("nutrients.Protein", proteinMax)
+            .whereGreaterThanOrEqualTo("nutrients.Sugar", sugarMin)
+            .whereLessThanOrEqualTo("nutrients.Sugar", sugarMax)
+        if (sort == "newness") {
+            query = query.orderBy("created", Query.Direction.DESCENDING)
+        } else if (sort == "rating") {
+            query = query.orderBy("rating", Query.Direction.DESCENDING)
+        } else if (sort == "popularity") {
+            query = query.orderBy("cooked", Query.Direction.DESCENDING)
+        }
+        val snapshot = query.limit(limit).get().await()
+
+        val queryResult = mutableListOf<Recipe>()
+
+        for (document in snapshot) {
+            val recipe = document.toObject<Recipe>()
+            queryResult.add(recipe)
+        }
+        return@repoTryCatchBlock queryResult
     }.flowOn(Dispatchers.IO)
 
     companion object {
