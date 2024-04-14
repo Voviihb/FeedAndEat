@@ -161,14 +161,15 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
     ) {
         items(cardsData.itemCount) { index ->
             val cardData = cardsData[index]
-            DishCard(
-                link = cardData?.link ?: "",
-                ingredients = cardData?.ingredients ?: 0,
-                steps = cardData?.steps ?: 0,
-                name = cardData?.name ?: "",
-                rating = cardData?.rating ?: 0.0,
-                cooked = cardData?.cooked ?: 0
-            )
+            if (cardData != null)
+                DishCard(
+                    link = cardData.link,
+                    ingredients = cardData.ingredients,
+                    steps = cardData.steps,
+                    name = cardData.name,
+                    rating = cardData.rating,
+                    cooked = cardData.cooked
+                )
         }
     }
 }
