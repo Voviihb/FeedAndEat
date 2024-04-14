@@ -8,7 +8,7 @@ interface SearchRepoInter {
         sort: String,
         filters: HashMap<String, List<String?>>,
         page: Int,
-        limit: Int = 20
+        limit: Int
     ): List<CardDataModel>
 }
 

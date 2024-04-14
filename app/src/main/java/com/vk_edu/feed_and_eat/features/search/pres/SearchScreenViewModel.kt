@@ -19,11 +19,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+const val LIMIT = 20
+
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor() : ViewModel() {
     private val repo: SearchRepoInter = SearchRepository()
 
-    val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = 20)) {
+    val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = LIMIT)) {
         CardsDataPagingSource()
     }.flow.cachedIn(viewModelScope)
 
@@ -129,14 +131,13 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
             _loading.value = true
             return try {
                 val page = params.key ?: 1
-                val limit = params.loadSize
-                val response = repo.getCardsData(requestBody, sort, filters, page, limit)
+                val response = repo.getCardsData(requestBody, sort, filters, page, LIMIT)
                 _loading.value = false
 
                 LoadResult.Page(
                     data = response,
                     prevKey = if (page == 1) null else page - 1,
-                    nextKey = if (response.isEmpty() || response.size < limit) page + 1 else page + 1
+                    nextKey = if (response.isEmpty() || response.size < LIMIT) null else page + 1
                 )
             } catch (e: Exception) {
                 onError(e)
