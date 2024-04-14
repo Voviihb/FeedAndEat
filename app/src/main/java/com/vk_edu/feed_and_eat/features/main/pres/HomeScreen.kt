@@ -37,7 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
-import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
+import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
@@ -122,7 +122,7 @@ fun SearchCard(modifier: Modifier = Modifier) {
                         .size(44.dp)
                         .background(colorResource(R.color.medium_cyan), RoundedCornerShape(22.dp))
                 ) {
-                    LargeIcon(
+                    MediumIcon(
                         painter = painterResource(R.drawable.search_icon),
                         color = colorResource(R.color.white),
                         modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)

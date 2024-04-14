@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,14 +38,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
-import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
+import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
-import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SearchScreen(navigateToRoute : (String) -> Unit) {
@@ -59,8 +60,7 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
                 .background(colorResource(R.color.pale_cyan))
                 .padding(padding)
         ) {
-            viewModel.addCardsData()
-            CardsGrid(cardsData = viewModel.cardsData)
+            CardsGrid(viewModel = viewModel)
 
             SearchCard(viewModel = viewModel)
         }
@@ -77,8 +77,7 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
             modifier = Modifier
                 .height(52.dp)
                 .fillMaxWidth()
-                .shadow(12.dp, RoundedCornerShape(26.dp)),
-            onClick = { /* TODO add function */ }
+                .shadow(12.dp, RoundedCornerShape(26.dp))
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -130,7 +129,7 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                         keyboardController?.hide()
                     }
                 ) {
-                    LargeIcon(
+                    MediumIcon(
                         painter = painterResource(R.drawable.search_icon),
                         color = colorResource(R.color.white),
                         modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
@@ -143,54 +142,33 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
 }
 
 @Composable
-fun CardsGrid(cardsData: List<CardDataModel>, modifier: Modifier = Modifier) {
+fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+    val gridState = rememberLazyGridState()
+    val cardsData = viewModel.cardsDataPager.collectAsLazyPagingItems()
+    if (viewModel.reloadData.value) {
+        runBlocking {
+            gridState.scrollToItem(0)
+        }
+        cardsData.refresh()
+        viewModel.reloadDataFinished()
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
+        state = gridState,
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp)
     ) {
-        items(cardsData) { cardData ->
+        items(cardsData.itemCount) { index ->
+            val cardData = cardsData[index]
             DishCard(
-                link = cardData.link,
-                ingredients = cardData.ingredients,
-                steps = cardData.steps,
-                name = cardData.name,
-                rating = cardData.rating,
-                cooked = cardData.cooked
+                link = cardData?.link ?: "",
+                ingredients = cardData?.ingredients ?: 0,
+                steps = cardData?.steps ?: 0,
+                name = cardData?.name ?: "",
+                rating = cardData?.rating ?: 0.0,
+                cooked = cardData?.cooked ?: 0
             )
         }
     }
 }
-
-
-
-/*
-@Composable
-fun SearchScreen(
-    navigateToRoute : (String) -> Unit,
-) {
-    Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
-    ) {padding ->
-    Column(
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-    ) {
-        Text(stringResource(id = R.string.SearchScreen))
-        Button(
-            onClick = { navigateToRoute(Screen.NewRecipeScreen.route) }
-        ){
-            Text("New Recipe")
-        }
-        Button(
-            onClick = { navigateToRoute(Screen.RecipeScreen.route) }
-        ){
-            Text("To Single Recipe")
-        }
-    }
-    }
-}*/

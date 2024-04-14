@@ -5,7 +5,7 @@ import com.vk_edu.feed_and_eat.features.search.domain.repository.SearchRepoInter
 import javax.inject.Inject
 
 class SearchRepository @Inject constructor() : SearchRepoInter {
-    private val cards = MutableList(20) {
+    private val cards = List(20) {
         CardDataModel(
             link = "https://img.spoonacular.com/recipes/641732-556x370.jpg",
             ingredients = 15,
@@ -25,8 +25,16 @@ class SearchRepository @Inject constructor() : SearchRepoInter {
         page: Int,
         limit: Int
     ): List<CardDataModel> {
-        cards[0].ingredients = cnt
+        val arr = mutableListOf<CardDataModel>()
+        for (elem in cards) {
+            val newElem = elem.copy(
+                ingredients = cnt,
+                name = request + elem.name,
+                steps = page
+            )
+            arr.add(newElem)
+        }
         cnt += 1
-        return cards
+        return arr
     }
 }

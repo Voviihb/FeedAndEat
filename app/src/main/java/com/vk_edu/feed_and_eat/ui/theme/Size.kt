@@ -10,4 +10,4 @@ val SmallText = 18.sp
 val ExtraSmallText = 17.sp
 
 val SmallIconSize = 24.dp
-val LargeIconSize = 32.dp
+val MediumIconSize = 32.dp
