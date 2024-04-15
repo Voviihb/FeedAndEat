@@ -81,26 +81,38 @@ class RecipesRepoImpl @Inject constructor(
         carbohydratesMax: Double
     ): Flow<Response<List<Recipe>?>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-//            .whereArrayContainsAny("tags", tags)
-            .whereGreaterThanOrEqualTo("nutrients.Calories", caloriesMin)
-            .whereLessThanOrEqualTo("nutrients.Calories", caloriesMax)
-            .whereGreaterThanOrEqualTo("nutrients.Carbohydrates", carbohydratesMin)
-            .whereLessThanOrEqualTo("nutrients.Carbohydrates", carbohydratesMax)
-            .whereGreaterThanOrEqualTo("nutrients.Fat", fatMin)
-            .whereLessThanOrEqualTo("nutrients.Fat", fatMax)
-            .whereGreaterThanOrEqualTo("nutrients.Protein", proteinMin)
-            .whereLessThanOrEqualTo("nutrients.Protein", proteinMax)
-            .whereGreaterThanOrEqualTo("nutrients.Sugar", sugarMin)
-            .whereLessThanOrEqualTo("nutrients.Sugar", sugarMax)
-        if (sort == "newness") {
-            query = query.orderBy("created", Query.Direction.DESCENDING)
-        } else if (sort == "rating") {
-            query = query.orderBy("rating", Query.Direction.DESCENDING)
-        } else if (sort == "popularity") {
-            query = query.orderBy("cooked", Query.Direction.DESCENDING)
-        }
-        val snapshot = query.limit(limit).get().await()
+            .whereGreaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMax)
+            .whereArrayContainsAny(TAGS_FIELD, listOf(tags[0]))
 
+        /* TODO FIX ME FIRESTORE*/
+//        for (tag in tags) {
+//            query = query.whereArrayContainsAny(TAGS_FIELD, listOf(tag))
+//        }
+
+        when (sort) {
+            "newness" -> {
+                query = query.orderBy("created", Query.Direction.DESCENDING)
+            }
+
+            "rating" -> {
+                query = query.orderBy("rating", Query.Direction.DESCENDING)
+            }
+
+            "popularity" -> {
+                query = query.orderBy("cooked", Query.Direction.DESCENDING)
+            }
+        }
+
+        val snapshot = query.limit(limit).get().await()
         val queryResult = mutableListOf<Recipe>()
 
         for (document in snapshot) {
@@ -112,5 +124,12 @@ class RecipesRepoImpl @Inject constructor(
 
     companion object {
         private const val RECIPES_COLLECTION = "recipes"
+
+        private const val TAGS_FIELD = "tags"
+        private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
+        private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"
+        private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
+        private const val NUTRIENTS_PROTEIN_FIELD = "nutrients.Protein"
+        private const val NUTRIENTS_SUGAR_FIELD = "nutrients.Sugar"
     }
 }

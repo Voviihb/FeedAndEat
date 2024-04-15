@@ -68,11 +68,27 @@ fun RecipesScreen() {
                         Text(text = "Load one recipe", fontSize = 24.sp)
                     }
                 }
+
+                Button(onClick = {
+                    viewModel.filterRecipes(tags = listOf("side dish", "lunch", "main dish"),
+//                        includedIngredients = listOf("cheddar cheese", "chorizo sausage", "eggs", "garlic"),
+//                        caloriesMin = 1000.0,
+                        sort = "popularity", limit = 10, offset = 0)
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Load filtered", fontSize = 24.sp)
+                    }
+                }
             }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(recipesList) { dish ->
                     Text(
-                        text = dish.toString(),
+                        text = dish.name.toString(),
                         color = Color.Black,
                         fontSize = 16.sp
                     )

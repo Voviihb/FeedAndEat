@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.dishes.pres
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -71,6 +72,66 @@ class RecipesScreenViewModel @Inject constructor(
                         is Response.Success -> {
                             if (response.data != null) {
                                 _recipesList.value = listOf(response.data)
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
+    fun filterRecipes(
+        sort: String,
+        limit: Long,
+        offset: Int,
+        includedIngredients: List<String> = listOf(),
+        excludedIngredients: List<String> = listOf(),
+        tags: List<String> = listOf(),
+        caloriesMin: Double = 0.0,
+        caloriesMax: Double = 10e9,
+        sugarMin: Double = 0.0,
+        sugarMax: Double = 10e9,
+        proteinMin: Double = 0.0,
+        proteinMax: Double = 10e9,
+        fatMin: Double = 0.0,
+        fatMax: Double = 10e9,
+        carbohydratesMin: Double = 0.0,
+        carbohydratesMax: Double = 10e9
+    ) {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.filterRecipes(
+                    sort,
+                    limit,
+                    offset,
+                    includedIngredients,
+                    excludedIngredients,
+                    tags,
+                    caloriesMin,
+                    caloriesMax,
+                    sugarMin,
+                    sugarMax,
+                    proteinMin,
+                    proteinMax,
+                    fatMin,
+                    fatMax,
+                    carbohydratesMin,
+                    carbohydratesMax
+                ).collect { response ->
+                    Log.d("Taag", response.toString())
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            if (response.data != null) {
+                                _recipesList.value += response.data
                             }
                         }
 
