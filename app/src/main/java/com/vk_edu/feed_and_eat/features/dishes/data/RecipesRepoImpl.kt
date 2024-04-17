@@ -2,6 +2,7 @@ package com.vk_edu.feed_and_eat.features.dishes.data
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
@@ -81,38 +82,39 @@ class RecipesRepoImpl @Inject constructor(
         carbohydratesMax: Double
     ): Flow<Response<List<Recipe>?>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMax)
-            .whereArrayContainsAny(TAGS_FIELD, listOf(tags[0]))
-
-        /* TODO FIX ME FIRESTORE*/
-//        for (tag in tags) {
-//            query = query.whereArrayContainsAny(TAGS_FIELD, listOf(tag))
-//        }
+            .whereArrayContainsAny(INGREDIENTS_FIELD, includedIngredients)
+            .where(Filter.and(
+                Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMax),
+            ))
+            .where(Filter.and(*Array(tags.size) { i ->
+                Filter.arrayContains(TAGS_FIELD, tags[i])
+            }))
+        /*for (tag in tags) {
+            query = query.whereArrayContains(TAGS_FIELD, tag)
+        }*/
 
         when (sort) {
             "newness" -> {
                 query = query.orderBy("created", Query.Direction.DESCENDING)
             }
-
             "rating" -> {
                 query = query.orderBy("rating", Query.Direction.DESCENDING)
             }
-
             "popularity" -> {
                 query = query.orderBy("cooked", Query.Direction.DESCENDING)
             }
         }
 
-        val snapshot = query.limit(limit).get().await()
+        val snapshot = query.limit(limit).startAt(offset).get().await()
         val queryResult = mutableListOf<Recipe>()
 
         for (document in snapshot) {
@@ -126,6 +128,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val RECIPES_COLLECTION = "recipes"
 
         private const val TAGS_FIELD = "tags"
+        private const val INGREDIENTS_FIELD = "ingredients"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
         private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
