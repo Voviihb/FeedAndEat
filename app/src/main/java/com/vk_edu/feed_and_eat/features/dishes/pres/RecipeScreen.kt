@@ -99,8 +99,7 @@ fun InfoSurface(
                 fontSize = 20.sp,
                 color = Color.Gray
             )
-            Column(
-            ) {
+            Column {
                 for (i in names.indices){
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -317,6 +316,7 @@ fun TextContainer(
         )
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn(
+            userScrollEnabled = true,
             modifier = Modifier
                 .background(
                     Color(red = 0xE4, blue = 0xFE, green = 0xFA, alpha = 0xFF),
@@ -329,7 +329,6 @@ fun TextContainer(
                     Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
                     shape = RoundedCornerShape(20.dp)
                 ),
-
             ){
             if (description != null){
                 items(description.size){ index ->
@@ -386,7 +385,8 @@ fun RecipeScreen(
     navigateBack : () -> Unit,
     viewModel: RecipesScreenViewModel = hiltViewModel()
 ) {
-    viewModel.loadRecipeById(id = "01QBOFwzXIkmkqsuwyzy")
+    val id = "083KzNCvzuf4CIKoeJFB"
+    viewModel.loadRecipeById(id)
     val recipeList by viewModel.recipesList
 
     Scaffold(
@@ -402,7 +402,10 @@ fun RecipeScreen(
                             .fillMaxSize()
                     ) {
                         Button(
-                            onClick = { viewModel.loadRecipeById(id = "01QBOFwzXIkmkqsuwyzy") },
+                            onClick = {
+                                viewModel.loadRecipeById(id)
+                                viewModel.clearError()
+                                      },
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonColors(
                                 colorResource(id = R.color.textback),

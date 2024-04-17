@@ -93,7 +93,7 @@ class RecipesScreenViewModel @Inject constructor(
         _loading.value = false
     }
 
-    init {
-//        loadRecipeById(id = "016VAjdUxDHSfAagMB2k")
+    fun clearError() {
+        _errorMessage.value = null
     }
 }
