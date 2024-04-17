@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.graphics.BoxofText
+import com.vk_edu.feed_and_eat.common.graphics.BoxWithCards
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
@@ -78,11 +78,11 @@ fun InfoSurface(
             Text(stringResource(id = R.string.ingridients),
                 modifier = Modifier.padding(5.dp)
             )
-            BoxofText(bigText = ingredients)
+            BoxWithCards(bigText = ingredients)
             Text(stringResource(id = R.string.tags),
                 modifier = Modifier.padding(5.dp)
             )
-            BoxofText(bigText = tags)
+            BoxWithCards(bigText = tags)
             Text(stringResource(id = R.string.energy_value),
                 modifier = Modifier.padding(5.dp),
                 fontSize = 20.sp,

@@ -14,4 +14,5 @@
     <color name="lightwhite">#CFFBFF</color>
     <color name="strange">#E4FAFE</color>
     <color name="background">#FCFCFC</color>
+    <color name="textback">#CFFFFC</color>
 </resources>
