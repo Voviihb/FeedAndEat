@@ -19,8 +19,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-const val LIMIT = 20
-
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor() : ViewModel() {
     private val repo: SearchRepoInter = SearchRepository()
@@ -151,5 +149,9 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
                     ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
             }
         }
+    }
+
+    companion object {
+        private const val LIMIT = 20
     }
 }
