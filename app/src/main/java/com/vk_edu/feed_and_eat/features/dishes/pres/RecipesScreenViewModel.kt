@@ -91,7 +91,6 @@ class RecipesScreenViewModel @Inject constructor(
     fun filterRecipes(
         sort: String,
         limit: Long,
-        offset: Int,
         includedIngredients: List<String> = listOf(),
         excludedIngredients: List<String> = listOf(),
         tags: List<String> = listOf(),
@@ -111,7 +110,7 @@ class RecipesScreenViewModel @Inject constructor(
                 _recipesRepo.filterRecipes(
                     sort,
                     limit,
-                    offset,
+                    _prevDocument,
                     includedIngredients,
                     excludedIngredients,
                     tags,
@@ -130,9 +129,8 @@ class RecipesScreenViewModel @Inject constructor(
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            if (response.data != null) {
-                                _recipesList.value += response.data
-                            }
+                            _recipesList.value += response.data.recipes
+                            _prevDocument = response.data.prevDocument
                         }
 
                         is Response.Failure -> {

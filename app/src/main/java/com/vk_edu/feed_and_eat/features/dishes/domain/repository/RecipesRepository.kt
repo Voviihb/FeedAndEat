@@ -17,7 +17,7 @@ interface RecipesRepository {
     fun filterRecipes(
         sort: String,
         limit: Long,
-        offset: Int,
+        prevDocument: DocumentSnapshot?,
         includedIngredients: List<String>,
         excludedIngredients: List<String>,
         tags: List<String>,
@@ -31,5 +31,5 @@ interface RecipesRepository {
         fatMax: Double,
         carbohydratesMin: Double,
         carbohydratesMax: Double,
-    ) : Flow<Response<List<Recipe>?>>
+    ) : Flow<Response<PaginationResult>>
 }

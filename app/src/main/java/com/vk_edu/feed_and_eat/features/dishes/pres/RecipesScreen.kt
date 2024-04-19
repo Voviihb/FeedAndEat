@@ -68,12 +68,10 @@ fun RecipesScreen() {
                         Text(text = "Load one recipe", fontSize = 24.sp)
                     }
                 }
-
                 Button(onClick = {
                     viewModel.filterRecipes(tags = listOf("side dish", "lunch", "main dish"),
-//                        includedIngredients = listOf("cheddar cheese", "chorizo sausage", "eggs", "garlic"),
-//                        caloriesMin = 1000.0,
-                        sort = "popularity", limit = 10, offset = 0)
+                        caloriesMin = 1000.0,
+                        sort = "popularity", limit = 10)
                 }) {
                     Column(
                         modifier = Modifier
