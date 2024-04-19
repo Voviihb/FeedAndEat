@@ -95,16 +95,16 @@ class RecipesRepoImpl @Inject constructor(
             .whereArrayContainsAny(TAGS_FIELD, tags)
 
         when (sort) {
-            "newness" -> {
-                query = query.orderBy("created", Query.Direction.DESCENDING)
+            SORT_NEWNESS -> {
+                query = query.orderBy(ORDER_BY_CREATED, Query.Direction.DESCENDING)
             }
 
-            "rating" -> {
-                query = query.orderBy("rating", Query.Direction.DESCENDING)
+            SORT_RATING -> {
+                query = query.orderBy(ORDER_BY_RATING, Query.Direction.DESCENDING)
             }
 
-            "popularity" -> {
-                query = query.orderBy("cooked", Query.Direction.DESCENDING)
+            SORT_POPULARITY -> {
+                query = query.orderBy(ORDER_BY_COOKED, Query.Direction.DESCENDING)
             }
         }
 
@@ -129,6 +129,13 @@ class RecipesRepoImpl @Inject constructor(
 
     companion object {
         private const val RECIPES_COLLECTION = "recipes"
+
+        private const val SORT_NEWNESS = "newness"
+        private const val SORT_RATING = "rating"
+        private const val SORT_POPULARITY = "popularity"
+        private const val ORDER_BY_CREATED = "created"
+        private const val ORDER_BY_RATING = "rating"
+        private const val ORDER_BY_COOKED = "cooked"
 
         private const val TAGS_FIELD = "tags"
         private const val INGREDIENTS_FIELD = "ingredients"
