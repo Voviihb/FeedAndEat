@@ -4,14 +4,14 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class Ingredient(
-    val name: String? = null,
-    val amount: Double? = null,
-    val unit: String? = null
+    val name: String = "",
+    val amount: Double = 0.0,
+    val unit: String = ""
 )
 
 @IgnoreExtraProperties
 data class Instruction(
-    val paragraph: String? = null,
+    val paragraph: String = "",
     val timers: List<Timer>? = null
 )
 
@@ -27,16 +27,16 @@ data class Nutrients(
 
 @IgnoreExtraProperties
 data class Recipe(
-    val name: String? = null,
+    val name: String = "",
     val image: String? = null,
-    val instructions: List<Instruction>? = null,
+    val instructions: List<Instruction> = listOf(),
     val servings: Servings? = null,
-    val ingredients: List<Ingredient>? = null,
+    val ingredients: List<Ingredient> = listOf(),
     val tags: List<String>? = null,
-    val nutrients: Nutrients? = null,
-    val author: Int? = null,
-    val rating: Double? = null,
-    val cooked: Int? = null,
+    val nutrients: Nutrients = Nutrients(),
+    val author: Int = 0,
+    val rating: Double = 0.0,
+    val cooked: Int = 0,
     val reviews: List<Review>? = null
 )
 
@@ -48,7 +48,7 @@ data class Servings(
 
 @IgnoreExtraProperties
 data class Timer(
-    val type: String? = null,
+    val type: String = "",
     val lowerLimit: Int? = null,
     val upperLimit: Int? = null,
     val number: Int? = null
@@ -56,8 +56,8 @@ data class Timer(
 
 @IgnoreExtraProperties
 data class Review(
-    val author: Int? = null,
-    val mark: Double? = null,
+    val author: Int = 0,
+    val mark: Double = 0.0,
     val message: String? = null
 )
 
