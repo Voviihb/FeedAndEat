@@ -2,6 +2,7 @@ package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
 data class FiltersDTO(val sort: SortFilter,
                       val limit: Long,
+                      val startsWith: String? = null,
                       val includedIngredients: List<String>? = null,
                       val excludedIngredients: List<String>? = null,
                       val tags: List<String>? = null,

@@ -81,6 +81,11 @@ class RecipesRepoImpl @Inject constructor(
             .whereGreaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMin)
             .whereLessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax)
 
+        if (filters.startsWith != null) {
+            query = query.whereGreaterThanOrEqualTo(NAME_FIELD, filters.startsWith)
+                .whereLessThanOrEqualTo(NAME_FIELD, "${filters.startsWith}\\uf8ff")
+        }
+
         if (filters.tags != null) {
             query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
         }
@@ -125,6 +130,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val ORDER_BY_RATING = "rating"
         private const val ORDER_BY_COOKED = "cooked"
 
+        private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
         private const val INGREDIENTS_FIELD = "ingredients"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
