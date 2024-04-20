@@ -9,6 +9,7 @@ import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.Dispatchers
@@ -84,17 +85,17 @@ class RecipesRepoImpl @Inject constructor(
             query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
         }
 
-        when (filters.sort) {
-            SORT_NEWNESS -> {
-                query = query.orderBy(ORDER_BY_CREATED, Query.Direction.DESCENDING)
+        query = when (filters.sort) {
+            SortFilter.SORT_NEWNESS -> {
+                query.orderBy(ORDER_BY_CREATED, Query.Direction.DESCENDING)
             }
 
-            SORT_RATING -> {
-                query = query.orderBy(ORDER_BY_RATING, Query.Direction.DESCENDING)
+            SortFilter.SORT_RATING -> {
+                query.orderBy(ORDER_BY_RATING, Query.Direction.DESCENDING)
             }
 
-            SORT_POPULARITY -> {
-                query = query.orderBy(ORDER_BY_COOKED, Query.Direction.DESCENDING)
+            SortFilter.SORT_POPULARITY -> {
+                query.orderBy(ORDER_BY_COOKED, Query.Direction.DESCENDING)
             }
         }
 
@@ -120,9 +121,6 @@ class RecipesRepoImpl @Inject constructor(
     companion object {
         private const val RECIPES_COLLECTION = "recipes"
 
-        private const val SORT_NEWNESS = "newness"
-        private const val SORT_RATING = "rating"
-        private const val SORT_POPULARITY = "popularity"
         private const val ORDER_BY_CREATED = "created"
         private const val ORDER_BY_RATING = "rating"
         private const val ORDER_BY_COOKED = "cooked"
