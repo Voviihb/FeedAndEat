@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
@@ -64,37 +65,26 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun filterRecipes(
-        sort: String,
-        limit: Long,
-        prevDocument: DocumentSnapshot?,
-        includedIngredients: List<String>,
-        excludedIngredients: List<String>,
-        tags: List<String>,
-        caloriesMin: Double,
-        caloriesMax: Double,
-        sugarMin: Double,
-        sugarMax: Double,
-        proteinMin: Double,
-        proteinMax: Double,
-        fatMin: Double,
-        fatMax: Double,
-        carbohydratesMin: Double,
-        carbohydratesMax: Double
+        filters: FiltersDTO,
+        prevDocument: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMax)
-            .whereGreaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMin)
-            .whereLessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMax)
-            .whereArrayContainsAny(TAGS_FIELD, tags)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, filters.carbohydratesMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, filters.carbohydratesMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMax)
+            .whereGreaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMin)
+            .whereLessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax)
 
-        when (sort) {
+        if (filters.tags != null) {
+            query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
+        }
+
+        when (filters.sort) {
             SORT_NEWNESS -> {
                 query = query.orderBy(ORDER_BY_CREATED, Query.Direction.DESCENDING)
             }
@@ -109,9 +99,9 @@ class RecipesRepoImpl @Inject constructor(
         }
 
         val snapshot = if (prevDocument != null) {
-            query.startAfter(prevDocument).limit(limit).get().await()
+            query.startAfter(prevDocument).limit(filters.limit).get().await()
         } else {
-            query.limit(limit).get().await()
+            query.limit(filters.limit).get().await()
         }
 
         val queryResult = mutableListOf<Recipe>()
