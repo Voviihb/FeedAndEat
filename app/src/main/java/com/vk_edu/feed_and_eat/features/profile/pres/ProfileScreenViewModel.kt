@@ -23,11 +23,11 @@ class ProfileScreenViewModel @Inject constructor(
     private val _profileState = mutableStateOf(Profile(null, null, null, ""))
     val profileState: State<Profile> = _profileState
 
-    val themes = listOf(ThemeSelection.LIGHT, ThemeSelection.DARK, ThemeSelection.AS_SYSTEM)
+    val themes = ThemeSelection.entries.toTypedArray()
     private val _selectedTheme = mutableStateOf(themes[0])
     val selectedTheme: State<ThemeSelection> = _selectedTheme
 
-    val profileType = listOf(ProfileType.PUBLIC, ProfileType.PRIVATE)
+    val profileType = ProfileType.entries.toTypedArray()
     private val _selectedProfileType = mutableStateOf(profileType[0])
     val selectedProfileType: State<ProfileType> = _selectedProfileType
 
@@ -95,13 +95,13 @@ class ProfileScreenViewModel @Inject constructor(
             try {
                 val userId = _authRepo.getUserId()
                 val profileType = when (_selectedProfileType.value) {
-                    ProfileType.PUBLIC -> false
-                    ProfileType.PRIVATE -> true
+                    ProfileType.PUBLIC -> ProfileType.PUBLIC.type
+                    ProfileType.PRIVATE -> ProfileType.PRIVATE.type
                 }
                 val theme = when (_selectedTheme.value) {
-                    ThemeSelection.LIGHT -> LIGHT_VALUE
-                    ThemeSelection.DARK -> DARK_VALUE
-                    ThemeSelection.AS_SYSTEM -> AS_SYSTEM_VALUE
+                    ThemeSelection.LIGHT -> ThemeSelection.LIGHT.themeName
+                    ThemeSelection.DARK -> ThemeSelection.DARK.themeName
+                    ThemeSelection.AS_SYSTEM -> ThemeSelection.AS_SYSTEM.themeName
                 }
                 if (userId != null) {
                     val data: HashMap<String, Any?> = hashMapOf(
@@ -160,10 +160,6 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val LIGHT_VALUE = "light"
-        private const val DARK_VALUE = "dark"
-        private const val AS_SYSTEM_VALUE = "system"
-
         private const val AVATAR_URL_VALUE = "avatarUrl"
         private const val ABOUT_ME_VALUE = "aboutMeData"
         private const val IS_PROFILE_PRIVATE_VALUE = "isProfilePrivate"
