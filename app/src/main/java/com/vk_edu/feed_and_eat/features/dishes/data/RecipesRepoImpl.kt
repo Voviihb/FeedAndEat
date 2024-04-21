@@ -71,7 +71,6 @@ class RecipesRepoImpl @Inject constructor(
         prevDocument: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-            .whereArrayContainsAny(TAGS_FIELD, filters.tags)
             .where(Filter.and(
                 Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMin),
                 Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMax),
@@ -84,6 +83,9 @@ class RecipesRepoImpl @Inject constructor(
                 Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMin),
                 Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
             ))
+
+        if (filters.tags != null)
+            query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
 
         query = when (filters.sort) {
             SortFilter.SORT_NEWNESS -> {
@@ -98,10 +100,10 @@ class RecipesRepoImpl @Inject constructor(
             }
         }
 
-        var snapshot = query.limit(20).get().await()
-        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(20).get().await()
-        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(20).get().await()
-        snapshot = query.endBefore(snapshot.documents[0]).limitToLast(20).get().await()
+        var snapshot = query.limit(filters.limit).get().await()
+        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(filters.limit).get().await()
+        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(filters.limit).get().await()
+        snapshot = query.endBefore(snapshot.documents[0]).limitToLast(filters.limit).get().await()
         val queryResult = mutableListOf<Recipe>()
 
         for (document in snapshot) {
