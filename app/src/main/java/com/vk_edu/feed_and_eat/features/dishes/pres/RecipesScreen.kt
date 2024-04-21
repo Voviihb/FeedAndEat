@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
 
 @Composable
 fun RecipesScreen() {
@@ -68,12 +70,14 @@ fun RecipesScreen() {
                         Text(text = "Load one recipe", fontSize = 24.sp)
                     }
                 }
-
                 Button(onClick = {
-                    viewModel.filterRecipes(tags = listOf("side dish", "lunch", "main dish"),
-//                        includedIngredients = listOf("cheddar cheese", "chorizo sausage", "eggs", "garlic"),
-//                        caloriesMin = 1000.0,
-                        sort = "popularity", limit = 10, offset = 0)
+                    val filters = FiltersDTO(
+                        sort = SortFilter.SORT_POPULARITY,
+                        limit = 10,
+                        tags = listOf("lunch"),
+                        startsWith = "Chorizo"
+                    )
+                    viewModel.filterRecipes(filters)
                 }) {
                     Column(
                         modifier = Modifier

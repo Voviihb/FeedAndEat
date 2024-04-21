@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -89,46 +90,19 @@ class RecipesScreenViewModel @Inject constructor(
     }
 
     fun filterRecipes(
-        sort: String,
-        limit: Long,
-        offset: Int,
-        tags: List<String> = listOf("lunch"),
-        caloriesMin: Double = 0.0,
-        caloriesMax: Double = 10e9,
-        sugarMin: Double = 0.0,
-        sugarMax: Double = 10e9,
-        proteinMin: Double = 0.0,
-        proteinMax: Double = 10e9,
-        fatMin: Double = 0.0,
-        fatMax: Double = 10e9,
-        carbohydratesMin: Double = 0.0,
-        carbohydratesMax: Double = 10e9
+        filters: FiltersDTO
     ) {
         viewModelScope.launch {
             try {
                 _recipesRepo.filterRecipes(
-                    sort,
-                    limit,
-                    offset,
-                    tags,
-                    caloriesMin,
-                    caloriesMax,
-                    sugarMin,
-                    sugarMax,
-                    proteinMin,
-                    proteinMax,
-                    fatMin,
-                    fatMax,
-                    carbohydratesMin,
-                    carbohydratesMax
+                    filters = filters, prevDocument = _prevDocument
                 ).collect { response ->
                     Log.d("Taag", response.toString())
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            if (response.data != null) {
-                                _recipesList.value += response.data
-                            }
+                            _recipesList.value += response.data.recipes
+                            _prevDocument = response.data.prevDocument
                         }
 
                         is Response.Failure -> {

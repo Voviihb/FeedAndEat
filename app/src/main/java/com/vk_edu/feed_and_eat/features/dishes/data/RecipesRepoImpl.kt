@@ -7,8 +7,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +51,8 @@ class RecipesRepoImpl @Inject constructor(
             recipesList.add(dish)
         }
 
-        val lastDocument = snapshot.documents[snapshot.size() - 1]
+        val lastDocument =
+            if (snapshot.size() > 0) snapshot.documents[snapshot.size() - 1] else prevDocument
         return@repoTryCatchBlock PaginationResult(
             recipesList.toList<Recipe>(),
             lastDocument
@@ -64,45 +67,34 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun filterRecipes(
-        sort: String,
-        limit: Long,
-        offset: Int,
-        tags: List<String>,
-        caloriesMin: Double,
-        caloriesMax: Double,
-        sugarMin: Double,
-        sugarMax: Double,
-        proteinMin: Double,
-        proteinMax: Double,
-        fatMin: Double,
-        fatMax: Double,
-        carbohydratesMin: Double,
-        carbohydratesMax: Double
-    ): Flow<Response<List<Recipe>?>> = repoTryCatchBlock {
+        filters: FiltersDTO,
+        prevDocument: DocumentSnapshot?
+    ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-            .whereArrayContainsAny(TAGS_FIELD, tags)
+            .whereArrayContainsAny(TAGS_FIELD, filters.tags)
             .where(Filter.and(
-                Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, carbohydratesMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_FAT_FIELD, fatMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, proteinMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, filters.carbohydratesMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, filters.carbohydratesMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMax),
+                Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMin),
+                Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
             ))
 
-        when (sort) {
-            "newness" -> {
-                query = query.orderBy("created", Query.Direction.DESCENDING)
+        query = when (filters.sort) {
+            SortFilter.SORT_NEWNESS -> {
+                query.orderBy(ORDER_BY_CREATED, Query.Direction.DESCENDING)
             }
-            "rating" -> {
-                query = query.orderBy("rating", Query.Direction.DESCENDING)
+            SortFilter.SORT_RATING -> {
+                query.orderBy(ORDER_BY_RATING, Query.Direction.DESCENDING)
             }
-            "popularity" -> {
-                query = query.orderBy("cooked", Query.Direction.DESCENDING)
+
+            SortFilter.SORT_POPULARITY -> {
+                query.orderBy(ORDER_BY_COOKED, Query.Direction.DESCENDING)
             }
         }
 
@@ -116,13 +108,24 @@ class RecipesRepoImpl @Inject constructor(
             val recipe = document.toObject<Recipe>()
             queryResult.add(recipe)
         }
-        return@repoTryCatchBlock queryResult
+        val lastDocument =
+            if (snapshot.size() > 0) snapshot.documents[snapshot.size() - 1] else prevDocument
+        return@repoTryCatchBlock PaginationResult(
+            queryResult,
+            lastDocument
+        )
     }.flowOn(Dispatchers.IO)
 
     companion object {
         private const val RECIPES_COLLECTION = "recipes"
 
+        private const val ORDER_BY_CREATED = "created"
+        private const val ORDER_BY_RATING = "rating"
+        private const val ORDER_BY_COOKED = "cooked"
+
+        private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
+        private const val INGREDIENTS_FIELD = "ingredients"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
         private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
