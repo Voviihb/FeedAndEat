@@ -74,7 +74,7 @@ fun RecipesScreen() {
                     val filters = FiltersDTO(
                         sort = SortFilter.SORT_POPULARITY,
                         limit = 20,
-                        tags = listOf("side dish", "lunch", "main dish")
+                        tags = listOf("side dish", "lunch", "main dish"),
                     )
                     viewModel.filterRecipes(filters)
                 }) {

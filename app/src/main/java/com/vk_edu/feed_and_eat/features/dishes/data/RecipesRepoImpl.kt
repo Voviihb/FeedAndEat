@@ -24,6 +24,12 @@ import javax.inject.Singleton
 class RecipesRepoImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : RecipesRepository {
+    /**
+     * Loads all recipes with pagination, order by DocID
+     * @param limit how many items to load
+     * @param startOfNextDocument is needed to calculate start point for FORWARD pagination
+     * @param endOfPrevDocument is needed to calculate start point for BACKWARD pagination
+     * */
     override fun loadRecipes(
         limit: Long,
         endOfPrevDocument: DocumentSnapshot?,
@@ -59,7 +65,12 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock document.toObject<Recipe>()
     }.flowOn(Dispatchers.IO)
 
-
+    /**
+     * Filters recipes with pagination
+     * @param filters pass all filters in DTO here
+     * @param startOfNextDocument is needed to calculate start point for FORWARD pagination
+     * @param endOfPrevDocument is needed to calculate start point for BACKWARD pagination
+     * */
     override fun filterRecipes(
         filters: FiltersDTO,
         endOfPrevDocument: DocumentSnapshot?,
@@ -79,6 +90,10 @@ class RecipesRepoImpl @Inject constructor(
                 Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
             ))
 
+        if (filters.startsWith != null) {
+            query = query.whereGreaterThanOrEqualTo(NAME_FIELD, filters.startsWith)
+                .whereLessThanOrEqualTo(NAME_FIELD, "${filters.startsWith}\\uf8ff")
+        }
         if (filters.tags != null)
             query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
 
@@ -124,6 +139,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val ORDER_BY_RATING = "rating"
         private const val ORDER_BY_COOKED = "cooked"
 
+        private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
         private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"

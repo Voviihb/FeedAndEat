@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -114,7 +113,6 @@ class RecipesScreenViewModel @Inject constructor(
                         endOfPrevDocument = if (direction == BACK) _endOfPrevDocument else null,
                         startOfNextDocument = if (direction == FORWARD) _startOfNextDocument else null
                     ).collect { response ->
-                        Log.d("Taag", response.toString())
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
