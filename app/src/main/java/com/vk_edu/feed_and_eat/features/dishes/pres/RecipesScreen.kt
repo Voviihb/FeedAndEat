@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
 
 @Composable
 fun RecipesScreen() {
@@ -43,7 +45,7 @@ fun RecipesScreen() {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    viewModel.loadRecipes()
+                    viewModel.loadRecipes(20)
                 }) {
                     Column(
                         modifier = Modifier
@@ -68,11 +70,28 @@ fun RecipesScreen() {
                         Text(text = "Load one recipe", fontSize = 24.sp)
                     }
                 }
+                Button(onClick = {
+                    val filters = FiltersDTO(
+                        sort = SortFilter.SORT_POPULARITY,
+                        limit = 20,
+                        tags = listOf("side dish", "lunch", "main dish"),
+                    )
+                    viewModel.filterRecipes(filters)
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Load filtered", fontSize = 24.sp)
+                    }
+                }
             }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 items(recipesList) { dish ->
                     Text(
-                        text = dish.toString(),
+                        text = dish.name.toString(),
                         color = Color.Black,
                         fontSize = 16.sp
                     )
