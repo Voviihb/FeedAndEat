@@ -22,6 +22,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -37,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
-import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
+import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
@@ -63,29 +67,32 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
             viewModel.getLargeCardData()
             LargeCard(cardData = viewModel.largeCardData.value)
 
+            var columnWidthDp by remember { mutableStateOf(0.dp) }
             val localDensity = LocalDensity.current
             viewModel.getCardsDataOfRow1()
             CardsRow(
                 title = stringResource(R.string.title2),
                 cards = viewModel.cardsDataOfRow1.value,
-                columnWidthDp = viewModel.columnWidthDp.value,
-                modifier = Modifier.onGloballyPositioned { coordinates ->
-                    viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
-                }
+                columnWidthDp = columnWidthDp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
+                    }
             )
 
             viewModel.getCardsDataOfRow2()
             CardsRow(
                 title = stringResource(R.string.title3),
                 cards = viewModel.cardsDataOfRow2.value,
-                columnWidthDp = viewModel.columnWidthDp.value
+                columnWidthDp = columnWidthDp
             )
 
             viewModel.getCardsDataOfRow3()
             CardsRow(
                 title = stringResource(R.string.title4),
                 cards = viewModel.cardsDataOfRow3.value,
-                columnWidthDp = viewModel.columnWidthDp.value
+                columnWidthDp = columnWidthDp
             )
 
             Spacer(modifier = Modifier.size(12.dp))
@@ -111,14 +118,22 @@ fun SearchCard(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp, 0.dp, 8.dp, 0.dp)
+                    .padding(20.dp, 0.dp, 4.dp, 0.dp)
             ) {
                 LightText(text = stringResource(R.string.searchLabel), fontSize = LargeText)
-                LargeIcon(
-                    painter = painterResource(R.drawable.search_icon),
-                    color = colorResource(R.color.medium_cyan),
-                    modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(colorResource(R.color.medium_cyan), RoundedCornerShape(22.dp))
+                ) {
+                    MediumIcon(
+                        painter = painterResource(R.drawable.search_icon),
+                        color = colorResource(R.color.white),
+                        modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
+                    )
+                }
+
             }
         }
     }

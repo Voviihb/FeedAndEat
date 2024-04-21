@@ -68,7 +68,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material:1.6.4")
+    implementation("androidx.compose.material:material:1.6.5")
 
     implementation("com.google.dagger:hilt-android:2.51")
     kapt("com.google.dagger:hilt-android-compiler:2.51")
@@ -81,7 +81,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
-
+    implementation("androidx.paging:paging-compose:3.3.0-beta01")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     testImplementation("junit:junit:4.13.2")

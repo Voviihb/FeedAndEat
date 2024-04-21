@@ -2,8 +2,6 @@ package com.vk_edu.feed_and_eat.features.main.pres
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
@@ -17,20 +15,17 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor() : ViewModel() {
     private val repo: HomeRepoInter = HomeRepository()
 
-    private val privateLargeCardData = mutableStateOf(CardDataModel())
-    var largeCardData: State<CardDataModel> = privateLargeCardData
+    private val _largeCardData = mutableStateOf(CardDataModel())
+    var largeCardData: State<CardDataModel> = _largeCardData
 
-    private val privateCardsDataOfRow1 = mutableStateOf(listOf<CardDataModel>())
-    var cardsDataOfRow1: State<List<CardDataModel>> = privateCardsDataOfRow1
+    private val _cardsDataOfRow1 = mutableStateOf(listOf<CardDataModel>())
+    var cardsDataOfRow1: State<List<CardDataModel>> = _cardsDataOfRow1
 
-    private val privateCardsDataOfRow2 = mutableStateOf(listOf<CardDataModel>())
-    var cardsDataOfRow2: State<List<CardDataModel>> = privateCardsDataOfRow2
+    private val _cardsDataOfRow2 = mutableStateOf(listOf<CardDataModel>())
+    var cardsDataOfRow2: State<List<CardDataModel>> = _cardsDataOfRow2
 
-    private val privateCardsDataOfRow3 = mutableStateOf(listOf<CardDataModel>())
-    var cardsDataOfRow3: State<List<CardDataModel>> = privateCardsDataOfRow3
-
-    private val privateColumnWidthDp = mutableStateOf(0.dp)
-    var columnWidthDp: State<Dp> = privateColumnWidthDp
+    private val _cardsDataOfRow3 = mutableStateOf(listOf<CardDataModel>())
+    var cardsDataOfRow3: State<List<CardDataModel>> = _cardsDataOfRow3
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -42,7 +37,7 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 _loading.value = true
-                privateLargeCardData.value = repo.getLargeCardData()
+                _largeCardData.value = repo.getLargeCardData()
             } catch (e: Exception) {
                 onError(e)
             }
@@ -54,7 +49,7 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 _loading.value = true
-                privateCardsDataOfRow1.value = repo.getCardsDataOfRow1()
+                _cardsDataOfRow1.value = repo.getCardsDataOfRow1()
             } catch (e: Exception) {
                 onError(e)
             }
@@ -66,7 +61,7 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 _loading.value = true
-                privateCardsDataOfRow2.value = repo.getCardsDataOfRow2()
+                _cardsDataOfRow2.value = repo.getCardsDataOfRow2()
             } catch (e: Exception) {
                 onError(e)
             }
@@ -78,16 +73,12 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             try {
                 _loading.value = true
-                privateCardsDataOfRow3.value = repo.getCardsDataOfRow3()
+                _cardsDataOfRow3.value = repo.getCardsDataOfRow3()
             } catch (e: Exception) {
                 onError(e)
             }
             _loading.value = false
         }
-    }
-
-    fun columnWidthDpChanged(value: Dp) {
-        privateColumnWidthDp.value = value
     }
 
     private fun onError(message: Exception?) {
