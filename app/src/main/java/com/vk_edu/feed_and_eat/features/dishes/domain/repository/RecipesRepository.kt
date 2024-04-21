@@ -18,8 +18,6 @@ interface RecipesRepository {
         sort: String,
         limit: Long,
         offset: Int,
-        includedIngredients: List<String>,
-        excludedIngredients: List<String>,
         tags: List<String>,
         caloriesMin: Double,
         caloriesMax: Double,

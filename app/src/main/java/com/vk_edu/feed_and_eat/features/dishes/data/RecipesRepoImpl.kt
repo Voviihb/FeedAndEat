@@ -67,8 +67,6 @@ class RecipesRepoImpl @Inject constructor(
         sort: String,
         limit: Long,
         offset: Int,
-        includedIngredients: List<String>,
-        excludedIngredients: List<String>,
         tags: List<String>,
         caloriesMin: Double,
         caloriesMax: Double,
@@ -82,7 +80,7 @@ class RecipesRepoImpl @Inject constructor(
         carbohydratesMax: Double
     ): Flow<Response<List<Recipe>?>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-            .whereArrayContainsAny(INGREDIENTS_FIELD, includedIngredients)
+            .whereArrayContainsAny(TAGS_FIELD, tags)
             .where(Filter.and(
                 Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMin),
                 Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, caloriesMax),
@@ -95,12 +93,6 @@ class RecipesRepoImpl @Inject constructor(
                 Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMin),
                 Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, sugarMax),
             ))
-            .where(Filter.and(*Array(tags.size) { i ->
-                Filter.arrayContains(TAGS_FIELD, tags[i])
-            }))
-        /*for (tag in tags) {
-            query = query.whereArrayContains(TAGS_FIELD, tag)
-        }*/
 
         when (sort) {
             "newness" -> {
@@ -114,7 +106,10 @@ class RecipesRepoImpl @Inject constructor(
             }
         }
 
-        val snapshot = query.limit(limit).startAt(offset).get().await()
+        var snapshot = query.limit(20).get().await()
+        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(20).get().await()
+        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(20).get().await()
+        snapshot = query.endBefore(snapshot.documents[0]).limitToLast(20).get().await()
         val queryResult = mutableListOf<Recipe>()
 
         for (document in snapshot) {
@@ -128,7 +123,6 @@ class RecipesRepoImpl @Inject constructor(
         private const val RECIPES_COLLECTION = "recipes"
 
         private const val TAGS_FIELD = "tags"
-        private const val INGREDIENTS_FIELD = "ingredients"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
         private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
