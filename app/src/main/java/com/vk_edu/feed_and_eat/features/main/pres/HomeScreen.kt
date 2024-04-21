@@ -22,6 +22,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -63,16 +67,17 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
             viewModel.getLargeCardData()
             LargeCard(cardData = viewModel.largeCardData.value)
 
+            var columnWidthDp by remember { mutableStateOf(0.dp) }
             val localDensity = LocalDensity.current
             viewModel.getCardsDataOfRow1()
             CardsRow(
                 title = stringResource(R.string.title2),
                 cards = viewModel.cardsDataOfRow1.value,
-                columnWidthDp = viewModel.columnWidthDp.value,
+                columnWidthDp = columnWidthDp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
-                        viewModel.columnWidthDpChanged(with(localDensity) { coordinates.size.width.toDp() })
+                        columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
                     }
             )
 
@@ -80,14 +85,14 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
             CardsRow(
                 title = stringResource(R.string.title3),
                 cards = viewModel.cardsDataOfRow2.value,
-                columnWidthDp = viewModel.columnWidthDp.value
+                columnWidthDp = columnWidthDp
             )
 
             viewModel.getCardsDataOfRow3()
             CardsRow(
                 title = stringResource(R.string.title4),
                 cards = viewModel.cardsDataOfRow3.value,
-                columnWidthDp = viewModel.columnWidthDp.value
+                columnWidthDp = columnWidthDp
             )
 
             Spacer(modifier = Modifier.size(12.dp))

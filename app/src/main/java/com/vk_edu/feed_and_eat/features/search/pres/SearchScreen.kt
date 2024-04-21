@@ -88,7 +88,7 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
             ) {
                 val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
-                    value = viewModel.searchForm.value.requestBody,
+                    value = viewModel.searchForm.value,
                     textStyle = TextStyle(fontSize = LargeText, color = colorResource(R.color.black)),
                     placeholder = { LightText(text = stringResource(R.string.searchLabel), fontSize = LargeText) },
                     singleLine = true,

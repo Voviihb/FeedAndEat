@@ -2,8 +2,6 @@ package com.vk_edu.feed_and_eat.features.main.pres
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
@@ -28,9 +26,6 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
 
     private val _cardsDataOfRow3 = mutableStateOf(listOf<CardDataModel>())
     var cardsDataOfRow3: State<List<CardDataModel>> = _cardsDataOfRow3
-
-    private val _columnWidthDp = mutableStateOf(0.dp)
-    var columnWidthDp: State<Dp> = _columnWidthDp
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -84,10 +79,6 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
             }
             _loading.value = false
         }
-    }
-
-    fun columnWidthDpChanged(value: Dp) {
-        _columnWidthDp.value = value
     }
 
     private fun onError(message: Exception?) {

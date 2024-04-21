@@ -4,7 +4,7 @@ import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.search.domain.repository.SearchRepoInter
 import javax.inject.Inject
 
-class SearchRepository @Inject constructor() : SearchRepoInter {
+class SearchTestRepository @Inject constructor() : SearchRepoInter {
     private val cards = List(20) {
         CardDataModel(
             link = "https://img.spoonacular.com/recipes/641732-556x370.jpg",
