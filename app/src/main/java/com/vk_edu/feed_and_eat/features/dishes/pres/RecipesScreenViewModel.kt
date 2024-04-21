@@ -33,7 +33,7 @@ class RecipesScreenViewModel @Inject constructor(
     private var _startOfNextDocument: DocumentSnapshot? = null
     private var _endOfPrevDocument: DocumentSnapshot? = null
 
-    fun loadRecipes(direction: String = FORWARD) {
+    fun loadRecipes(limit: Long, direction: String = FORWARD) {
         viewModelScope.launch {
             try {
                 if (
@@ -41,7 +41,7 @@ class RecipesScreenViewModel @Inject constructor(
                     (direction == FORWARD && _startOfNextDocument != null) ||
                     (direction == BACK && _endOfPrevDocument != null)
                     ) _recipesRepo.loadRecipes(
-                        limit = 20,
+                        limit = limit,
                         endOfPrevDocument = if (direction == BACK) _endOfPrevDocument else null,
                         startOfNextDocument = if (direction == FORWARD) _startOfNextDocument else null
                     ).collect { response ->

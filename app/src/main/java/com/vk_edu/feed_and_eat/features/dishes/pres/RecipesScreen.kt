@@ -45,7 +45,7 @@ fun RecipesScreen() {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    viewModel.loadRecipes()
+                    viewModel.loadRecipes(20)
                 }) {
                     Column(
                         modifier = Modifier
