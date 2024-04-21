@@ -24,38 +24,31 @@ import javax.inject.Singleton
 class RecipesRepoImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : RecipesRepository {
-    /**
-     * Loads all recipes with pagination, order by DocID
-     * @param count how many items to load
-     * @param prevDocument is needed to calculate offset for pagination
-     * */
     override fun loadRecipes(
-        count: Long,
-        prevDocument: DocumentSnapshot?
+        limit: Long,
+        endOfPrevDocument: DocumentSnapshot?,
+        startOfNextDocument: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
-        val snapshot = if (prevDocument != null) {
-            db.collection(RECIPES_COLLECTION)
-                .orderBy(FieldPath.documentId())
-                .startAfter(prevDocument)
-                .limit(count).get().await()
+        val query = db.collection(RECIPES_COLLECTION).orderBy(FieldPath.documentId())
+        val snapshot = if (startOfNextDocument == null && endOfPrevDocument == null) {
+            query.limit(limit).get().await()
+        } else if (startOfNextDocument != null) {
+            query.startAfter(startOfNextDocument).limit(limit).get().await()
         } else {
-            db.collection(RECIPES_COLLECTION)
-                .orderBy(FieldPath.documentId())
-                .limit(count).get().await()
+            query.endBefore(endOfPrevDocument).limitToLast(limit).get().await()
         }
 
-        val recipesList = mutableListOf<Recipe>()
-
+        val queryResult = mutableListOf<Recipe>()
         for (document in snapshot) {
-            val dish = document.toObject<Recipe>()
-            recipesList.add(dish)
+            val recipe = document.toObject<Recipe>()
+            queryResult.add(recipe)
         }
-
-        val lastDocument =
-            if (snapshot.size() > 0) snapshot.documents[snapshot.size() - 1] else prevDocument
+        val startDocument = if (snapshot.size() > 0) snapshot.documents[0] else null
+        val endDocument = if (snapshot.size().toLong() == limit) snapshot.documents[snapshot.size() - 1] else null
         return@repoTryCatchBlock PaginationResult(
-            recipesList.toList<Recipe>(),
-            lastDocument
+            recipes = queryResult,
+            endOfPrevDocument = startDocument,
+            startOfNextDocument = endDocument
         )
     }.flowOn(Dispatchers.IO)
 
@@ -66,9 +59,11 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock document.toObject<Recipe>()
     }.flowOn(Dispatchers.IO)
 
+
     override fun filterRecipes(
         filters: FiltersDTO,
-        prevDocument: DocumentSnapshot?
+        endOfPrevDocument: DocumentSnapshot?,
+        startOfNextDocument: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
             .where(Filter.and(
@@ -100,21 +95,25 @@ class RecipesRepoImpl @Inject constructor(
             }
         }
 
-        var snapshot = query.limit(filters.limit).get().await()
-        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(filters.limit).get().await()
-        snapshot = query.startAfter(snapshot.documents[snapshot.size() - 1]).limit(filters.limit).get().await()
-        snapshot = query.endBefore(snapshot.documents[0]).limitToLast(filters.limit).get().await()
+        val snapshot = if (startOfNextDocument == null && endOfPrevDocument == null) {
+            query.limit(filters.limit).get().await()
+        } else if (startOfNextDocument != null) {
+            query.startAfter(startOfNextDocument).limit(filters.limit).get().await()
+        } else {
+            query.endBefore(endOfPrevDocument).limitToLast(filters.limit).get().await()
+        }
+        
         val queryResult = mutableListOf<Recipe>()
-
         for (document in snapshot) {
             val recipe = document.toObject<Recipe>()
             queryResult.add(recipe)
         }
-        val lastDocument =
-            if (snapshot.size() > 0) snapshot.documents[snapshot.size() - 1] else prevDocument
+        val startDocument = if (snapshot.size() > 0) snapshot.documents[0] else null
+        val endDocument = if (snapshot.size().toLong() == filters.limit) snapshot.documents[snapshot.size() - 1] else null
         return@repoTryCatchBlock PaginationResult(
-            queryResult,
-            lastDocument
+            recipes = queryResult,
+            endOfPrevDocument = startDocument,
+            startOfNextDocument = endDocument
         )
     }.flowOn(Dispatchers.IO)
 
@@ -125,9 +124,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val ORDER_BY_RATING = "rating"
         private const val ORDER_BY_COOKED = "cooked"
 
-        private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
-        private const val INGREDIENTS_FIELD = "ingredients"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
         private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"

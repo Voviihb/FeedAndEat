@@ -72,9 +72,9 @@ fun RecipesScreen() {
                 }
                 Button(onClick = {
                     val filters = FiltersDTO(
-                        sort = SortFilter.SORT_NEWNESS,
+                        sort = SortFilter.SORT_POPULARITY,
                         limit = 20,
-                        tags = listOf("lunch")
+                        tags = listOf("side dish", "lunch", "main dish")
                     )
                     viewModel.filterRecipes(filters)
                 }) {

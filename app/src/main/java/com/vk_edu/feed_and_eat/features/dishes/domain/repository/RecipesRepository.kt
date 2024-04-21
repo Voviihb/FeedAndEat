@@ -9,14 +9,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface RecipesRepository {
     fun loadRecipes(
-        count: Long = 10,
-        prevDocument: DocumentSnapshot?
+        limit: Long,
+        endOfPrevDocument: DocumentSnapshot?,
+        startOfNextDocument: DocumentSnapshot?
     ): Flow<Response<PaginationResult>>
 
     fun loadRecipeById(id: String): Flow<Response<Recipe?>>
 
     fun filterRecipes(
         filters: FiltersDTO,
-        prevDocument: DocumentSnapshot?
+        endOfPrevDocument: DocumentSnapshot?,
+        startOfNextDocument: DocumentSnapshot?
     ) : Flow<Response<PaginationResult>>
 }

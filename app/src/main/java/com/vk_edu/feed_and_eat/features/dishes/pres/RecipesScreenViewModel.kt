@@ -30,32 +30,42 @@ class RecipesScreenViewModel @Inject constructor(
     private val _recipesList = mutableStateOf(listOf<Recipe>())
     val recipesList: State<List<Recipe>> = _recipesList
 
-    /**
-     * Stores last seen document. Is used to calculate offset for pagination
-     * */
-    private var _prevDocument: DocumentSnapshot? = null
+    private var _startOfNextDocument: DocumentSnapshot? = null
+    private var _endOfPrevDocument: DocumentSnapshot? = null
 
-    /**
-     * Loads all recipes with pagination, order by DocID. Returns new collection every call.
-     * Uses loadRecipes() from repo
-     * */
-    fun loadRecipes() {
+    fun loadRecipes(direction: String = FORWARD) {
         viewModelScope.launch {
             try {
-                _recipesRepo.loadRecipes(prevDocument = _prevDocument).collect { response ->
-                    when (response) {
-                        is Response.Loading -> _loading.value = true
-                        is Response.Success -> {
-                            _recipesList.value += response.data.recipes
-                            _prevDocument = response.data.prevDocument
-                        }
+                if (
+                    (_startOfNextDocument == null && _endOfPrevDocument == null) ||
+                    (direction == FORWARD && _startOfNextDocument != null) ||
+                    (direction == BACK && _endOfPrevDocument != null)
+                    ) _recipesRepo.loadRecipes(
+                        limit = 20,
+                        endOfPrevDocument = if (direction == BACK) _endOfPrevDocument else null,
+                        startOfNextDocument = if (direction == FORWARD) _startOfNextDocument else null
+                    ).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                if (response.data.recipes.isEmpty()) {
+                                    if (direction == FORWARD)
+                                        _startOfNextDocument = null
+                                    else
+                                        _endOfPrevDocument = null
+                                }
+                                else {
+                                    _recipesList.value = response.data.recipes
+                                    _startOfNextDocument = response.data.startOfNextDocument
+                                    _endOfPrevDocument = response.data.endOfPrevDocument
+                                }
+                            }
 
-                        is Response.Failure -> {
-                            onError(response.e)
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
                         }
                     }
-                }
-
             } catch (e: Exception) {
                 onError(e)
             }
@@ -90,27 +100,42 @@ class RecipesScreenViewModel @Inject constructor(
     }
 
     fun filterRecipes(
-        filters: FiltersDTO
+        filters: FiltersDTO,
+        direction: String = FORWARD
     ) {
         viewModelScope.launch {
             try {
-                _recipesRepo.filterRecipes(
-                    filters = filters, prevDocument = _prevDocument
-                ).collect { response ->
-                    Log.d("Taag", response.toString())
-                    when (response) {
-                        is Response.Loading -> _loading.value = true
-                        is Response.Success -> {
-                            _recipesList.value += response.data.recipes
-                            _prevDocument = response.data.prevDocument
-                        }
+                if (
+                    (_startOfNextDocument == null && _endOfPrevDocument == null) ||
+                    (direction == FORWARD && _startOfNextDocument != null) ||
+                    (direction == BACK && _endOfPrevDocument != null)
+                    ) _recipesRepo.filterRecipes(
+                        filters = filters,
+                        endOfPrevDocument = if (direction == BACK) _endOfPrevDocument else null,
+                        startOfNextDocument = if (direction == FORWARD) _startOfNextDocument else null
+                    ).collect { response ->
+                        Log.d("Taag", response.toString())
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                if (response.data.recipes.isEmpty()) {
+                                    if (direction == FORWARD)
+                                        _startOfNextDocument = null
+                                    else
+                                        _endOfPrevDocument = null
+                                }
+                                else {
+                                    _recipesList.value = response.data.recipes
+                                    _startOfNextDocument = response.data.startOfNextDocument
+                                    _endOfPrevDocument = response.data.endOfPrevDocument
+                                }
+                            }
 
-                        is Response.Failure -> {
-                            onError(response.e)
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
                         }
                     }
-                }
-
             } catch (e: Exception) {
                 onError(e)
             }
@@ -122,5 +147,10 @@ class RecipesScreenViewModel @Inject constructor(
     private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false
+    }
+
+    companion object {
+        private const val FORWARD = "forward"
+        private const val BACK = "back"
     }
 }
