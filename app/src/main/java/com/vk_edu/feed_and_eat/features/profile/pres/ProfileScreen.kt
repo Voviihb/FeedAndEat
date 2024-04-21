@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
@@ -19,6 +20,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 @Composable
 fun ProfileScreen(
     navigateToRoute : (String) -> Unit,
+    viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.ProfileScreen.route) }
