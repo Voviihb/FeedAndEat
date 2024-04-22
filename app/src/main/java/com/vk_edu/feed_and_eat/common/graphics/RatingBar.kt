@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.GenericShape
@@ -19,7 +20,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.vk_edu.feed_and_eat.R
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -27,16 +30,19 @@ import kotlin.math.sin
 fun RatingBar(
     rating: Float,
     modifier: Modifier = Modifier,
-    color: Color = Color.Yellow
+    stars: Int = 5,
+    ratingColor: Color = colorResource(R.color.yellow),
+    backgroundColor: Color = colorResource(R.color.gray)
 ) {
+    val realRating = rating * stars / 5
     Row(modifier = modifier.wrapContentSize()) {
-        (1..5).forEach { step ->
+        (1..stars).forEach { step ->
             val stepRating = when {
-                rating > step -> 1f
-                step.rem(rating) < 1 -> rating - (step - 1f)
+                realRating > step -> 1f
+                step.rem(realRating) < 1 -> realRating - (step - 1f)
                 else -> 0f
             }
-            RatingStar(stepRating, color)
+            RatingStar(stepRating, ratingColor, backgroundColor)
         }
     }
 }
@@ -44,13 +50,14 @@ fun RatingBar(
 @Composable
 private fun RatingStar(
     rating: Float,
-    ratingColor: Color = Color.Yellow,
-    backgroundColor: Color = Color.Gray
+    ratingColor: Color,
+    backgroundColor: Color
 ) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxHeight()
             .aspectRatio(1f)
+            .heightIn(0.dp, 25.dp)
             .clip(starShape)
     ) {
         Canvas(modifier = Modifier.size(maxHeight)) {
@@ -118,7 +125,9 @@ fun RatingBarPres(rating : Double) {
     ) {
         RatingBar(
             rating = rating.toFloat(),
-            modifier = Modifier.height(25.dp)
+            modifier = Modifier
+                .height(25.dp)
+//                .heightIn(0.dp, 25.dp)
         )
 
     }

@@ -23,12 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
-import kotlin.random.Random
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
 
 @Composable
-fun DishScreen() {
-    val viewModel: DishScreenViewModel = viewModel()
+fun RecipesScreen() {
+    val viewModel: RecipesScreenViewModel = viewModel()
     val errorMsg by viewModel.errorMessage
+    val recipesList by viewModel.recipesList
 
     Box(
         modifier = Modifier
@@ -43,7 +45,7 @@ fun DishScreen() {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    viewModel.postDish("Banana ${Random.nextInt(0, 100)}", 15, 10)
+                    viewModel.loadRecipes(20)
                 }) {
                     Column(
                         modifier = Modifier
@@ -51,12 +53,13 @@ fun DishScreen() {
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Post banana", fontSize = 24.sp)
+                        Text(text = "Load recipes", fontSize = 24.sp)
                     }
                 }
 
+                /* Test data  */
                 Button(onClick = {
-                    viewModel.loadDishes()
+                    viewModel.loadRecipeById(id = "016VAjdUxDHSfAagMB2k")
                 }) {
                     Column(
                         modifier = Modifier
@@ -64,21 +67,36 @@ fun DishScreen() {
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Load bananas", fontSize = 24.sp)
+                        Text(text = "Load one recipe", fontSize = 24.sp)
+                    }
+                }
+                Button(onClick = {
+                    val filters = FiltersDTO(
+                        sort = SortFilter.SORT_POPULARITY,
+                        limit = 20,
+                        tags = listOf("side dish", "lunch", "main dish"),
+                    )
+                    viewModel.filterRecipes(filters)
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Load filtered", fontSize = 24.sp)
                     }
                 }
             }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(viewModel.dishesList) { dish ->
+                items(recipesList) { dish ->
                     Text(
-                        text = "id = ${dish.id}, name = ${dish.name}, rating = ${dish.rating}",
+                        text = dish.name.toString(),
                         color = Color.Black,
                         fontSize = 16.sp
                     )
                 }
             }
         }
-
-
     }
 }
