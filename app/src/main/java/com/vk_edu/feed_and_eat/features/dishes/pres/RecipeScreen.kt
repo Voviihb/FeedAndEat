@@ -140,8 +140,8 @@ fun BackButtonContainer(
                 SquareArrowButton(navigateBack)
             }
             item {
-                ExpandableInfo(width = 350, surface = {
-                    InfoSurface(350, model)
+                ExpandableInfo(width = 352, surface = {
+                    InfoSurface(352, model)
                 })
             }
         }
@@ -174,8 +174,8 @@ fun RecipeImageContainer(
                     fontSize = 25.sp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(35.dp)
-                        .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xBF)),
+                        .height(36.dp)
+                        .background(colorResource(id = R.color.lightwhite)),
                     textAlign = TextAlign.Center
                 )
             }
@@ -193,10 +193,10 @@ fun StartCookingContainer(
         modifier = Modifier
             .height(40.dp)
             .fillMaxWidth()
-            .background(Color(red = 0xCF, blue = 0xFF, green = 0xFB))
+            .background(colorResource(id = R.color.lightwhite))
             .border(
                 1.dp,
-                Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
+                colorResource(id = R.color.dark_cyan),
             )
     ){
         Row(
@@ -207,7 +207,7 @@ fun StartCookingContainer(
             Text(text = stringResource(R.string.ingridients) + " :" + ingredients?.size,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 10.dp),
+                    .padding(vertical = 12.dp),
                 textAlign = TextAlign.Center,
                 maxLines = 1
             )
@@ -217,7 +217,7 @@ fun StartCookingContainer(
                     .weight(2f)
                     .fillMaxHeight(),
                 colors = ButtonColors(
-                    Color(red = 0xCF, blue = 0xFF, green = 0xFB, alpha = 0xFF),
+                    colorResource(id = R.color.lightwhite),
                     Color.Black, Color.White, Color.Black),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
@@ -229,7 +229,7 @@ fun StartCookingContainer(
             Text(text = stringResource(R.string.steps) + ": " + steps?.size,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 10.dp),
+                    .padding(vertical = 12.dp),
                 textAlign = TextAlign.Center
             )
         }
@@ -240,29 +240,30 @@ fun StartCookingContainer(
 fun AddCollectionButtons(){
     Column(
         modifier = Modifier
-            .padding(horizontal = 15.dp)
+            .padding(horizontal = 12.dp)
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(10.dp))
+                .clip(shape = RoundedCornerShape(12.dp))
                 .border(
                     2.dp,
-                    Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
-                    shape = RoundedCornerShape(10.dp)
+                    colorResource(id = R.color.medium_cyan),
+                    shape = RoundedCornerShape(12.dp)
                 )
         ) {
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
-                colors = ButtonColors(Color(red = 0x08, blue = 0xE8, green = 0xDF, alpha = 0xFF),
+                colors = ButtonColors(
+                    colorResource(id = R.color.medium_cyan),
                     Color.White,
                     Color.White,
                     Color.Black),
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp)
+                    .height(32.dp)
             ) {
                 Text(
                     stringResource(R.string.add_to_favourite),
@@ -278,15 +279,14 @@ fun AddCollectionButtons(){
                 colors = ButtonColors(Color.White, Color.Gray, Color.White, Color.Black),
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp)
+                    .height(32.dp)
             ) {
                 Text(
                     stringResource(R.string.add_to_playlist),
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Visible,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -302,11 +302,11 @@ fun TextContainer(
         modifier = Modifier
             .fillMaxWidth()
             .height(280.dp)
-            .padding(horizontal = 15.dp)
+            .padding(horizontal = 12.dp)
             .background(Color.Transparent),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(text = stringResource(R.string.short_recipe),
             color = Color.Gray,
             textAlign = TextAlign.Left,
@@ -314,19 +314,19 @@ fun TextContainer(
                 .background(Color.Transparent),
             fontSize = 25.sp
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
             userScrollEnabled = true,
             modifier = Modifier
                 .background(
-                    Color(red = 0xE4, blue = 0xFE, green = 0xFA, alpha = 0xFF),
+                    colorResource(id = R.color.white_cyan),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
                 .height(280.dp)
                 .border(
                     1.dp,
-                    Color(red = 0x00, blue = 0xB6, green = 0xBB, alpha = 0xFF),
+                    colorResource(id = R.color.turqoise),
                     shape = RoundedCornerShape(20.dp)
                 ),
             ){
@@ -335,7 +335,7 @@ fun TextContainer(
                     Text(
                         text = (index + 1).toString() + ". " + description[index],
                         modifier = Modifier
-                            .padding(start = 15.dp, end = 25.dp, top = 10.dp),
+                            .padding(start = 12.dp, end = 24.dp, top = 8.dp),
                         fontSize = 20.sp
                     )
                 }
@@ -350,25 +350,25 @@ fun RatingContainer(
 ){
     Column(
         modifier = Modifier
-            .height(50.dp)
+            .height(52.dp)
     ){
         Spacer(modifier = Modifier.height(20.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.width(15.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             RatingBarPres(model.rating ?: 0.0)
-            Spacer(modifier = Modifier.width(5.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(model.rating.toString(), modifier = Modifier
                 .background(Color.Transparent),
                 fontSize = 25.sp
             )
-            Spacer(modifier = Modifier.width(70.dp))
+            Spacer(modifier = Modifier.width(72.dp))
             Image(
                 painter = painterResource(R.drawable.povar),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(52.dp)
             )
             Text(
                 text = model.cooked.toString(),
@@ -391,20 +391,20 @@ fun RepeatButton(
             onClick = onClick,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonColors(
-                colorResource(id = R.color.textback),
+                colorResource(id = R.color.pale_cyan),
                 Color.Black, Color.White, Color.Black),
             modifier = Modifier
                 .background(
-                    color = colorResource(id = R.color.textback),
-                    RoundedCornerShape(5.dp)
+                    color = colorResource(id = R.color.pale_cyan),
+                    RoundedCornerShape(4.dp)
                 )
                 .border(
                     2.dp,
                     colorResource(id = R.color.turqoise),
-                    RoundedCornerShape(5.dp)
+                    RoundedCornerShape(4.dp)
                 )
                 .height(40.dp)
-                .width(70.dp)
+                .width(72.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.repeat),
@@ -445,7 +445,7 @@ fun RecipeScreen(
                 recipeList.forEach{model ->
                     Column(modifier = Modifier
                         .fillMaxSize()
-                        .background(colorResource(id = R.color.background))
+                        .background(colorResource(id = R.color.white))
                         .padding(padding)
                     ) {
                         Box{

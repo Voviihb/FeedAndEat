@@ -249,7 +249,7 @@ fun AddCollectionButtons(){
                 .clip(shape = RoundedCornerShape(10.dp))
                 .border(
                     2.dp,
-                    colorResource(id = R.color.mediumcyan),
+                    colorResource(id = R.color.medium_cyan),
                     shape = RoundedCornerShape(10.dp)
                 )
 
@@ -258,7 +258,7 @@ fun AddCollectionButtons(){
                 shape = RectangleShape,
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonColors(
-                    colorResource(id = R.color.mediumcyan),
+                    colorResource(id = R.color.medium_cyan),
                     Color.White,
                     Color.White,
                     Color.Black),
@@ -314,7 +314,7 @@ fun TextContainer(
         LazyColumn(
             modifier = Modifier
                 .background(
-                    colorResource(id = R.color.strange),
+                    colorResource(id = R.color.white_cyan),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
@@ -387,7 +387,7 @@ fun RecipeScreen(
     ) {padding ->
     Column(modifier = Modifier
         .fillMaxSize()
-        .background(colorResource(id = R.color.background))
+        .background(colorResource(id = R.color.white))
         .padding(padding)
         ) {
         Box{

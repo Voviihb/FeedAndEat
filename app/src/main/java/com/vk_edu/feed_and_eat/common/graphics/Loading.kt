@@ -24,7 +24,7 @@ fun LoadingCircular(padding : PaddingValues){
             .padding(padding)
     ) {
         CircularProgressIndicator(
-            color = colorResource(id = R.color.mediumcyan),
+            color = colorResource(id = R.color.medium_cyan),
             strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth,
             modifier = Modifier
                 .height(200.dp)

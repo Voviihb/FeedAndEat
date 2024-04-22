@@ -14,8 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,22 +21,22 @@ import com.vk_edu.feed_and_eat.R
 
 @Composable
 fun TextBox(text : String){
-    val lightWhite =  colorResource(id = R.color.background)
+    val lightWhite =  colorResource(id = R.color.white)
     Text(
         text = text,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .padding(5.dp)
             .width(80.dp)
-            .background(lightWhite, shape = RoundedCornerShape(5.dp))
-            .clip(RoundedCornerShape(5.dp)),
+            .background(lightWhite, shape = RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(4.dp)),
     )
 }
 
 @Composable
 fun BoxWithCards(bigText : List<String?>){
     val turquoise = colorResource(id = R.color.turqoise)
-    val lightBlue = colorResource(id = R.color.textback)
+    val lightBlue = colorResource(id = R.color.pale_cyan)
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Adaptive(70.dp),
         contentPadding = PaddingValues(5.dp),
@@ -46,9 +44,9 @@ fun BoxWithCards(bigText : List<String?>){
             .padding(10.dp)
             .height(200.dp)
             .fillMaxWidth()
-            .background(lightBlue, RoundedCornerShape(10.dp))
-            .border(2.dp, turquoise, RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
+            .background(lightBlue, RoundedCornerShape(12.dp))
+            .border(2.dp, turquoise, RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
     ){
         for (item in bigText){
             item{
