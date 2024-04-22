@@ -10,9 +10,9 @@
     <color name="purple_fae">#6E0D80</color>
     <color name="lightcyan">#98E4DF</color>
     <color name="mediumcyan">#08E8DF</color>
-    <color name="turqoise">#00B6BB</color>
     <color name="lightwhite">#CFFBFF</color>
     <color name="strange">#E4FAFE</color>
     <color name="background">#FCFCFC</color>
     <color name="textback">#CFFFFC</color>
+    <color name="turqoise">#00B6BB</color>
 </resources>

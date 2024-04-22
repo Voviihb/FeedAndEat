@@ -17,6 +17,7 @@
     <string name="sugar">Сахар</string>
     <string name="gramm">гр</string>
     <string name="info">информация</string>
+    <string name="repeat">повторить</string>
     <string name="image">так выглядит рецепт</string>
 <!--    login-->
     <string name="back">вернуться назад</string>

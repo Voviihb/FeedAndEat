@@ -378,6 +378,45 @@ fun RatingContainer(
     }
 }
 
+@Composable
+fun RepeatButton(
+    onClick : () -> Unit,
+){
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Button(
+            onClick = onClick,
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonColors(
+                colorResource(id = R.color.textback),
+                Color.Black, Color.White, Color.Black),
+            modifier = Modifier
+                .background(
+                    color = colorResource(id = R.color.textback),
+                    RoundedCornerShape(5.dp)
+                )
+                .border(
+                    2.dp,
+                    colorResource(id = R.color.turqoise),
+                    RoundedCornerShape(5.dp)
+                )
+                .height(40.dp)
+                .width(70.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.repeat),
+                fontSize = 12.sp,
+                overflow = TextOverflow.Visible,
+                maxLines = 1,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically),
+            )
+        }
+    }
+}
 
 @Composable
 fun RecipeScreen(
@@ -389,6 +428,11 @@ fun RecipeScreen(
     viewModel.loadRecipeById(id)
     val recipeList by viewModel.recipesList
 
+    val reload = {
+        viewModel.loadRecipeById(id)
+        viewModel.clearError()
+    }
+
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) },
     ) {padding ->
@@ -396,43 +440,7 @@ fun RecipeScreen(
             LoadingCircular(padding)
         } else {
             if (viewModel.errorMessage.value != null){
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        Button(
-                            onClick = {
-                                viewModel.loadRecipeById(id)
-                                viewModel.clearError()
-                                      },
-                            contentPadding = PaddingValues(0.dp),
-                            colors = ButtonColors(
-                                colorResource(id = R.color.textback),
-                                Color.Black, Color.White, Color.Black),
-                            modifier = Modifier
-                                .background(
-                                    color = colorResource(id = R.color.textback),
-                                    RoundedCornerShape(5.dp)
-                                )
-                                .border(
-                                    2.dp,
-                                    colorResource(id = R.color.turqoise),
-                                    RoundedCornerShape(5.dp)
-                                )
-                                .height(40.dp)
-                                .width(70.dp)
-                            ) {
-                        Text(
-                            "Repeat",
-                            fontSize = 12.sp,
-                            overflow = TextOverflow.Visible,
-                            maxLines = 1,
-                            modifier = Modifier
-                                    .align(Alignment.CenterVertically),
-                        )
-                    }
-                }
+                RepeatButton(reload)
             } else {
                 recipeList.forEach{model ->
                     Column(modifier = Modifier
