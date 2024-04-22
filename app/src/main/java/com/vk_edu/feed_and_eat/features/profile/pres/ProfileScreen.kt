@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +59,9 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-
+        LaunchedEffect(Unit) {
+            viewModel.loadProfileInfo()
+        }
         if (loading) {
             LoadingCircular(padding = PaddingValues(4.dp))
         } else {
@@ -106,7 +109,8 @@ private fun UserInfoBlock(profileInfo: Profile) {
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = profileInfo.email ?: "Error!",
+
+                    text = profileInfo.email ?: stringResource(id = R.string.anonymous_user),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Right
@@ -122,7 +126,7 @@ private fun UserInfoBlock(profileInfo: Profile) {
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = profileInfo.nickname ?: "Error!",
+                    text = profileInfo.nickname ?: stringResource(id = R.string.anonymous_user),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Right

@@ -40,11 +40,8 @@ class ProfileScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    init {
-        loadProfileInfo()
-    }
 
-    private fun loadProfileInfo() {
+    fun loadProfileInfo() {
         viewModelScope.launch {
             try {
                 val userId = _authRepo.getUserId()
@@ -54,28 +51,33 @@ class ProfileScreenViewModel @Inject constructor(
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> if (response.data != null) {
                                 _user.value = response.data
+                            } else {
+                                _user.value = UserModel()
                             }
 
                             is Response.Failure -> onError(response.e)
                         }
                     }
                 }
-
+                var nickname = _authRepo.getUserLogin()
+                if (nickname == "") nickname = null
+                var email = _authRepo.getUserEmail()
+                if (email == "") email = null
                 _profileState.value = _profileState.value.copy(
-                    nickname = _authRepo.getUserLogin(),
-                    email = _authRepo.getUserEmail(),
+                    nickname = nickname,
+                    email = email,
                     avatar = _user.value.avatarUrl,
                     aboutMe = _user.value.aboutMeData ?: ""
                 )
 
-                _selectedTheme.value = when(_user.value.themeSettings) {
+                _selectedTheme.value = when (_user.value.themeSettings) {
                     ThemeSelection.LIGHT.themeName -> ThemeSelection.LIGHT
                     ThemeSelection.DARK.themeName -> ThemeSelection.DARK
                     ThemeSelection.AS_SYSTEM.themeName -> ThemeSelection.AS_SYSTEM
                     else -> ThemeSelection.LIGHT
                 }
 
-                _selectedProfileType.value = when(_user.value.isProfilePrivate) {
+                _selectedProfileType.value = when (_user.value.isProfilePrivate) {
                     ProfileType.PUBLIC.type -> ProfileType.PUBLIC
                     ProfileType.PRIVATE.type -> ProfileType.PRIVATE
                     else -> ProfileType.PUBLIC
