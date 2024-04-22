@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -66,30 +65,29 @@ fun InfoSurface(
         model.nutrients.Fat,
         model.nutrients.Carbohydrates
     )
-    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar)
+    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar).map{ stringResource( id = it )}
     Surface(
         modifier = Modifier
             .padding(8.dp)
-            .background(Color.Red)
             .width(surfaceWidth.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(colorResource(R.color.white))
         ) {
             Text(stringResource(
                 id = R.string.ingridients),
                 fontSize = 18.sp,
-                color = Color.Gray,
+                color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
             )
             BoxWithCards(bigText = ingredients.map { it.name }.toList())
             Text(stringResource(
                 id = R.string.tags),
                 fontSize = 18.sp,
-                color = Color.Gray,
+                color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
             )
             BoxWithCards(bigText = model.tags ?: listOf())
@@ -97,7 +95,7 @@ fun InfoSurface(
                 id = R.string.energy_value),
                 modifier = Modifier.padding(4.dp),
                 fontSize = 20.sp,
-                color = Color.Gray
+                color = colorResource(R.color.gray)
             )
             Column {
                 for (i in names.indices){
@@ -109,9 +107,9 @@ fun InfoSurface(
                             .padding(start = 4.dp, end = 12.dp)
                     ){
                         Text(
-                            text = stringResource(id = names[i]),
+                            text = names[i],
                             fontSize = 18.sp,
-                            color = Color.Gray
+                            color = colorResource(R.color.gray)
                         )
                         Text(text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm))
                     }
@@ -131,7 +129,6 @@ fun BackButtonContainer(
 ){
     Column {
         LazyRow(modifier = Modifier
-            .background(Color.Transparent)
             .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Top,
@@ -154,8 +151,7 @@ fun RecipeImageContainer(
 ){
     Column(
         modifier = Modifier
-            .heightIn(0.dp, 280.dp)
-            .background(Color.Transparent),
+            .heightIn(0.dp, 280.dp),
         verticalArrangement = Arrangement.Top
     ) {
         AsyncImage(
@@ -218,7 +214,7 @@ fun StartCookingContainer(
                     .fillMaxHeight(),
                 colors = ButtonColors(
                     colorResource(id = R.color.pale_cyan),
-                    Color.Black, Color.White, Color.Black),
+                    colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
                     fontSize = 15.sp,
@@ -258,9 +254,9 @@ fun AddCollectionButtons(){
                 shape = RectangleShape,
                 colors = ButtonColors(
                     colorResource(id = R.color.medium_cyan),
-                    Color.White,
-                    Color.White,
-                    Color.Black),
+                    colorResource(R.color.white),
+                    colorResource(R.color.white),
+                    colorResource(R.color.black)),
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
@@ -275,7 +271,7 @@ fun AddCollectionButtons(){
             }
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
-                colors = ButtonColors(Color.White, Color.Gray, Color.White, Color.Black),
+                colors = ButtonColors(colorResource(R.color.white), colorResource(R.color.gray), colorResource(R.color.white), colorResource(R.color.black)),
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
@@ -301,16 +297,13 @@ fun TextContainer(
         modifier = Modifier
             .fillMaxWidth()
             .height(280.dp)
-            .padding(horizontal = 12.dp)
-            .background(Color.Transparent),
+            .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = stringResource(R.string.short_recipe),
-            color = Color.Gray,
+            color = colorResource(R.color.gray),
             textAlign = TextAlign.Left,
-            modifier = Modifier
-                .background(Color.Transparent),
             fontSize = 25.sp
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -356,8 +349,7 @@ fun RatingContainer(
             Spacer(modifier = Modifier.width(16.dp))
             RatingBarPres(model.rating)
             Spacer(modifier = Modifier.width(4.dp))
-            Text(model.rating.toString(), modifier = Modifier
-                .background(Color.Transparent),
+            Text(model.rating.toString(),
                 fontSize = 25.sp
             )
             Spacer(modifier = Modifier.width(72.dp))
@@ -389,7 +381,7 @@ fun RepeatButton(
             contentPadding = PaddingValues(0.dp),
             colors = ButtonColors(
                 colorResource(id = R.color.pale_cyan),
-                Color.Black, Color.White, Color.Black),
+                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
             modifier = Modifier
                 .background(
                     color = colorResource(id = R.color.pale_cyan),
