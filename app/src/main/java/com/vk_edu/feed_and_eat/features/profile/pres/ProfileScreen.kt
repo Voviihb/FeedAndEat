@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -43,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
 @Composable
 fun ProfileScreen(
@@ -53,37 +56,42 @@ fun ProfileScreen(
     val loading by viewModel.loading
     val selectedThemeOption by viewModel.selectedTheme
     val selectedProfileOption by viewModel.selectedProfileType
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        LaunchedEffect(Unit) {
-            viewModel.loadProfileInfo()
-        }
-        if (loading) {
-            LoadingCircular(padding = PaddingValues(4.dp))
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-            ) {
-                UserInfoBlock(profileInfo)
+    Scaffold(
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.ProfileScreen.route) }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(padding)
+        ) {
+            LaunchedEffect(Unit) {
+                viewModel.loadProfileInfo()
+            }
+            if (loading) {
+                LoadingCircular(padding = PaddingValues(4.dp))
+            } else {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                 ) {
-                    AboutMeBlock(profileInfo, viewModel)
-                    SaveInfoButton(viewModel = viewModel)
-                    LogoutButton(viewModel = viewModel, navigateToRoute = navigateToRoute)
-                    SettingsBlock(viewModel, selectedThemeOption, selectedProfileOption)
-                }
+                    UserInfoBlock(profileInfo)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AboutMeBlock(profileInfo, viewModel)
+                        SaveInfoButton(viewModel = viewModel)
+                        LogoutButton(viewModel = viewModel, navigateToRoute = navigateToRoute)
+                        SettingsBlock(viewModel, selectedThemeOption, selectedProfileOption)
+                    }
 
+                }
             }
         }
     }
+
 }
 
 @Composable
@@ -176,7 +184,7 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                     unfocusedTextColor = Color.Black,
                     disabledTextColor = Color.Black,
                 ),
-                label = { Text(stringResource(R.string.enter_information_about_yourself)) },
+                placeholder = { Text(stringResource(R.string.enter_information_about_yourself)) },
                 textStyle = TextStyle(fontSize = 20.sp)
             )
         }
@@ -303,7 +311,7 @@ private fun SettingsBlock(
                 }
             }
         }
-        /* TODO change vertical padding*/
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
