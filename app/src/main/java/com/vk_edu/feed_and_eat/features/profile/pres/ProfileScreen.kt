@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,12 +41,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 
 @Composable
 fun ProfileScreen(
+    navigateToRoute: (String) -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
     val profileInfo by viewModel.profileState
+    val loading by viewModel.loading
     val selectedThemeOption by viewModel.selectedTheme
     val selectedProfileOption by viewModel.selectedProfileType
 
@@ -54,22 +58,27 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-        ) {
-            UserInfoBlock(profileInfo)
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AboutMeBlock(profileInfo, viewModel)
-                SaveInfoButton(viewModel = viewModel)
-                LogoutButton(viewModel = viewModel)
-                SettingsBlock(viewModel, selectedThemeOption, selectedProfileOption)
-            }
 
+        if (loading) {
+            LoadingCircular(padding = PaddingValues(4.dp))
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            ) {
+                UserInfoBlock(profileInfo)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AboutMeBlock(profileInfo, viewModel)
+                    SaveInfoButton(viewModel = viewModel)
+                    LogoutButton(viewModel = viewModel, navigateToRoute = navigateToRoute)
+                    SettingsBlock(viewModel, selectedThemeOption, selectedProfileOption)
+                }
+
+            }
         }
     }
 }
@@ -97,8 +106,8 @@ private fun UserInfoBlock(profileInfo: Profile) {
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = profileInfo.email,
-                    fontSize = 24.sp,
+                    text = profileInfo.email ?: "Error!",
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Right
                 )
@@ -113,8 +122,8 @@ private fun UserInfoBlock(profileInfo: Profile) {
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = profileInfo.nickname,
-                    fontSize = 24.sp,
+                    text = profileInfo.nickname ?: "Error!",
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Right
                 )
@@ -174,7 +183,7 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
 @Composable
 private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
     Button(
-        onClick = { viewModel.saveUserData() },
+        onClick = { viewModel.updateUserProfile() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.light_cyan_fae),
@@ -207,9 +216,11 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
 }
 
 @Composable
-private fun LogoutButton(viewModel: ProfileScreenViewModel) {
+private fun LogoutButton(viewModel: ProfileScreenViewModel, navigateToRoute: (String) -> Unit) {
     Button(
-        onClick = { viewModel.logout() },
+        onClick = {
+            viewModel.logout(navigateToRoute)
+        },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = Color.Red,
