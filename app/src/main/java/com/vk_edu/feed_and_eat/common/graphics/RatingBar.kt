@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -116,19 +115,12 @@ private val starPath = { size: Float ->
     }
 }
 
-
 @Composable
 fun RatingBarPres(rating : Double) {
-    Column(
-        Modifier
-            .background(Color.Transparent)
-    ) {
+    Column {
         RatingBar(
             rating = rating.toFloat(),
-            modifier = Modifier
-                .height(25.dp)
-//                .heightIn(0.dp, 25.dp)
+            modifier = Modifier.height(25.dp)
         )
-
     }
 }

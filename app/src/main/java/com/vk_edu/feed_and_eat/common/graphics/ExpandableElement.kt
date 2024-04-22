@@ -15,8 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.vk_edu.feed_and_eat.R
 
 @Composable
 fun ExpandableInfo(width : Int, surface : @Composable () -> Unit) {
@@ -26,17 +27,17 @@ fun ExpandableInfo(width : Int, surface : @Composable () -> Unit) {
     )
 
     Surface(
-        color = Color.Transparent,
+        color = colorResource(R.color.transparent),
         modifier = Modifier
             .width(width.dp)
             .fillMaxHeight()
-            .background(Color.Transparent)
+            .background(colorResource(R.color.transparent))
             .offset(x = xOffset)
     ) {
         Row {
             Box(
                 modifier = Modifier
-                    .background(Color.Transparent)
+                    .background(colorResource(R.color.transparent))
             ){
                 InfoSquareButton { expanded = !expanded }
             }

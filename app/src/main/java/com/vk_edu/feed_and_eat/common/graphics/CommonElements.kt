@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -32,22 +31,22 @@ fun SquareArrowButton(
         onClick = { onClick() },
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
-        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
+        colors = ButtonDefaults.outlinedButtonColors(colorResource(R.color.transparent)),
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
             .border(
                 2.dp,
-                color = colorResource(id = R.color.turqoise),
+                color = colorResource(id = R.color.cyan_fae),
                 shape = RoundedCornerShape(4.dp)
             )
-            .background(Color.White, shape = RoundedCornerShape(4.dp))
+            .background(colorResource(R.color.white), shape = RoundedCornerShape(4.dp))
             .clip(shape = RoundedCornerShape(4.dp))
     ){
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
             contentDescription = stringResource(id = R.string.back),
-            tint = colorResource(id = R.color.turqoise),
+            tint = colorResource(id = R.color.cyan_fae),
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
@@ -65,22 +64,22 @@ fun InfoSquareButton(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
         shape = RectangleShape,
-        colors = ButtonDefaults.outlinedButtonColors(Color.Transparent),
+        colors = ButtonDefaults.outlinedButtonColors(colorResource(R.color.transparent)),
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
-            .background(Color.White, shape = RoundedCornerShape(4.dp))
+            .background(colorResource(R.color.white), shape = RoundedCornerShape(4.dp))
             .clip(shape = RoundedCornerShape(4.dp))
             .border(
                 2.dp,
-                color = colorResource(id = R.color.turqoise),
+                color = colorResource(id = R.color.cyan_fae),
                 shape = RoundedCornerShape(4.dp)
             ),
     ){
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = stringResource(id = R.string.info),
-            tint = colorResource(id = R.color.turqoise),
+            tint = colorResource(id = R.color.cyan_fae),
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)

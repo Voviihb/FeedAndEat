@@ -12,4 +12,5 @@
     <color name="black">#292929</color>
     <color name="cyan_fae">#00B6BB</color>
     <color name="light_cyan_fae">#E5FEFB</color>
+    <color name="transparent">#00000000</color>
 </resources>
