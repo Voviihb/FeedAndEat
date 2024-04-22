@@ -269,8 +269,7 @@ fun AddCollectionButtons(){
                     stringResource(R.string.add_to_favourite),
                     fontSize = 12.sp,
                     overflow = TextOverflow.Visible,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center,
                     maxLines = 1
                 )
             }
@@ -411,8 +410,7 @@ fun RepeatButton(
                 fontSize = 12.sp,
                 overflow = TextOverflow.Visible,
                 maxLines = 1,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically),
+                textAlign = TextAlign.Center,
             )
         }
     }
