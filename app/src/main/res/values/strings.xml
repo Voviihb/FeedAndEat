@@ -1,11 +1,10 @@
 <resources>
-<!--    single recipe-->
+    <!--    single recipe-->
     <string name="app_name">FeedAndEat</string>
     <string name="short_recipe">Краткий рецепт</string>
     <string name="add_to_favourite">Добавить в любимое</string>
     <string name="add_to_playlist">Добавить в подборку</string>
     <string name="ingr">Ингр</string>
-    <string name="steps">Шагов</string>
     <string name="start_cooking">Начать готовить</string>
     <string name="ingridients">Ингредиенты</string>
     <string name="tags">Тэги</string>
@@ -19,7 +18,7 @@
     <string name="info">информация</string>
     <string name="repeat">повторить</string>
     <string name="image">так выглядит рецепт</string>
-<!--    login-->
+    <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
     <string name="hide_password">Спрятать пароль</string>
@@ -41,13 +40,28 @@
     <string name="exception_occured">Произошла ошибка!</string>
     <string name="password_differs">Введенные пароли отличаются!</string>
     <string name="authenticated">Authenticated!</string>
-<!--    navigation-->
+    <!--    profile -->
+    <string name="user_profile_icon">User profile icon</string>
+    <string name="e_mail">E-Mail:</string>
+    <string name="nickname">Никнейм:</string>
+    <string name="about_me">Обо мне:</string>
+    <string name="enter_information_about_yourself">Введите желаемую информацию о себе</string>
+    <string name="save_information">Сохранить информацию</string>
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="light_theme">Светлая</string>
+    <string name="dark_theme">Темная</string>
+    <string name="as_system_theme">Как в системе</string>
+    <string name="public_profile">Открытый</string>
+    <string name="private_profile">Закрытый</string>
+    <string name="settings">Настройки:</string>
+    <string name="theme">Тема:</string>
+    <!--    navigation-->
     <string name="main">Главная</string>
     <string name="search">Поиск</string>
     <string name="collection">Коллекция</string>
     <string name="inProgress">В процессе</string>
     <string name="profile">Профиль</string>
-<!--    screen names-->
+    <!--    screen names-->
     <string name="HomeScreen">HomeScreen</string>
     <string name="CollectionScreen">CollectionScreen</string>
     <string name="ProfileScreen">ProfileScreen</string>
@@ -57,6 +71,16 @@
     <string name="RegisterScreen">RegisterScreen</string>
     <string name="RecipeScreen">RecipeScreen</string>
     <string name="inProgressScreen">inProgressScreen</string>
-<!--    collection names-->
-    <string name="recipes">Рецептов</string>
+    <!-- card -->
+    <string name="imageDescription">Image of this dish</string>
+    <string name="icon">Icon</string>
+    <string name="small_ingredients">Ingr.:</string>
+    <string name="ingredients">Ingredients:</string>
+    <string name="steps">Steps:</string>
+    <string name="searchLabel">Search</string>
+    <string name="title1">Recipe of the day</string>
+    <string name="title2">Top of the week</string>
+    <string name="title3">Recipes for you</string>
+    <string name="title4">Popular dietary</string>
+    <string name="anonymous_user">Anonymous</string>
 </resources>

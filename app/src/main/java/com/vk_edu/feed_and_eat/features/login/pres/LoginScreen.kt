@@ -64,8 +64,8 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 fun LoginScreen(
     context: Context,
     navigateToRoute: (String) -> Unit,
+    viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
-    val viewModel: LoginScreenViewModel = hiltViewModel()
     val loginForm by viewModel.loginFormState
     val errorMsg by viewModel.errorMessage
 

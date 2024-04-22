@@ -5,9 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
+import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
+import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepoImpl,
+    private val _usersRepo: UsersRepoImpl,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
@@ -25,9 +30,6 @@ class RegisterScreenViewModel @Inject constructor(
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
-
-    val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
-    val currentUserId get() = _authRepo.getUserId()
 
 
     fun registerUserWithEmail(navigateToRoute: (String) -> Unit) {
@@ -45,9 +47,11 @@ class RegisterScreenViewModel @Inject constructor(
                                 val currentUserId = _authRepo.getUserId()
                                 if (currentUserId != null) {
                                     writeUserId(_preferencesManager, currentUserId)
+                                    saveUserData()
                                     navigateToRoute(BottomScreen.HomeScreen.route)
                                 }
                             }
+
                             is Response.Failure -> onError(response.e)
                         }
                     }
@@ -62,6 +66,41 @@ class RegisterScreenViewModel @Inject constructor(
             _loading.value = false
         }
 
+    }
+
+    private fun saveUserData() {
+        viewModelScope.launch {
+            try {
+                val userId = _authRepo.getUserId()
+                if (userId != null) {
+                    val data = UserModel(
+                        userId = userId,
+                        collections = listOf(
+                            Compilation(
+                                FAVOURITES,
+                                mutableListOf<RecipeDataModel>()
+                            )
+                        )
+                    )
+                    _usersRepo.saveUserData(userId, data).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                /* TODO add success flow */
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
     }
 
     private fun onError(message: Exception?) {
@@ -95,5 +134,9 @@ class RegisterScreenViewModel @Inject constructor(
         _registerFormState.value = _registerFormState.value.copy(
             passwordControl = value
         )
+    }
+
+    companion object {
+        private const val FAVOURITES = "Favourites"
     }
 }
