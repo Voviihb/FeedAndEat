@@ -147,6 +147,10 @@ class RecipesScreenViewModel @Inject constructor(
         _loading.value = false
     }
 
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     companion object {
         private const val FORWARD = "forward"
         private const val BACK = "back"

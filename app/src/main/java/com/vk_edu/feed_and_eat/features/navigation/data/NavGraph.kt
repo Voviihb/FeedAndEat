@@ -20,7 +20,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.NavBarViewModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.newrecipe.pres.NewRecipeScreen
 import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
-import com.vk_edu.feed_and_eat.features.dishes.pres.RecipeScreen
+import com.vk_edu.feed_and_eat.features.recipe.pres.RecipeScreen
 import com.vk_edu.feed_and_eat.features.search.pres.SearchScreen
 
 
