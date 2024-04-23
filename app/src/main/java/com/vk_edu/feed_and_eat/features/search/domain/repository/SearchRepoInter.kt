@@ -10,5 +10,7 @@ interface SearchRepoInter {
         page: Int,
         limit: Int
     ): List<CardDataModel>
+
+    fun getAllTags(): List<String>
 }
 

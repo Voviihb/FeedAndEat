@@ -1,10 +1,15 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,15 +19,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,17 +50,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
+import com.vk_edu.feed_and_eat.ui.theme.SmallText
 import kotlinx.coroutines.runBlocking
+
+
+private const val CALORIES_INT = 0
+private const val SUGAR_INT = 1
+private const val CARBOHYDRATES_INT = 2
+private const val FAT_INT = 3
+private const val PROTEIN_INT = 4
 
 @Composable
 fun SearchScreen(navigateToRoute : (String) -> Unit) {
@@ -56,6 +81,7 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
     ) { padding ->
         Box(
+            contentAlignment = Alignment.TopEnd,
             modifier = Modifier
                 .background(colorResource(R.color.pale_cyan))
                 .padding(padding)
@@ -63,6 +89,8 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
             CardsGrid(viewModel = viewModel)
 
             SearchCard(viewModel = viewModel)
+
+            FiltersBlock(viewModel = viewModel)
         }
     }
 }
@@ -170,6 +198,158 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
                     rating = cardData.rating,
                     cooked = cardData.cooked
                 )
+        }
+    }
+}
+
+
+@Composable
+fun FiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .fillMaxWidth(0.666667f)
+            .background(colorResource(R.color.white), RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
+            .border(2.dp, colorResource(R.color.dark_cyan), RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+        ) {
+            TagsFilter(viewModel = viewModel)
+
+            NutrientFilter(title = "Calories", nutrient = CALORIES_INT, viewModel = viewModel)
+            NutrientFilter(title = "Sugar", nutrient = SUGAR_INT, viewModel = viewModel)
+            NutrientFilter(title = "Carbohydrates", nutrient = CARBOHYDRATES_INT, viewModel = viewModel)
+            NutrientFilter(title = "Fat", nutrient = FAT_INT, viewModel = viewModel)
+            NutrientFilter(title = "Protein", nutrient = PROTEIN_INT, viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+fun NutrientFilter(title: String, nutrient: Int, viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+    Column (
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        LightText(text = title, fontSize = MediumText)
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = viewModel.filtersForm.value.nutrients[nutrient].min,
+                textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
+                placeholder = { LightText(text = "from", fontSize = MediumText) },
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = colorResource(R.color.white_cyan),
+                    focusedContainerColor = colorResource(R.color.white_cyan),
+                    errorContainerColor = colorResource(R.color.white_cyan),
+                    focusedIndicatorColor = colorResource(R.color.medium_cyan),
+                    unfocusedIndicatorColor = colorResource(R.color.medium_cyan),
+                    disabledIndicatorColor = colorResource(R.color.medium_cyan),
+                    errorIndicatorColor = colorResource(R.color.medium_cyan),
+                    focusedTextColor = colorResource(R.color.black),
+                    unfocusedTextColor = colorResource(R.color.black),
+                    disabledTextColor = colorResource(R.color.black),
+                    cursorColor = colorResource(R.color.black),
+                    errorCursorColor = colorResource(R.color.black)
+                ),
+                modifier = Modifier
+                    .padding(0.dp, 0.dp, 8.dp, 0.dp)
+                    .weight(1f),
+                onValueChange = { viewModel.nutrientMinChanged(nutrient, it) }
+            )
+            OutlinedTextField(
+                value = viewModel.filtersForm.value.nutrients[nutrient].max,
+                textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
+                placeholder = { LightText(text = "to", fontSize = MediumText) },
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = colorResource(R.color.white_cyan),
+                    focusedContainerColor = colorResource(R.color.white_cyan),
+                    errorContainerColor = colorResource(R.color.white_cyan),
+                    focusedIndicatorColor = colorResource(R.color.medium_cyan),
+                    unfocusedIndicatorColor = colorResource(R.color.medium_cyan),
+                    disabledIndicatorColor = colorResource(R.color.medium_cyan),
+                    errorIndicatorColor = colorResource(R.color.medium_cyan),
+                    focusedTextColor = colorResource(R.color.black),
+                    unfocusedTextColor = colorResource(R.color.black),
+                    disabledTextColor = colorResource(R.color.black),
+                    cursorColor = colorResource(R.color.black),
+                    errorCursorColor = colorResource(R.color.black)
+                ),
+                modifier = Modifier
+                    .padding(8.dp, 0.dp, 0.dp, 0.dp)
+                    .weight(1f),
+                onValueChange = { viewModel.nutrientMaxChanged(nutrient, it) }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+    Column (
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(180.dp)
+    ) {
+        LightText(text = "Tags", fontSize = MediumText)
+        FlowRow(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorResource(R.color.white_cyan), RoundedCornerShape(8.dp))
+                .border(1.dp, colorResource(R.color.medium_cyan), RoundedCornerShape(8.dp))
+        ) {
+            for (index in 0 until viewModel.filtersForm.value.tags.size) {
+                Card(
+                    shape = RoundedCornerShape(4.dp),
+                    colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
+                        colorResource(R.color.white), colorResource(R.color.white)),
+                    modifier = modifier.shadow(12.dp, RoundedCornerShape(8.dp))
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier.padding(4.dp)
+                        //.shadow(12.dp, RoundedCornerShape(8.dp))
+                    ) {
+                        Checkbox(
+                            checked = viewModel.filtersForm.value.tags[index].ckecked,
+                            colors = CheckboxColors(
+                                colorResource(R.color.black),
+                                colorResource(R.color.black),
+                                colorResource(R.color.white),
+                                colorResource(R.color.white),
+                                colorResource(R.color.white),
+                                colorResource(R.color.white),
+                                colorResource(R.color.white),
+                                colorResource(R.color.black),
+                                colorResource(R.color.black),
+                                colorResource(R.color.black),
+                                colorResource(R.color.black),
+                                colorResource(R.color.black)
+                            ),
+                            modifier = Modifier.size(18.dp),
+                            onCheckedChange = { viewModel.tagCheckingChanged(index, it) }
+                        )
+                        DarkText(
+                            text = viewModel.filtersForm.value.tags[index].name,
+                            fontSize = SmallText
+                        )
+                    }
+                }
+            }
         }
     }
 }
