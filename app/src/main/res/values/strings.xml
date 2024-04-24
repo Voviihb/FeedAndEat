@@ -18,6 +18,7 @@
     <string name="info">информация</string>
     <string name="repeat">повторить</string>
     <string name="image">так выглядит рецепт</string>
+    <string name = "unlimited">не ограничено</string>
     <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
@@ -76,7 +77,7 @@
     <string name="icon">Icon</string>
     <string name="small_ingredients">Ingr.:</string>
     <string name="ingredients">Ingredients:</string>
-    <string name="steps">Steps:</string>
+    <string name="steps">Steps</string>
     <string name="searchLabel">Search</string>
     <string name="title1">Recipe of the day</string>
     <string name="title2">Top of the week</string>

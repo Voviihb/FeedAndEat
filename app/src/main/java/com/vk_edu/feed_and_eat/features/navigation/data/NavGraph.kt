@@ -8,8 +8,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
@@ -80,10 +82,14 @@ fun NavGraph(
         composable(Screen.NewRecipeScreen.route) {
             NewRecipeScreen(navigateToRoute)
         }
-        composable(Screen.RecipeScreen.route) {
+        composable(Screen.RecipeScreen.route + "/{id}",
+            arguments = listOf(navArgument("id"){ type = NavType.StringType })
+        ) {backStackEntry ->
             RecipeScreen(
-                navigateToRoute,
-                navigateBack
+                navigateToRoute = navigateToRoute,
+                navigateBack = navigateBack,
+                id = backStackEntry.arguments?.getString("id") ?: "",
+                destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.InProgressScreen.route
             )
         }
     }

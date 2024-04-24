@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FloatingActionButtonDefaults.LargeIconSize
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,5 +29,15 @@ fun MediumIcon(painter: Painter, color: Color, modifier: Modifier = Modifier) {
         tint = color,
         contentDescription = stringResource(R.string.icon),
         modifier = modifier.size(MediumIconSize)
+    )
+}
+
+@Composable
+fun LargeIcon(painter: Painter, color: Color, modifier: Modifier = Modifier) {
+    Icon(
+        painter = painter,
+        tint = color,
+        contentDescription = stringResource(R.string.icon),
+        modifier = modifier.size(LargeIconSize)
     )
 }
