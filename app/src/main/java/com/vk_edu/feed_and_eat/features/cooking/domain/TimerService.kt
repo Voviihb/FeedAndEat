@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -19,21 +18,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class TimerService : Service() {
 
     private val timerJobs = mutableMapOf<String, Job>()
+    private var isStopWatchRunning = false
     private val CHANNEL_ID = "TimerServiceChannel"
 
-    private val binder = LocalBinder()
-
-    inner class LocalBinder : Binder() {
-        fun getService(): TimerService = this@TimerService
-    }
-
-    override fun onBind(intent: Intent): IBinder {
-        return binder
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -47,15 +39,17 @@ class TimerService : Service() {
         return START_STICKY
     }
 
-    fun startTimer(timerId: String?) {
-        timerId?.let {
+    private fun moveToForeground() {
+        Log.d("Taag", "Move to foreground")
+        if (isStopWatchRunning) {
+            val uuid = Random.nextInt(1, 100)
             val notification = createNotification()
-//            startForeground(1, notification)
-//            val foregroundType = when {
-//                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-//                else -> 0
-//            }
-            ServiceCompat.startForeground(this, 100, notification, 0)
+            ServiceCompat.startForeground(this, uuid, notification, 0)
+        }
+    }
+
+    private fun startTimer(timerId: String?) {
+        timerId?.let {
             val job = GlobalScope.launch {
                 flow {
                     var secondsPassed = 0
@@ -69,13 +63,19 @@ class TimerService : Service() {
                 }
             }
             timerJobs[timerId] = job
+            isStopWatchRunning = true
+            moveToForeground()
+            Log.d("Taag", timerJobs.toString())
         }
     }
 
-    fun stopTimer(timerId: String?) {
+    private fun stopTimer(timerId: String?) {
         timerJobs[timerId]?.cancel()
         timerJobs.remove(timerId)
-        stopSelf()
+        if (timerJobs.isEmpty()) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            isStopWatchRunning = false
+        }
     }
 
     private fun createNotification(): Notification {
@@ -89,8 +89,11 @@ class TimerService : Service() {
             manager.createNotificationChannel(channel)
         }
         val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
-            PendingIntent.FLAG_MUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, notificationIntent,
+            PendingIntent.FLAG_MUTABLE
+        )
+        Log.d("Taag", "create notification")
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Timer Service")
             .setContentText("Running")
@@ -105,5 +108,9 @@ class TimerService : Service() {
             job.cancel()
         }
         timerJobs.clear()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 }

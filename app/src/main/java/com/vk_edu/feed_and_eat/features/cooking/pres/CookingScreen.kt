@@ -22,6 +22,7 @@ import com.vk_edu.feed_and_eat.R
 
 @Composable
 fun CookingScreen(start: (String) -> Unit, stop: (String) -> Unit) {
+    var counter = 0
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -35,7 +36,8 @@ fun CookingScreen(start: (String) -> Unit, stop: (String) -> Unit) {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    start("timer1")
+                    start("timer$counter")
+                    counter++
                 }) {
                     Column(
                         modifier = Modifier
@@ -48,7 +50,8 @@ fun CookingScreen(start: (String) -> Unit, stop: (String) -> Unit) {
                 }
 
                 Button(onClick = {
-                    stop("timer1")
+                    counter--
+                    stop("timer$counter")
                 }) {
                     Column(
                         modifier = Modifier
