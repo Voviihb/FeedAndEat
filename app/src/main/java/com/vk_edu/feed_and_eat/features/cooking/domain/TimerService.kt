@@ -24,6 +24,7 @@ import java.util.TimerTask
 class TimerService : Service() {
     private val timerJobs = mutableMapOf<String, Job>()
     private val timerValues = mutableMapOf<String, Int>()
+    private val pausedTimers = mutableMapOf<String, Int>()
     private var isStopWatchRunning = false
     private var updateTimer: Timer? = null
 
@@ -39,6 +40,8 @@ class TimerService : Service() {
             when (action) {
                 ACTION_START -> startTimer(timerId, time)
                 ACTION_STOP -> stopTimer(timerId)
+                ACTION_PAUSE -> pauseTimer(timerId)
+                ACTION_RESUME -> resumeTimer(timerId)
             }
         }
         return START_STICKY
@@ -76,7 +79,6 @@ class TimerService : Service() {
             timerValues[timerId] = time
             moveToForeground()
             isStopWatchRunning = true
-            Log.d("Taag", timerJobs.toString())
         }
     }
 
@@ -89,6 +91,26 @@ class TimerService : Service() {
             updateTimer?.cancel()
             isStopWatchRunning = false
             stopForeground(STOP_FOREGROUND_REMOVE)
+        }
+    }
+
+    private fun pauseTimer(timerId: String?) {
+        if (timerId != null) {
+            timerJobs[timerId]?.cancel()
+            pausedTimers[timerId] = timerValues[timerId] ?: 0
+            timerJobs.remove(timerId)
+            timerValues.remove(timerId)
+            updateNotification()
+        }
+    }
+
+    private fun resumeTimer(timerId: String?) {
+        if (timerId != null) {
+            val timeLeft = pausedTimers[timerId]
+            if (timeLeft != null && timeLeft >= 0) {
+                startTimer(timerId, timeLeft)
+            }
+            pausedTimers.remove(timerId)
         }
     }
 
@@ -120,6 +142,9 @@ class TimerService : Service() {
         timerJobs.forEach { (timerId, _) ->
             style = style.addLine("$timerId is at ${timerValues[timerId]} seconds")
         }
+        pausedTimers.forEach { (timerId, _) ->
+            style = style.addLine("$timerId paused, ${pausedTimers[timerId]} seconds left")
+        }
         return notification.setStyle(style).build()
     }
 
@@ -139,6 +164,7 @@ class TimerService : Service() {
         }
         timerJobs.clear()
         timerValues.clear()
+        pausedTimers.clear()
         updateTimer = null
     }
 
@@ -152,5 +178,7 @@ class TimerService : Service() {
         const val TIMER_TIME = "time"
         const val ACTION_START = "start"
         const val ACTION_STOP = "stop"
+        const val ACTION_PAUSE = "pause"
+        const val ACTION_RESUME = "resume"
     }
 }

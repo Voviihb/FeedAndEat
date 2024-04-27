@@ -22,7 +22,12 @@ class MainActivity : ComponentActivity() {
 //            ){
 //                NavGraph(navController = navController, context = LocalContext.current)
 //            }
-            CookingScreen(start = ::startTimer, stop = ::stopTimer)
+            CookingScreen(
+                start = ::startTimer,
+                stop = ::stopTimer,
+                pause = ::pauseTimer,
+                resume = ::resumeTimer
+            )
         }
     }
 
@@ -48,6 +53,32 @@ class MainActivity : ComponentActivity() {
         timerService.putExtra(
             TimerService.ACTION,
             TimerService.ACTION_STOP
+        )
+        timerService.putExtra(
+            TimerService.TIMER_ID,
+            timerId
+        )
+        startService(timerService)
+    }
+
+    private fun pauseTimer(timerId: String) {
+        val timerService = Intent(this, TimerService::class.java)
+        timerService.putExtra(
+            TimerService.ACTION,
+            TimerService.ACTION_PAUSE
+        )
+        timerService.putExtra(
+            TimerService.TIMER_ID,
+            timerId
+        )
+        startService(timerService)
+    }
+
+    private fun resumeTimer(timerId: String) {
+        val timerService = Intent(this, TimerService::class.java)
+        timerService.putExtra(
+            TimerService.ACTION,
+            TimerService.ACTION_RESUME
         )
         timerService.putExtra(
             TimerService.TIMER_ID,

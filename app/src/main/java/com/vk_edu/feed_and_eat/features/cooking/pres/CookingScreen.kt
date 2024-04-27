@@ -21,7 +21,12 @@ import com.vk_edu.feed_and_eat.R
 
 
 @Composable
-fun CookingScreen(start: (String, Int) -> Unit, stop: (String) -> Unit) {
+fun CookingScreen(
+    start: (String, Int) -> Unit,
+    stop: (String) -> Unit,
+    pause: (String) -> Unit,
+    resume: (String) -> Unit
+) {
     var counter = 0
     Box(
         modifier = Modifier
@@ -36,16 +41,16 @@ fun CookingScreen(start: (String, Int) -> Unit, stop: (String) -> Unit) {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    start("timer$counter", 10*counter)
+                    start("timer$counter", 10 * counter)
                     counter++
                 }) {
                     Column(
                         modifier = Modifier
-                            .width(100.dp)
+                            .width(50.dp)
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Start timer", fontSize = 24.sp)
+                        Text(text = "Start timer", fontSize = 16.sp)
                     }
                 }
 
@@ -55,11 +60,39 @@ fun CookingScreen(start: (String, Int) -> Unit, stop: (String) -> Unit) {
                 }) {
                     Column(
                         modifier = Modifier
-                            .width(100.dp)
+                            .width(50.dp)
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Stop timer", fontSize = 24.sp)
+                        Text(text = "Stop timer", fontSize = 16.sp)
+                    }
+                }
+
+                Button(onClick = {
+                    counter--
+                    pause("timer$counter")
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Pause timer", fontSize = 16.sp)
+                    }
+                }
+
+                Button(onClick = {
+                    resume("timer$counter")
+                    counter++
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Resume timer", fontSize = 16.sp)
                     }
                 }
             }
