@@ -18,11 +18,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.util.Timer
+import java.util.TimerTask
 
 class TimerService : Service() {
 
     private val timerJobs = mutableMapOf<String, Job>()
+    private val timerValues = mutableMapOf<String, Int>()
     private var isStopWatchRunning = false
+    private var updateTimer: Timer? = null
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -39,10 +43,16 @@ class TimerService : Service() {
 
     private fun moveToForeground() {
         Log.d("Taag", "Move to foreground")
-        if (isStopWatchRunning) {
-            val notification = createNotification()
-            ServiceCompat.startForeground(this, 1, notification, 0)
+        if (!isStopWatchRunning) {
+            updateTimer = Timer()
+            updateTimer?.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    updateNotification()
+                }
+            }, 0, 1000)
         }
+        val notification = createNotification()
+        ServiceCompat.startForeground(this, 1, notification, 0)
     }
 
     private fun startTimer(timerId: String?) {
@@ -53,6 +63,7 @@ class TimerService : Service() {
                     while (true) {
                         delay(1000)
                         emit(secondsPassed++)
+                        timerValues[timerId] = secondsPassed
                     }
                 }.collect {
                     // Обновление UI или выполнение других действий при каждом тике таймера
@@ -60,8 +71,9 @@ class TimerService : Service() {
                 }
             }
             timerJobs[timerId] = job
-            isStopWatchRunning = true
+            timerValues[timerId] = 0
             moveToForeground()
+            isStopWatchRunning = true
             Log.d("Taag", timerJobs.toString())
         }
     }
@@ -69,10 +81,12 @@ class TimerService : Service() {
     private fun stopTimer(timerId: String?) {
         timerJobs[timerId]?.cancel()
         timerJobs.remove(timerId)
+        timerValues.remove(timerId)
         updateNotification()
         if (timerJobs.isEmpty()) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
+            updateTimer?.cancel()
             isStopWatchRunning = false
+            stopForeground(STOP_FOREGROUND_REMOVE)
         }
     }
 
@@ -102,7 +116,7 @@ class TimerService : Service() {
 
         var style = NotificationCompat.InboxStyle()
         timerJobs.forEach { (timerId, _) ->
-            style = style.addLine(timerId)
+            style = style.addLine("$timerId is at ${timerValues[timerId]} seconds")
         }
         return notification.setStyle(style).build()
     }
@@ -122,6 +136,8 @@ class TimerService : Service() {
             job.cancel()
         }
         timerJobs.clear()
+        timerValues.clear()
+        updateTimer = null
     }
 
     override fun onBind(intent: Intent?): IBinder? {
