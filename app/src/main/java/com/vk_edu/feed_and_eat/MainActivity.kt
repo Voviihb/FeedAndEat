@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun startTimer(timerId: String) {
+    private fun startTimer(timerId: String, time: Int) {
         val timerService = Intent(this, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -35,6 +35,10 @@ class MainActivity : ComponentActivity() {
         timerService.putExtra(
             TimerService.TIMER_ID,
             timerId
+        )
+        timerService.putExtra(
+            TimerService.TIMER_TIME,
+            time
         )
         startService(timerService)
     }

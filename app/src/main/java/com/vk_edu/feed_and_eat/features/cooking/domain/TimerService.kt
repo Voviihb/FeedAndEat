@@ -22,19 +22,22 @@ import java.util.Timer
 import java.util.TimerTask
 
 class TimerService : Service() {
-
     private val timerJobs = mutableMapOf<String, Job>()
     private val timerValues = mutableMapOf<String, Int>()
     private var isStopWatchRunning = false
     private var updateTimer: Timer? = null
 
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             val action = it.getStringExtra(ACTION)
             val timerId = it.getStringExtra(TIMER_ID)
+            val time = it.getIntExtra(TIMER_TIME, 0)
             when (action) {
-                ACTION_START -> startTimer(timerId)
+                ACTION_START -> startTimer(timerId, time)
                 ACTION_STOP -> stopTimer(timerId)
             }
         }
@@ -42,7 +45,6 @@ class TimerService : Service() {
     }
 
     private fun moveToForeground() {
-        Log.d("Taag", "Move to foreground")
         if (!isStopWatchRunning) {
             updateTimer = Timer()
             updateTimer?.scheduleAtFixedRate(object : TimerTask() {
@@ -55,23 +57,23 @@ class TimerService : Service() {
         ServiceCompat.startForeground(this, 1, notification, 0)
     }
 
-    private fun startTimer(timerId: String?) {
+    private fun startTimer(timerId: String?, time: Int) {
         timerId?.let {
             val job = GlobalScope.launch {
                 flow {
-                    var secondsPassed = 0
-                    while (true) {
+                    var secondsLeft = time
+                    while (secondsLeft > 0) {
                         delay(1000)
-                        emit(secondsPassed++)
-                        timerValues[timerId] = secondsPassed
+                        emit(secondsLeft--)
+                        timerValues[timerId] = secondsLeft
                     }
                 }.collect {
                     // Обновление UI или выполнение других действий при каждом тике таймера
-                    Log.d("Taag", "Timer $timerId: $it seconds passed")
+                    Log.d("Taag", "Timer $timerId: $it seconds left")
                 }
             }
             timerJobs[timerId] = job
-            timerValues[timerId] = 0
+            timerValues[timerId] = time
             moveToForeground()
             isStopWatchRunning = true
             Log.d("Taag", timerJobs.toString())
@@ -107,7 +109,7 @@ class TimerService : Service() {
         )
         Log.d("Taag", "create notification")
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Feed&Eat timer")
+            .setContentTitle(FEED_AND_EAT_TIMER)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setContentText("Running ${timerJobs.keys.size} timers")
@@ -140,16 +142,14 @@ class TimerService : Service() {
         updateTimer = null
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
     companion object {
         private const val CHANNEL_ID = "TimerServiceChannel"
         private const val CHANNEL_NAME = "Timer Service Channel"
+        private const val FEED_AND_EAT_TIMER = "Feed&Eat timer"
 
         const val ACTION = "action"
         const val TIMER_ID = "timerId"
+        const val TIMER_TIME = "time"
         const val ACTION_START = "start"
         const val ACTION_STOP = "stop"
     }
