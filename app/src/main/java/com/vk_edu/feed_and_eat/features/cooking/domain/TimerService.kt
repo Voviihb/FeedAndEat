@@ -18,22 +18,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class TimerService : Service() {
 
     private val timerJobs = mutableMapOf<String, Job>()
     private var isStopWatchRunning = false
-    private val CHANNEL_ID = "TimerServiceChannel"
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
-            val action = it.getStringExtra("action")
-            val timerId = it.getStringExtra("timerId")
+            val action = it.getStringExtra(ACTION)
+            val timerId = it.getStringExtra(TIMER_ID)
             when (action) {
-                "start" -> startTimer(timerId)
-                "stop" -> stopTimer(timerId)
+                ACTION_START -> startTimer(timerId)
+                ACTION_STOP -> stopTimer(timerId)
             }
         }
         return START_STICKY
@@ -42,9 +40,8 @@ class TimerService : Service() {
     private fun moveToForeground() {
         Log.d("Taag", "Move to foreground")
         if (isStopWatchRunning) {
-            val uuid = Random.nextInt(1, 100)
             val notification = createNotification()
-            ServiceCompat.startForeground(this, uuid, notification, 0)
+            ServiceCompat.startForeground(this, 1, notification, 0)
         }
     }
 
@@ -72,6 +69,7 @@ class TimerService : Service() {
     private fun stopTimer(timerId: String?) {
         timerJobs[timerId]?.cancel()
         timerJobs.remove(timerId)
+        updateNotification()
         if (timerJobs.isEmpty()) {
             stopForeground(STOP_FOREGROUND_REMOVE)
             isStopWatchRunning = false
@@ -82,7 +80,7 @@ class TimerService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Timer Service Channel",
+                CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)
@@ -94,12 +92,28 @@ class TimerService : Service() {
             PendingIntent.FLAG_MUTABLE
         )
         Log.d("Taag", "create notification")
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Timer Service")
-            .setContentText("Running")
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Feed&Eat timer")
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setContentText("Running ${timerJobs.keys.size} timers")
             .setSmallIcon(R.drawable.logo_feed_and_eat)
             .setContentIntent(pendingIntent)
-            .build()
+
+        var style = NotificationCompat.InboxStyle()
+        timerJobs.forEach { (timerId, _) ->
+            style = style.addLine(timerId)
+        }
+        return notification.setStyle(style).build()
+    }
+
+    private fun updateNotification() {
+        Log.d("Taag", "update notification")
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.notify(
+            1,
+            createNotification()
+        )
     }
 
     override fun onDestroy() {
@@ -112,5 +126,15 @@ class TimerService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "TimerServiceChannel"
+        private const val CHANNEL_NAME = "Timer Service Channel"
+
+        const val ACTION = "action"
+        const val TIMER_ID = "timerId"
+        const val ACTION_START = "start"
+        const val ACTION_STOP = "stop"
     }
 }

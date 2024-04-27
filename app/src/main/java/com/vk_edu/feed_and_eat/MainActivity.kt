@@ -12,13 +12,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
-    override fun onStart() {
-        super.onStart()
-//        moveToForeground()
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,11 +29,11 @@ class MainActivity : ComponentActivity() {
     private fun startTimer(timerId: String) {
         val timerService = Intent(this, TimerService::class.java)
         timerService.putExtra(
-            "action",
-            "start"
+            TimerService.ACTION,
+            TimerService.ACTION_START
         )
         timerService.putExtra(
-            "timerId",
+            TimerService.TIMER_ID,
             timerId
         )
         startService(timerService)
@@ -49,11 +42,11 @@ class MainActivity : ComponentActivity() {
     private fun stopTimer(timerId: String) {
         val timerService = Intent(this, TimerService::class.java)
         timerService.putExtra(
-            "action",
-            "stop"
+            TimerService.ACTION,
+            TimerService.ACTION_STOP
         )
         timerService.putExtra(
-            "timerId",
+            TimerService.TIMER_ID,
             timerId
         )
         startService(timerService)
