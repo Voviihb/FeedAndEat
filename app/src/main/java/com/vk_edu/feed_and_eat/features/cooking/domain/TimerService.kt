@@ -33,10 +33,10 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            val action = it.getStringExtra(ACTION)
-            val timerId = it.getStringExtra(TIMER_ID)
-            val time = it.getIntExtra(TIMER_TIME, 0)
+        if (intent != null) {
+            val action = intent.getStringExtra(ACTION)
+            val timerId = intent.getStringExtra(TIMER_ID)
+            val time = intent.getIntExtra(TIMER_TIME, 0)
             when (action) {
                 ACTION_START -> startTimer(timerId, time)
                 ACTION_STOP -> stopTimer(timerId)
@@ -61,7 +61,7 @@ class TimerService : Service() {
     }
 
     private fun startTimer(timerId: String?, time: Int) {
-        timerId?.let {
+        if (timerId != null) {
             val job = GlobalScope.launch {
                 flow {
                     var secondsLeft = time
@@ -71,7 +71,7 @@ class TimerService : Service() {
                         timerValues[timerId] = secondsLeft
                     }
                 }.collect {
-                    // Обновление UI или выполнение других действий при каждом тике таймера
+                    // Выполнение действий при каждом тике таймера?
                     Log.d("Taag", "Timer $timerId: $it seconds left")
                 }
             }
