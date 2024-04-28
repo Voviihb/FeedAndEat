@@ -38,6 +38,7 @@ class CookingScreenViewModel @Inject constructor(
         application.bindService(intent, timerServiceConnection, Context.BIND_ABOVE_CLIENT)
         Log.d("Taaag", "VM created")
     }
+
     override fun onCleared() {
         super.onCleared()
         application.unbindService(timerServiceConnection)

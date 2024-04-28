@@ -27,9 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".features.cooking.domain.TimerService"
-            android:stopWithTask="true" />
+        <service android:name=".features.cooking.domain.TimerService" />
+
     </application>
 
 </manifest>

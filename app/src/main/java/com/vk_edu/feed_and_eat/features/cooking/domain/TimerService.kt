@@ -14,12 +14,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.vk_edu.feed_and_eat.MainActivity
 import com.vk_edu.feed_and_eat.R
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
@@ -48,7 +48,6 @@ class TimerService : Service() {
     override fun onBind(intent: Intent): IBinder {
         return binder
     }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             val action = intent.getStringExtra(ACTION)
@@ -81,17 +80,12 @@ class TimerService : Service() {
 
     private fun startTimer(timerId: String?, time: Int) {
         if (timerId != null) {
-            val job = GlobalScope.launch {
-                flow {
-                    var secondsLeft = time
-                    while (secondsLeft > 0) {
-                        delay(1000)
-                        emit(secondsLeft--)
-                        timerValues[timerId] = secondsLeft
-                    }
-                }.collect {
-                    // Выполнение действий при каждом тике таймера?
-                    Log.d("Taag", "Timer $timerId: $it seconds left")
+            val job = CoroutineScope(Dispatchers.IO).launch {
+                var secondsLeft = time
+                while (secondsLeft > 0) {
+                    delay(1000)
+                    secondsLeft--
+                    timerValues[timerId] = secondsLeft
                 }
             }
             timerJobs[timerId] = job
