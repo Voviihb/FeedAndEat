@@ -48,6 +48,7 @@ class TimerService : Service() {
     override fun onBind(intent: Intent): IBinder {
         return binder
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent != null) {
             val action = intent.getStringExtra(ACTION)
@@ -58,9 +59,10 @@ class TimerService : Service() {
                 ACTION_STOP -> stopTimer(timerId)
                 ACTION_PAUSE -> pauseTimer(timerId)
                 ACTION_RESUME -> resumeTimer(timerId)
+                ACTION_CANCEL_ALL -> cancelAllTimers()
             }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun moveToForeground() {
@@ -129,6 +131,21 @@ class TimerService : Service() {
         }
     }
 
+    private fun cancelAllTimers() {
+        timerJobs.forEach { (_, job) ->
+            job.cancel()
+        }
+        timerJobs.clear()
+        timerValues.clear()
+        pausedTimers.clear()
+
+        updateTimer?.cancel()
+        isStopWatchRunning = false
+        _activeTimerUpdates.tryEmit(timerValues.toMap())
+        _pausedTimerUpdates.tryEmit(pausedTimers.toMap())
+        stopForeground(STOP_FOREGROUND_REMOVE)
+    }
+
     private fun createNotification(): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -144,6 +161,19 @@ class TimerService : Service() {
             this, 0, notificationIntent,
             PendingIntent.FLAG_MUTABLE
         )
+
+        val cancelAllIntent = Intent(this, TimerService::class.java)
+        cancelAllIntent.putExtra(
+            ACTION,
+            ACTION_CANCEL_ALL
+        )
+        val pendingCancelAllIntent = PendingIntent.getService(
+            this,
+            1,
+            cancelAllIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         Log.d("Taag", "create notification")
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(FEED_AND_EAT_TIMER)
@@ -152,6 +182,7 @@ class TimerService : Service() {
             .setContentText("Running ${timerJobs.keys.size} timers")
             .setSmallIcon(R.drawable.logo_feed_and_eat)
             .setContentIntent(pendingIntent)
+            .addAction(R.drawable.cooked_icon, "Cancel all", pendingCancelAllIntent)
 
         var style = NotificationCompat.InboxStyle()
         timerJobs.forEach { (timerId, _) ->
@@ -195,5 +226,6 @@ class TimerService : Service() {
         const val ACTION_STOP = "stop"
         const val ACTION_PAUSE = "pause"
         const val ACTION_RESUME = "resume"
+        const val ACTION_CANCEL_ALL = "cancel_all"
     }
 }

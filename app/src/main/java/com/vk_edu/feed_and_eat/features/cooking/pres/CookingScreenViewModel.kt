@@ -100,6 +100,15 @@ class CookingScreenViewModel @Inject constructor(
         application.startService(timerService)
     }
 
+    fun cancelAllTimers() {
+        val timerService = Intent(application, TimerService::class.java)
+        timerService.putExtra(
+            TimerService.ACTION,
+            TimerService.ACTION_CANCEL_ALL
+        )
+        application.startService(timerService)
+    }
+
     fun updateCounter(value: Int) {
         _counter.intValue += value
     }

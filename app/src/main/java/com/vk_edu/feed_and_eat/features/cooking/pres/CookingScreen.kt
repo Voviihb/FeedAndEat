@@ -35,6 +35,7 @@ fun CookingScreen(
     val stop: (String) -> Unit = viewModel::stopTimer
     val pause: (String) -> Unit = viewModel::pauseTimer
     val resume: (String) -> Unit = viewModel::resumeTimer
+    val cancel: () -> Unit = viewModel::cancelAllTimers
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +55,7 @@ fun CookingScreen(
                 }) {
                     Column(
                         modifier = Modifier
-                            .width(50.dp)
+                            .width(35.dp)
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -68,7 +69,7 @@ fun CookingScreen(
                 }) {
                     Column(
                         modifier = Modifier
-                            .width(50.dp)
+                            .width(35.dp)
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -82,7 +83,7 @@ fun CookingScreen(
                 }) {
                     Column(
                         modifier = Modifier
-                            .width(50.dp)
+                            .width(35.dp)
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -96,11 +97,24 @@ fun CookingScreen(
                 }) {
                     Column(
                         modifier = Modifier
-                            .width(50.dp)
+                            .width(35.dp)
                             .padding(vertical = 4.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = "Resume timer", fontSize = 16.sp)
+                    }
+                }
+
+                Button(onClick = {
+                    cancel()
+                }) {
+                    Column(
+                        modifier = Modifier
+                            .width(35.dp)
+                            .padding(vertical = 4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Cancel all", fontSize = 16.sp)
                     }
                 }
             }
