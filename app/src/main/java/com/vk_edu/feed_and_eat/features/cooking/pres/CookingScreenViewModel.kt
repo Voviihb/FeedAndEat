@@ -27,7 +27,9 @@ class CookingScreenViewModel @Inject constructor(
     private val application = getApplication(appContext)
     private val timerServiceConnection = TimerServiceConnection()
 
-    val timerState = timerServiceConnection.timerUpdates
+    val activeTimerState = timerServiceConnection.activeTimerUpdates
+    val pausedTimerState = timerServiceConnection.pausedTimerUpdates
+
     private val _counter = mutableIntStateOf(1)
     val counter: State<Int> = _counter
 
@@ -103,13 +105,19 @@ class CookingScreenViewModel @Inject constructor(
 
 
     inner class TimerServiceConnection : ServiceConnection {
-        private val _timerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
-        val timerUpdates: SharedFlow<Map<String, Int>> = _timerUpdates
+        private val _activeTimerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
+        val activeTimerUpdates: SharedFlow<Map<String, Int>> = _activeTimerUpdates
+
+        private val _pausedTimerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
+        val pausedTimerUpdates: SharedFlow<Map<String, Int>> = _pausedTimerUpdates
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as TimerService.LocalBinder
-            binder.getService().timerUpdates.onEach { update ->
-                _timerUpdates.emit(update)
+            binder.getService().activeTimerUpdates.onEach { update ->
+                _activeTimerUpdates.emit(update)
+            }.launchIn(viewModelScope)
+            binder.getService().pausedTimerUpdates.onEach { update ->
+                _pausedTimerUpdates.emit(update)
             }.launchIn(viewModelScope)
         }
 

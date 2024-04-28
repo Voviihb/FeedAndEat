@@ -32,8 +32,11 @@ class TimerService : Service() {
     private var isStopWatchRunning = false
     private var updateTimer: Timer? = null
 
-    private val _timerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
-    val timerUpdates: SharedFlow<Map<String, Int>> = _timerUpdates
+    private val _activeTimerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
+    val activeTimerUpdates: SharedFlow<Map<String, Int>> = _activeTimerUpdates
+
+    private val _pausedTimerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
+    val pausedTimerUpdates: SharedFlow<Map<String, Int>> = _pausedTimerUpdates
 
 
     inner class LocalBinder : Binder() {
@@ -66,7 +69,8 @@ class TimerService : Service() {
             updateTimer = Timer()
             updateTimer?.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
-                    _timerUpdates.tryEmit(timerValues.toMap())
+                    _activeTimerUpdates.tryEmit(timerValues.toMap())
+                    _pausedTimerUpdates.tryEmit(pausedTimers.toMap())
                     updateNotification()
                 }
             }, 0, 1000)
@@ -102,10 +106,11 @@ class TimerService : Service() {
         timerJobs.remove(timerId)
         timerValues.remove(timerId)
         updateNotification()
-        if (timerJobs.isEmpty()) {
+        if (timerJobs.isEmpty() && pausedTimers.isEmpty()) {
             updateTimer?.cancel()
             isStopWatchRunning = false
-            _timerUpdates.tryEmit(timerValues.toMap())
+            _activeTimerUpdates.tryEmit(timerValues.toMap())
+            _pausedTimerUpdates.tryEmit(pausedTimers.toMap())
             stopForeground(STOP_FOREGROUND_REMOVE)
         }
     }

@@ -28,7 +28,8 @@ import com.vk_edu.feed_and_eat.R
 fun CookingScreen(
     viewModel: CookingScreenViewModel = hiltViewModel()
 ) {
-    val timerState = viewModel.timerState.collectAsState(emptyMap())
+    val activeTimerState = viewModel.activeTimerState.collectAsState(emptyMap())
+    val pausedTimerState = viewModel.pausedTimerState.collectAsState(emptyMap())
     val counter by viewModel.counter
     val start: (String, Int) -> Unit = viewModel::startTimer
     val stop: (String) -> Unit = viewModel::stopTimer
@@ -103,10 +104,12 @@ fun CookingScreen(
                     }
                 }
             }
-            Log.d("Taaag", timerState.value.toString())
             Column {
-                timerState.value.forEach { (timerId, secondsLeft) ->
+                activeTimerState.value.forEach { (timerId, secondsLeft) ->
                     Text(text = "Timer $timerId has $secondsLeft seconds left")
+                }
+                pausedTimerState.value.forEach { (timerId, secondsLeft) ->
+                    Text(text = "Timer $timerId paused, $secondsLeft seconds left")
                 }
             }
         }
