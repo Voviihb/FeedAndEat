@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -16,10 +17,13 @@ import com.vk_edu.feed_and_eat.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
+
 
 class TimerService : Service() {
     private val timerJobs = mutableMapOf<String, Job>()
@@ -28,8 +32,18 @@ class TimerService : Service() {
     private var isStopWatchRunning = false
     private var updateTimer: Timer? = null
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
+    private val _timerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
+    val timerUpdates: SharedFlow<Map<String, Int>> = _timerUpdates
+
+
+    inner class LocalBinder : Binder() {
+        fun getService(): TimerService = this@TimerService
+    }
+
+    private val binder = LocalBinder()
+
+    override fun onBind(intent: Intent): IBinder {
+        return binder
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -52,6 +66,7 @@ class TimerService : Service() {
             updateTimer = Timer()
             updateTimer?.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
+                    _timerUpdates.tryEmit(timerValues.toMap())
                     updateNotification()
                 }
             }, 0, 1000)
@@ -90,6 +105,7 @@ class TimerService : Service() {
         if (timerJobs.isEmpty()) {
             updateTimer?.cancel()
             isStopWatchRunning = false
+            _timerUpdates.tryEmit(timerValues.toMap())
             stopForeground(STOP_FOREGROUND_REMOVE)
         }
     }

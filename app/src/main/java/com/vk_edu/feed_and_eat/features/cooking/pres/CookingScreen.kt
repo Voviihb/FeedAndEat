@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.cooking.pres
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -17,17 +20,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 
 
 @Composable
 fun CookingScreen(
-    start: (String, Int) -> Unit,
-    stop: (String) -> Unit,
-    pause: (String) -> Unit,
-    resume: (String) -> Unit
+    viewModel: CookingScreenViewModel = hiltViewModel()
 ) {
-    var counter = 0
+    val timerState = viewModel.timerState.collectAsState(emptyMap())
+    val counter by viewModel.counter
+    val start: (String, Int) -> Unit = viewModel::startTimer
+    val stop: (String) -> Unit = viewModel::stopTimer
+    val pause: (String) -> Unit = viewModel::pauseTimer
+    val resume: (String) -> Unit = viewModel::resumeTimer
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -41,8 +47,9 @@ fun CookingScreen(
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
+                    Log.d("Taaag", "Start timer$counter")
                     start("timer$counter", 10 * counter)
-                    counter++
+                    viewModel.updateCounter(1)
                 }) {
                     Column(
                         modifier = Modifier
@@ -55,7 +62,7 @@ fun CookingScreen(
                 }
 
                 Button(onClick = {
-                    counter--
+                    viewModel.updateCounter(-1)
                     stop("timer$counter")
                 }) {
                     Column(
@@ -69,7 +76,7 @@ fun CookingScreen(
                 }
 
                 Button(onClick = {
-                    counter--
+                    viewModel.updateCounter(-1)
                     pause("timer$counter")
                 }) {
                     Column(
@@ -84,7 +91,7 @@ fun CookingScreen(
 
                 Button(onClick = {
                     resume("timer$counter")
-                    counter++
+                    viewModel.updateCounter(1)
                 }) {
                     Column(
                         modifier = Modifier
@@ -94,6 +101,12 @@ fun CookingScreen(
                     ) {
                         Text(text = "Resume timer", fontSize = 16.sp)
                     }
+                }
+            }
+            Log.d("Taaag", timerState.value.toString())
+            Column {
+                timerState.value.forEach { (timerId, secondsLeft) ->
+                    Text(text = "Timer $timerId has $secondsLeft seconds left")
                 }
             }
         }
