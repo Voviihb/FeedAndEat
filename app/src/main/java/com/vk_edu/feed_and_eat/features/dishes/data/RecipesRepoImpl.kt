@@ -7,10 +7,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.Dispatchers
@@ -71,8 +71,8 @@ class RecipesRepoImpl @Inject constructor(
      * @param startOfNextDocument is needed to calculate start point for FORWARD pagination
      * @param endOfPrevDocument is needed to calculate start point for BACKWARD pagination
      * */
-    override fun filterRecipes(
-        filters: FiltersDTO,
+    override fun loadSearchRecipes(
+        filters: SearchFilters,
         endOfPrevDocument: DocumentSnapshot?,
         startOfNextDocument: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
@@ -94,19 +94,22 @@ class RecipesRepoImpl @Inject constructor(
             query = query.whereGreaterThanOrEqualTo(NAME_FIELD, filters.startsWith)
                 .whereLessThanOrEqualTo(NAME_FIELD, "${filters.startsWith}\\uf8ff")
         }
-        if (filters.tags != null)
+        if (filters.tags.isNotEmpty())
             query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
 
         query = when (filters.sort) {
-            SortFilter.SORT_NEWNESS -> {
-                query.orderBy(ORDER_BY_CREATED, Query.Direction.DESCENDING)
+            SORT_NEWNESS -> {
+                query.orderBy(CREATED, Query.Direction.DESCENDING)
             }
-            SortFilter.SORT_RATING -> {
-                query.orderBy(ORDER_BY_RATING, Query.Direction.DESCENDING)
+            SORT_RATING -> {
+                query.orderBy(RATING, Query.Direction.DESCENDING)
+            }
+            SORT_POPULARITY -> {
+                query.orderBy(COOKED, Query.Direction.DESCENDING)
             }
 
-            SortFilter.SORT_POPULARITY -> {
-                query.orderBy(ORDER_BY_COOKED, Query.Direction.DESCENDING)
+            else -> {
+                query.orderBy(CREATED, Query.Direction.DESCENDING)
             }
         }
 
@@ -132,12 +135,21 @@ class RecipesRepoImpl @Inject constructor(
         )
     }.flowOn(Dispatchers.IO)
 
-    companion object {
-        private const val RECIPES_COLLECTION = "recipes"
+    override fun loadTags(): Flow<Response<List<String>>> = repoTryCatchBlock {
+        val query = db.collection(TAGS_COLLECTION)
+        val tags = query.get().await()
 
-        private const val ORDER_BY_CREATED = "created"
-        private const val ORDER_BY_RATING = "rating"
-        private const val ORDER_BY_COOKED = "cooked"
+        val queryResult = mutableListOf<String>()
+        for (document in tags) {
+            val tag = document.toObject<Tag>()
+            queryResult.add(tag.name)
+        }
+        return@repoTryCatchBlock queryResult
+    }.flowOn(Dispatchers.IO)
+
+    companion object {
+        private const val TAGS_COLLECTION = "tags"
+        private const val RECIPES_COLLECTION = "recipes"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
@@ -146,5 +158,13 @@ class RecipesRepoImpl @Inject constructor(
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
         private const val NUTRIENTS_PROTEIN_FIELD = "nutrients.Protein"
         private const val NUTRIENTS_SUGAR_FIELD = "nutrients.Sugar"
+
+        private const val SORT_NEWNESS = 0
+        private const val SORT_RATING = 1
+        private const val SORT_POPULARITY = 2
+
+        private const val CREATED = "created"
+        private const val RATING = "rating"
+        private const val COOKED = "cooked"
     }
 }

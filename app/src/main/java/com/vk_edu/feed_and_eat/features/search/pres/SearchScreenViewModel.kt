@@ -8,9 +8,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.google.firebase.firestore.DocumentSnapshot
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
+import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
-import com.vk_edu.feed_and_eat.features.search.data.repository.SearchRepository
-import com.vk_edu.feed_and_eat.features.search.domain.repository.SearchRepoInter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -18,23 +20,14 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class SearchScreenViewModel @Inject constructor() : ViewModel() {
-    private val repo: SearchRepoInter = SearchRepository()
-
+class SearchScreenViewModel @Inject constructor(
+    private val _recipesRepo: RecipesRepoImpl
+) : ViewModel() {
     val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = LIMIT)) {
-        SearchPagingSource(repo, requestBody, sorting, filters, LIMIT)
+        SearchPagingSource(::searchRecipes, searchFilters)
     }.flow.cachedIn(viewModelScope)
 
-    private var requestBody: String = ""
-    private var sorting: String = ""
-    private var filters: HashMap<String, List<String?>> = hashMapOf(
-        TAGS to listOf(),  // tags are stored here as strings
-        CALORIES to listOf(null, null),  // min-max limits are stored here in the form of numbers or nulls
-        SUGAR to listOf(null, null),
-        PROTEIN to listOf(null, null),
-        FAT to listOf(null, null),
-        CARBOHYDRATES to listOf(null, null)
-    )
+    private var searchFilters = SearchFilters(limit = LIMIT.toLong())
 
     private val _searchForm = mutableStateOf("")
     val searchForm: State<String> = _searchForm
@@ -42,13 +35,14 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     private val _sortingForm = mutableStateOf(0)
     val sortingForm: State<Int> = _sortingForm
 
-    private val _filtersForm = mutableStateOf(FiltersForm(tags = repo.getAllTags().map {
-        TagChecking(it, false)
-    }))
+    private val _filtersForm = mutableStateOf(FiltersForm())
     val filtersForm: State<FiltersForm> = _filtersForm
 
     private var _reloadData = mutableStateOf(false)
     val reloadData: State<Boolean> = _reloadData
+
+    private var _startOfNextDocument: DocumentSnapshot? = null
+    private var _endOfPrevDocument: DocumentSnapshot? = null
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -56,11 +50,39 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
+    init {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.loadTags().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            _filtersForm.value = _filtersForm.value.copy(
+                                tags = response.data.map { TagChecking(it, false) }
+                            )
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
     fun setRequest() {
         viewModelScope.launch {
             try {
                 _loading.value = true
-                requestBody = _searchForm.value
+
+                searchFilters = searchFilters.copy(
+                    startsWith = _searchForm.value
+                )
+
                 _reloadData.value = true
             } catch (e: Exception) {
                 onError(e)
@@ -69,7 +91,7 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun requestBodyChanged(value: String) {
+    fun requestChanged(value: String) {
         _searchForm.value = value
     }
 
@@ -85,13 +107,20 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
             try {
                 _loading.value = true
 
-                sorting = TYPES_OF_SORTING[_sortingForm.value]
-                filters[TAGS] = _filtersForm.value.tags.filter { it.ckecked }.map { it.name }
-                filters[CALORIES] = getRealNutrientRange(CALORIES_INT)
-                filters[SUGAR] = getRealNutrientRange(SUGAR_INT)
-                filters[CARBOHYDRATES] = getRealNutrientRange(CARBOHYDRATES_INT)
-                filters[FAT] = getRealNutrientRange(FAT_INT)
-                filters[PROTEIN] = getRealNutrientRange(PROTEIN_INT)
+                searchFilters = searchFilters.copy(
+                    sort = _sortingForm.value,
+                    tags = _filtersForm.value.tags.filter { it.ckecked }.map { it.name },
+                    caloriesMin = _filtersForm.value.nutrients[CALORIES].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    caloriesMax = _filtersForm.value.nutrients[CALORIES].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    sugarMin = _filtersForm.value.nutrients[SUGAR].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    sugarMax = _filtersForm.value.nutrients[SUGAR].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    carbohydratesMin = _filtersForm.value.nutrients[CARBOHYDRATES].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    carbohydratesMax = _filtersForm.value.nutrients[CARBOHYDRATES].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    fatMin = _filtersForm.value.nutrients[FAT].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    fatMax = _filtersForm.value.nutrients[FAT].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    proteinMin = _filtersForm.value.nutrients[PROTEIN].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    proteinMax = _filtersForm.value.nutrients[PROTEIN].max.ifEmpty { null }?.toDouble() ?: 10e9
+                )
 
                 _reloadData.value = true
             } catch (e: Exception) {
@@ -99,6 +128,16 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
             }
             _loading.value = false
         }
+    }
+
+    fun sortingChanged(sorting: Int) {
+        _sortingForm.value = sorting
+    }
+
+    fun tagCheckingChanged(tag: Int) {
+        val tags = _filtersForm.value.tags.toMutableList()
+        tags[tag] = TagChecking(tags[tag].name, !tags[tag].ckecked)
+        _filtersForm.value = _filtersForm.value.copy(tags = tags)
     }
 
     fun nutrientMinChanged(nutrient: Int, text: String) {
@@ -113,18 +152,62 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
         _filtersForm.value = _filtersForm.value.copy(nutrients = nutrients)
     }
 
-    fun tagCheckingChanged(tag: Int) {
-        val tags = _filtersForm.value.tags.toMutableList()
-        tags[tag] = TagChecking(tags[tag].name, !tags[tag].ckecked)
-        _filtersForm.value = _filtersForm.value.copy(tags = tags)
-    }
-
-    fun sortingChanged(sorting: Int) {
-        _sortingForm.value = sorting
-    }
-
     fun reloadDataFinished() {
         _reloadData.value = false
+    }
+
+    fun searchRecipes(
+        filters: SearchFilters,
+        direction: Direction
+    ): List<CardDataModel> {
+        var result = listOf<CardDataModel>()
+        viewModelScope.launch {
+            try {
+                if (
+                    (_startOfNextDocument == null && _endOfPrevDocument == null) ||
+                    (direction == Direction.FORWARD && _startOfNextDocument != null) ||
+                    (direction == Direction.BACK && _endOfPrevDocument != null)
+                ) _recipesRepo.loadSearchRecipes(
+                    filters = filters,
+                    endOfPrevDocument = if (direction == Direction.BACK) _endOfPrevDocument else null,
+                    startOfNextDocument = if (direction == Direction.FORWARD) _startOfNextDocument else null
+                ).collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            if (response.data.recipes.isEmpty()) {
+                                if (direction == Direction.FORWARD)
+                                    _startOfNextDocument = null
+                                else
+                                    _endOfPrevDocument = null
+                            }
+                            else {
+                                _startOfNextDocument = response.data.startOfNextDocument
+                                _endOfPrevDocument = response.data.endOfPrevDocument
+                                result = response.data.recipes.map { fullRecipe ->
+                                    CardDataModel(
+                                        link = fullRecipe.image ?: "",
+                                        ingredients = fullRecipe.ingredients.size,
+                                        steps = fullRecipe.instructions.size,
+                                        name = fullRecipe.name,
+                                        rating = fullRecipe.rating,
+                                        cooked = fullRecipe.cooked
+                                    )
+                                }
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+        return result
     }
 
     private fun onError(message: Exception?) {
@@ -139,18 +222,10 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     companion object {
         private const val LIMIT = 20
 
-        private val TYPES_OF_SORTING = listOf("SORT_NEWNESS", "SORT_RATING", "SORT_POPULARITY")
-        private const val TAGS = "tags"
-        private const val CALORIES = "calories"
-        private const val SUGAR = "sugar"
-        private const val CARBOHYDRATES = "carbohydrates"
-        private const val FAT = "fat"
-        private const val PROTEIN = "protein"
-
-        private const val CALORIES_INT = 0
-        private const val SUGAR_INT = 1
-        private const val CARBOHYDRATES_INT = 2
-        private const val FAT_INT = 3
-        private const val PROTEIN_INT = 4
+        private const val CALORIES = 0
+        private const val SUGAR = 1
+        private const val CARBOHYDRATES = 2
+        private const val FAT = 3
+        private const val PROTEIN = 4
     }
 }

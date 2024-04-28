@@ -23,8 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 
 @Composable
 fun RecipesScreen() {
@@ -71,8 +70,7 @@ fun RecipesScreen() {
                     }
                 }
                 Button(onClick = {
-                    val filters = FiltersDTO(
-                        sort = SortFilter.SORT_POPULARITY,
+                    val filters = SearchFilters(
                         limit = 20,
                         tags = listOf("side dish", "lunch", "main dish"),
                     )

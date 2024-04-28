@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -99,7 +99,7 @@ class RecipesScreenViewModel @Inject constructor(
     }
 
     fun filterRecipes(
-        filters: FiltersDTO,
+        filters: SearchFilters,
         direction: String = FORWARD
     ) {
         viewModelScope.launch {
@@ -108,7 +108,7 @@ class RecipesScreenViewModel @Inject constructor(
                     (_startOfNextDocument == null && _endOfPrevDocument == null) ||
                     (direction == FORWARD && _startOfNextDocument != null) ||
                     (direction == BACK && _endOfPrevDocument != null)
-                    ) _recipesRepo.filterRecipes(
+                    ) _recipesRepo.loadSearchRecipes(
                         filters = filters,
                         endOfPrevDocument = if (direction == BACK) _endOfPrevDocument else null,
                         startOfNextDocument = if (direction == FORWARD) _startOfNextDocument else null

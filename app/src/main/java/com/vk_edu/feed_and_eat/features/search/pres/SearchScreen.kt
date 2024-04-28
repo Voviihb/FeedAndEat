@@ -152,7 +152,7 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Search
                     ),
-                    onValueChange = { value -> viewModel.requestBodyChanged(value) }
+                    onValueChange = { value -> viewModel.requestChanged(value) }
                 )
                 Button(
                     shape = RoundedCornerShape(22.dp),
