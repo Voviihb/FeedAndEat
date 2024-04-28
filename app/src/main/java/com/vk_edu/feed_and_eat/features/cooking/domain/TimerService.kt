@@ -9,6 +9,7 @@ import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.notifications.Notifications
 import kotlinx.coroutines.CoroutineScope
@@ -150,7 +151,7 @@ class TimerService : Service() {
             this,
             CHANNEL_ID_TIMER,
             CHANNEL_NAME_TIMER,
-            NotificationManager.IMPORTANCE_DEFAULT
+            NotificationManager.IMPORTANCE_LOW
         )
 
         val cancelAllIntent = Intent(this, TimerService::class.java)
@@ -170,12 +171,13 @@ class TimerService : Service() {
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setContentText(getString(R.string.running_timers, timerJobs.keys.size.toString()))
-            .setSmallIcon(R.drawable.logo_feed_and_eat)
+            .setSmallIcon(R.drawable.app_logo)
             .setContentIntent(pendingIntent)
             .addAction(
                 R.drawable.cooked_icon,
                 getString(R.string.cancel_all), pendingCancelAllIntent
             )
+            .setColor(ContextCompat.getColor(this, R.color.light_purple_fae))
 
         var style = NotificationCompat.InboxStyle()
         timerJobs.forEach { (timerId, _) ->
@@ -227,8 +229,9 @@ class TimerService : Service() {
             .setContentTitle(FEED_AND_EAT_TIMER)
             .setAutoCancel(true)
             .setContentText(getString(R.string.timer_is_done, timerId))
-            .setSmallIcon(R.drawable.logo_feed_and_eat)
+            .setSmallIcon(R.drawable.app_logo)
             .setContentIntent(pendingIntent)
+            .setColor(ContextCompat.getColor(this, R.color.light_purple_fae))
             .build()
 
         val manager = getSystemService(NotificationManager::class.java)
