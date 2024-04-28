@@ -1,11 +1,12 @@
 package com.vk_edu.feed_and_eat.features.search.data.repository
 
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.FiltersDTO
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SortFilter
 import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.search.domain.repository.SearchRepoInter
 import javax.inject.Inject
 
-class SearchTestRepository @Inject constructor() : SearchRepoInter {
+class SearchRepository @Inject constructor() : SearchRepoInter {
     private val cards = List(20) {
         CardDataModel(
             link = "https://img.spoonacular.com/recipes/641732-556x370.jpg",
@@ -50,7 +51,7 @@ class SearchTestRepository @Inject constructor() : SearchRepoInter {
         "starter"
     )
 
-    private var cnt = 0
+    private var currentPage = 1
 
     override suspend fun getCardsData(
         request: String,
@@ -59,20 +60,36 @@ class SearchTestRepository @Inject constructor() : SearchRepoInter {
         page: Int,
         limit: Int
     ): List<CardDataModel> {
-        val arr = mutableListOf<CardDataModel>()
-        for (elem in cards) {
-            val newElem = elem.copy(
-                ingredients = cnt,
-                name = request + elem.name,
-                steps = page
-            )
-            arr.add(newElem)
-        }
-        cnt += 1
-        return arr
+        val parameters = FiltersDTO(
+            sort = SortFilter.valueOf(sort),
+            limit = limit.toLong(),
+            startsWith = request,
+            tags = filters[TAGS]?.map { it ?: "" },
+            caloriesMin = filters[CALORIES]?.get(0)?.toDouble() ?: 0.0,
+            caloriesMax = filters[CALORIES]?.get(1)?.toDouble() ?: 10e9,
+            sugarMin = filters[SUGAR]?.get(0)?.toDouble() ?: 0.0,
+            sugarMax = filters[SUGAR]?.get(1)?.toDouble() ?: 10e9,
+            carbohydratesMin = filters[CARBOHYDRATES]?.get(0)?.toDouble() ?: 0.0,
+            carbohydratesMax = filters[CARBOHYDRATES]?.get(1)?.toDouble() ?: 10e9,
+            fatMin = filters[FAT]?.get(0)?.toDouble() ?: 0.0,
+            fatMax = filters[FAT]?.get(1)?.toDouble() ?: 10e9,
+            proteinMin = filters[PROTEIN]?.get(0)?.toDouble() ?: 0.0,
+            proteinMax = filters[PROTEIN]?.get(1)?.toDouble() ?: 10e9
+        )
+
+        return cards
     }
 
     override fun getAllTags(): List<String> {
         return tags
+    }
+
+    companion object {
+        private const val TAGS = "tags"
+        private const val CALORIES = "calories"
+        private const val SUGAR = "sugar"
+        private const val CARBOHYDRATES = "carbohydrates"
+        private const val FAT = "fat"
+        private const val PROTEIN = "protein"
     }
 }

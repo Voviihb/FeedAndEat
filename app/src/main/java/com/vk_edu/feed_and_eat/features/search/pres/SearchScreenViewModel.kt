@@ -9,7 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
-import com.vk_edu.feed_and_eat.features.search.data.repository.SearchTestRepository
+import com.vk_edu.feed_and_eat.features.search.data.repository.SearchRepository
 import com.vk_edu.feed_and_eat.features.search.domain.repository.SearchRepoInter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -19,14 +19,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor() : ViewModel() {
-    private val repo: SearchRepoInter = SearchTestRepository()
+    private val repo: SearchRepoInter = SearchRepository()
 
     val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = LIMIT)) {
-        SearchPagingSource(repo, requestBody, sort, filters, LIMIT)
+        SearchPagingSource(repo, requestBody, sorting, filters, LIMIT)
     }.flow.cachedIn(viewModelScope)
 
     private var requestBody: String = ""
-    private var sort: String = ""
+    private var sorting: String = ""
     private var filters: HashMap<String, List<String?>> = hashMapOf(
         TAGS to listOf(),  // tags are stored here as strings
         CALORIES to listOf(null, null),  // min-max limits are stored here in the form of numbers or nulls
@@ -38,6 +38,9 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
 
     private val _searchForm = mutableStateOf("")
     val searchForm: State<String> = _searchForm
+
+    private val _sortingForm = mutableStateOf(0)
+    val sortingForm: State<Int> = _sortingForm
 
     private val _filtersForm = mutableStateOf(FiltersForm(tags = repo.getAllTags().map {
         TagChecking(it, false)
@@ -77,11 +80,12 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    fun setFilters() {
+    fun setSortingAndFilters() {
         viewModelScope.launch {
             try {
                 _loading.value = true
 
+                sorting = TYPES_OF_SORTING[_sortingForm.value]
                 filters[TAGS] = _filtersForm.value.tags.filter { it.ckecked }.map { it.name }
                 filters[CALORIES] = getRealNutrientRange(CALORIES_INT)
                 filters[SUGAR] = getRealNutrientRange(SUGAR_INT)
@@ -109,10 +113,14 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
         _filtersForm.value = _filtersForm.value.copy(nutrients = nutrients)
     }
 
-    fun tagCheckingChanged(tag: Int, checked: Boolean) {
+    fun tagCheckingChanged(tag: Int) {
         val tags = _filtersForm.value.tags.toMutableList()
-        tags[tag] = TagChecking(tags[tag].name, checked)
+        tags[tag] = TagChecking(tags[tag].name, !tags[tag].ckecked)
         _filtersForm.value = _filtersForm.value.copy(tags = tags)
+    }
+
+    fun sortingChanged(sorting: Int) {
+        _sortingForm.value = sorting
     }
 
     fun reloadDataFinished() {
@@ -131,6 +139,7 @@ class SearchScreenViewModel @Inject constructor() : ViewModel() {
     companion object {
         private const val LIMIT = 20
 
+        private val TYPES_OF_SORTING = listOf("SORT_NEWNESS", "SORT_RATING", "SORT_POPULARITY")
         private const val TAGS = "tags"
         private const val CALORIES = "calories"
         private const val SUGAR = "sugar"

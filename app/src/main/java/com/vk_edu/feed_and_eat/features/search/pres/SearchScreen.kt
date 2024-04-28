@@ -19,10 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -33,24 +32,32 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -67,6 +74,7 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 import kotlinx.coroutines.runBlocking
 
 
+private val TYPES_OF_SORTING = listOf("newness", "rating", "popularity")
 private const val CALORIES_INT = 0
 private const val SUGAR_INT = 1
 private const val CARBOHYDRATES_INT = 2
@@ -90,7 +98,7 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
 
             SearchCard(viewModel = viewModel)
 
-            FiltersBlock(viewModel = viewModel)
+            SortingAndFiltersBlock(viewModel = viewModel)
         }
     }
 }
@@ -204,13 +212,19 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun FiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxHeight()
             .fillMaxWidth(0.666667f)
             .background(colorResource(R.color.white), RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
-            .border(2.dp, colorResource(R.color.dark_cyan), RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
+            .border(
+                2.dp,
+                colorResource(R.color.dark_cyan),
+                RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp)
+            )
+            .clip(RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -218,6 +232,8 @@ fun FiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier
                 .fillMaxSize()
                 .padding(12.dp)
         ) {
+            Sorting(viewModel = viewModel)
+
             TagsFilter(viewModel = viewModel)
 
             NutrientFilter(title = "Calories", nutrient = CALORIES_INT, viewModel = viewModel)
@@ -298,56 +314,105 @@ fun NutrientFilter(title: String, nutrient: Int, viewModel: SearchScreenViewMode
 fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
     Column (
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .height(180.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
         LightText(text = "Tags", fontSize = MediumText)
-        FlowRow(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(180.dp)
                 .background(colorResource(R.color.white_cyan), RoundedCornerShape(8.dp))
                 .border(1.dp, colorResource(R.color.medium_cyan), RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .verticalScroll(rememberScrollState())
         ) {
-            for (index in 0 until viewModel.filtersForm.value.tags.size) {
-                Card(
-                    shape = RoundedCornerShape(4.dp),
-                    colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
-                        colorResource(R.color.white), colorResource(R.color.white)),
-                    modifier = modifier.shadow(12.dp, RoundedCornerShape(8.dp))
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier.padding(4.dp)
-                        //.shadow(12.dp, RoundedCornerShape(8.dp))
+            FlowRow(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(8.dp)
+            ) {
+                val localDensity = LocalDensity.current
+                var rowHeightDp by remember { mutableStateOf(100.dp) }
+                for (index in 0 until viewModel.filtersForm.value.tags.size) {
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        colors = CardColors(
+                            colorResource(R.color.white), colorResource(R.color.white),
+                            colorResource(R.color.white), colorResource(R.color.white)
+                        ),
+                        modifier = Modifier.height(rowHeightDp),
+                        onClick = { viewModel.tagCheckingChanged(index) }
                     ) {
-                        Checkbox(
-                            checked = viewModel.filtersForm.value.tags[index].ckecked,
-                            colors = CheckboxColors(
-                                colorResource(R.color.black),
-                                colorResource(R.color.black),
-                                colorResource(R.color.white),
-                                colorResource(R.color.white),
-                                colorResource(R.color.white),
-                                colorResource(R.color.white),
-                                colorResource(R.color.white),
-                                colorResource(R.color.black),
-                                colorResource(R.color.black),
-                                colorResource(R.color.black),
-                                colorResource(R.color.black),
-                                colorResource(R.color.black)
-                            ),
-                            modifier = Modifier.size(18.dp),
-                            onCheckedChange = { viewModel.tagCheckingChanged(index, it) }
-                        )
-                        DarkText(
-                            text = viewModel.filtersForm.value.tags[index].name,
-                            fontSize = SmallText
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(8.dp, 4.dp)
+                        ) {
+                            Checkbox(
+                                checked = viewModel.filtersForm.value.tags[index].ckecked,
+                                colors = CheckboxColors(
+                                    colorResource(R.color.black),
+                                    colorResource(R.color.black),
+                                    colorResource(R.color.white),
+                                    colorResource(R.color.white),
+                                    colorResource(R.color.white),
+                                    colorResource(R.color.white),
+                                    colorResource(R.color.white),
+                                    colorResource(R.color.black),
+                                    colorResource(R.color.black),
+                                    colorResource(R.color.black),
+                                    colorResource(R.color.black),
+                                    colorResource(R.color.black)
+                                ),
+                                modifier = Modifier.size(16.dp),
+                                onCheckedChange = { viewModel.tagCheckingChanged(index) }
+                            )
+                            DarkText(
+                                text = viewModel.filtersForm.value.tags[index].name,
+                                fontSize = SmallText,
+                                modifier = Modifier
+                                    .onGloballyPositioned { coordinates ->
+                                        val rowHeightDpCurrent = with(localDensity) { coordinates.size.width.toDp() } + 8.dp
+                                        if (rowHeightDpCurrent < rowHeightDp)
+                                            rowHeightDp = rowHeightDpCurrent
+                                    }
+                            )
+                        }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        LightText(text = "Sort by", fontSize = MediumText)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (index in 0..2) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = viewModel.sortingForm.value == index,
+                        colors = RadioButtonColors(
+                            colorResource(R.color.black), colorResource(R.color.black),
+                            colorResource(R.color.black), colorResource(R.color.black)
+                        ),
+                        modifier = Modifier.height(16.dp),
+                        onClick = { viewModel.sortingChanged(index) }
+                    )
+                    ClickableText(
+                        text = AnnotatedString(TYPES_OF_SORTING[index]),
+                        style = TextStyle(
+                            fontSize = MediumText,
+                            color = colorResource(R.color.black),
+                            fontWeight = if (viewModel.sortingForm.value == index) FontWeight.Bold else FontWeight.Normal
+                        ),
+                        onClick = { viewModel.sortingChanged(index) }
+                    )
                 }
             }
         }
