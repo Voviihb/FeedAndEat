@@ -1,18 +1,16 @@
 package com.vk_edu.feed_and_eat.features.cooking.domain
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
-import com.vk_edu.feed_and_eat.MainActivity
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.notifications.Notifications
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -88,6 +86,8 @@ class TimerService : Service() {
                     secondsLeft--
                     timerValues[timerId] = secondsLeft
                 }
+                sendOnFinishNotification(timerId)
+                stopTimer(timerId)
             }
             timerJobs[timerId] = job
             timerValues[timerId] = time
@@ -146,19 +146,11 @@ class TimerService : Service() {
     }
 
     private fun createNotification(): Notification {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this, ACTIVITY_INTENT_REQUEST_CODE, notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE
+        val pendingIntent = Notifications.getPendingIntentForTimer(
+            this,
+            CHANNEL_ID_TIMER,
+            CHANNEL_NAME_TIMER,
+            NotificationManager.IMPORTANCE_DEFAULT
         )
 
         val cancelAllIntent = Intent(this, TimerService::class.java)
@@ -173,7 +165,7 @@ class TimerService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID_TIMER)
             .setContentTitle(FEED_AND_EAT_TIMER)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -219,9 +211,28 @@ class TimerService : Service() {
     private fun updateNotification() {
         val manager = getSystemService(NotificationManager::class.java)
         manager.notify(
-            1,
+            TIMER_NOTIFICATION_ID,
             createNotification()
         )
+    }
+
+    private fun sendOnFinishNotification(timerId: String?) {
+        val pendingIntent = Notifications.getPendingIntentForTimer(
+            this,
+            CHANNEL_ID_ON_DONE,
+            CHANNEL_NAME_ON_DONE,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID_ON_DONE)
+            .setContentTitle(FEED_AND_EAT_TIMER)
+            .setAutoCancel(true)
+            .setContentText(getString(R.string.timer_is_done, timerId))
+            .setSmallIcon(R.drawable.logo_feed_and_eat)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.notify(timerId, ON_DONE_NOTIFICATION_ID, notification)
     }
 
     override fun onDestroy() {
@@ -236,12 +247,16 @@ class TimerService : Service() {
     }
 
     companion object {
-        private const val CHANNEL_ID = "TimerServiceChannel"
-        private const val CHANNEL_NAME = "Timer Service Channel"
+        private const val CHANNEL_ID_TIMER = "TimerServiceChannel"
+        private const val CHANNEL_ID_ON_DONE = "Timer OnDone"
+        private const val CHANNEL_NAME_TIMER = "Timer Service Channel"
+        private const val CHANNEL_NAME_ON_DONE = "Timer OnDone Notifications"
         private const val FEED_AND_EAT_TIMER = "Feed&Eat timer"
 
-        private const val ACTIVITY_INTENT_REQUEST_CODE = 0
+        const val ACTIVITY_INTENT_REQUEST_CODE = 0
         private const val CANCEL_INTENT_REQUEST_CODE = 1
+        private const val TIMER_NOTIFICATION_ID = 1
+        private const val ON_DONE_NOTIFICATION_ID = 2
 
         const val ACTION = "action"
         const val TIMER_ID = "timerId"
