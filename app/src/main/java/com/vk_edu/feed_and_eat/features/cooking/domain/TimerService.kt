@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.vk_edu.feed_and_eat.MainActivity
@@ -18,8 +17,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
@@ -32,11 +31,11 @@ class TimerService : Service() {
     private var isStopWatchRunning = false
     private var updateTimer: Timer? = null
 
-    private val _activeTimerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
-    val activeTimerUpdates: SharedFlow<Map<String, Int>> = _activeTimerUpdates
+    private val _activeTimerUpdates = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val activeTimerUpdates: StateFlow<Map<String, Int>> = _activeTimerUpdates
 
-    private val _pausedTimerUpdates = MutableSharedFlow<Map<String, Int>>(replay = 1)
-    val pausedTimerUpdates: SharedFlow<Map<String, Int>> = _pausedTimerUpdates
+    private val _pausedTimerUpdates = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val pausedTimerUpdates: StateFlow<Map<String, Int>> = _pausedTimerUpdates
 
 
     inner class LocalBinder : Binder() {
@@ -158,8 +157,8 @@ class TimerService : Service() {
         }
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, notificationIntent,
-            PendingIntent.FLAG_MUTABLE
+            this, ACTIVITY_INTENT_REQUEST_CODE, notificationIntent,
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val cancelAllIntent = Intent(this, TimerService::class.java)
@@ -169,33 +168,55 @@ class TimerService : Service() {
         )
         val pendingCancelAllIntent = PendingIntent.getService(
             this,
-            1,
+            CANCEL_INTENT_REQUEST_CODE,
             cancelAllIntent,
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        Log.d("Taag", "create notification")
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(FEED_AND_EAT_TIMER)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setContentText("Running ${timerJobs.keys.size} timers")
+            .setContentText(getString(R.string.running_timers, timerJobs.keys.size.toString()))
             .setSmallIcon(R.drawable.logo_feed_and_eat)
             .setContentIntent(pendingIntent)
-            .addAction(R.drawable.cooked_icon, "Cancel all", pendingCancelAllIntent)
+            .addAction(
+                R.drawable.cooked_icon,
+                getString(R.string.cancel_all), pendingCancelAllIntent
+            )
 
         var style = NotificationCompat.InboxStyle()
         timerJobs.forEach { (timerId, _) ->
-            style = style.addLine("$timerId is at ${timerValues[timerId]} seconds")
+            val hours: Int? = timerValues[timerId]?.div(60)?.div(60)
+            val minutes: Int? = timerValues[timerId]?.div(60)
+            val seconds: Int? = timerValues[timerId]?.rem(60)
+            style =
+                style.addLine(
+                    getString(R.string.timer_is_at).format(
+                        timerId,
+                        hours,
+                        minutes,
+                        seconds
+                    )
+                )
         }
         pausedTimers.forEach { (timerId, _) ->
-            style = style.addLine("$timerId paused, ${pausedTimers[timerId]} seconds left")
+            val hours: Int? = pausedTimers[timerId]?.div(60)?.div(60)
+            val minutes: Int? = pausedTimers[timerId]?.div(60)
+            val seconds: Int? = pausedTimers[timerId]?.rem(60)
+            style = style.addLine(
+                getString(R.string.paused_timer_is_at).format(
+                    timerId,
+                    hours,
+                    minutes,
+                    seconds
+                )
+            )
         }
         return notification.setStyle(style).build()
     }
 
     private fun updateNotification() {
-        Log.d("Taag", "update notification")
         val manager = getSystemService(NotificationManager::class.java)
         manager.notify(
             1,
@@ -218,6 +239,9 @@ class TimerService : Service() {
         private const val CHANNEL_ID = "TimerServiceChannel"
         private const val CHANNEL_NAME = "Timer Service Channel"
         private const val FEED_AND_EAT_TIMER = "Feed&Eat timer"
+
+        private const val ACTIVITY_INTENT_REQUEST_CODE = 0
+        private const val CANCEL_INTENT_REQUEST_CODE = 1
 
         const val ACTION = "action"
         const val TIMER_ID = "timerId"

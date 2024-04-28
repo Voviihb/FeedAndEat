@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.cooking.pres
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,7 +49,6 @@ fun CookingScreen(
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = {
-                    Log.d("Taaag", "Start timer$counter")
                     start("timer$counter", 10 * counter)
                     viewModel.updateCounter(1)
                 }) {
@@ -107,6 +106,7 @@ fun CookingScreen(
 
                 Button(onClick = {
                     cancel()
+                    viewModel.updateCounter(-counter)
                 }) {
                     Column(
                         modifier = Modifier
@@ -120,10 +120,30 @@ fun CookingScreen(
             }
             Column {
                 activeTimerState.value.forEach { (timerId, secondsLeft) ->
-                    Text(text = "Timer $timerId has $secondsLeft seconds left")
+                    val hours: Int = secondsLeft.div(60).div(60)
+                    val minutes: Int = secondsLeft.div(60)
+                    val seconds: Int = secondsLeft.rem(60)
+                    Text(
+                        text = stringResource(id = R.string.timer_is_at).format(
+                            timerId,
+                            hours,
+                            minutes,
+                            seconds
+                        ), fontSize = 20.sp
+                    )
                 }
                 pausedTimerState.value.forEach { (timerId, secondsLeft) ->
-                    Text(text = "Timer $timerId paused, $secondsLeft seconds left")
+                    val hours: Int = secondsLeft.div(60).div(60)
+                    val minutes: Int = secondsLeft.div(60)
+                    val seconds: Int = secondsLeft.rem(60)
+                    Text(
+                        text = stringResource(id = R.string.paused_timer_is_at).format(
+                            timerId,
+                            hours,
+                            minutes,
+                            seconds
+                        ), fontSize = 20.sp
+                    )
                 }
             }
         }
