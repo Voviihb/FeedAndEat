@@ -27,6 +27,8 @@ class SearchScreenViewModel @Inject constructor(
         SearchPagingSource(::searchRecipes, searchFilters)
     }.flow.cachedIn(viewModelScope)
 
+    private var currentPage = 1
+
     private var searchFilters = SearchFilters(limit = LIMIT.toLong())
 
     private val _searchForm = mutableStateOf("")
@@ -156,19 +158,17 @@ class SearchScreenViewModel @Inject constructor(
         _reloadData.value = false
     }
 
-    fun searchRecipes(
-        filters: SearchFilters,
-        direction: Direction
-    ): List<CardDataModel> {
+    fun searchRecipes(page: Int): List<CardDataModel> {
         var result = listOf<CardDataModel>()
         viewModelScope.launch {
+            val direction = if (page >= currentPage) Direction.FORWARD else Direction.BACK
             try {
                 if (
                     (_startOfNextDocument == null && _endOfPrevDocument == null) ||
                     (direction == Direction.FORWARD && _startOfNextDocument != null) ||
                     (direction == Direction.BACK && _endOfPrevDocument != null)
                 ) _recipesRepo.loadSearchRecipes(
-                    filters = filters,
+                    filters = searchFilters,
                     endOfPrevDocument = if (direction == Direction.BACK) _endOfPrevDocument else null,
                     startOfNextDocument = if (direction == Direction.FORWARD) _startOfNextDocument else null
                 ).collect { response ->
@@ -182,8 +182,6 @@ class SearchScreenViewModel @Inject constructor(
                                     _endOfPrevDocument = null
                             }
                             else {
-                                _startOfNextDocument = response.data.startOfNextDocument
-                                _endOfPrevDocument = response.data.endOfPrevDocument
                                 result = response.data.recipes.map { fullRecipe ->
                                     CardDataModel(
                                         link = fullRecipe.image ?: "",
@@ -194,6 +192,9 @@ class SearchScreenViewModel @Inject constructor(
                                         cooked = fullRecipe.cooked
                                     )
                                 }
+                                _startOfNextDocument = response.data.startOfNextDocument
+                                _endOfPrevDocument = response.data.endOfPrevDocument
+                                currentPage = page
                             }
                         }
 

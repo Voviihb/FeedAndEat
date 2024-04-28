@@ -6,16 +6,13 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 
 class SearchPagingSource(
-    private val searchRecipes: (SearchFilters, Direction) -> List<CardDataModel>,
+    private val searchRecipes: (Int) -> List<CardDataModel>,
     private val searchFilters: SearchFilters
 ): PagingSource<Int, CardDataModel>() {
-    private var currentPage = 1
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CardDataModel> {
         return try {
             val page = params.key ?: 1
-            val response = searchRecipes(searchFilters, if (page >= currentPage) Direction.FORWARD else Direction.BACK)
-            currentPage = page
+            val response = searchRecipes(page)
 
             LoadResult.Page(
                 data = response,
