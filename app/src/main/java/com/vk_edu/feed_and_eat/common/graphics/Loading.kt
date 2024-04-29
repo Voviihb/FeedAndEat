@@ -16,12 +16,11 @@ import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 
 @Composable
-fun LoadingCircular(padding : PaddingValues){
+fun LoadingCircular(modifier: Modifier = Modifier){
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(padding)
     ) {
         CircularProgressIndicator(
             color = colorResource(id = R.color.medium_cyan),

@@ -2,8 +2,8 @@ package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
 data class SearchFilters(
     val sort: Int = 0,
-    val limit: Long,
-    val startsWith: String? = null,
+    val limit: Int,
+    val startsWith: String = "",
     val tags: List<String> = listOf(),
     val caloriesMin: Double = 0.0,
     val caloriesMax: Double = 10e9,

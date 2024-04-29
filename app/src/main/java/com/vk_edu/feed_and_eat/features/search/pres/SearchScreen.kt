@@ -76,18 +76,17 @@ import kotlinx.coroutines.runBlocking
 
 
 private val TYPES_OF_SORTING = listOf("newness", "rating", "popularity")
-private const val CALORIES_INT = 0
-private const val SUGAR_INT = 1
-private const val CARBOHYDRATES_INT = 2
-private const val FAT_INT = 3
-private const val PROTEIN_INT = 4
+private const val CALORIES = 0
+private const val SUGAR = 1
+private const val CARBOHYDRATES = 2
+private const val FAT = 3
+private const val PROTEIN = 4
 
 @Composable
 fun SearchScreen(
     navigateToRoute: (String) -> Unit,
     viewModel: SearchScreenViewModel = hiltViewModel()
 ) {
-    val loading by viewModel.loading
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
     ) { padding ->
@@ -97,15 +96,12 @@ fun SearchScreen(
                 .background(colorResource(R.color.pale_cyan))
                 .padding(padding)
         ) {
-            if (loading) {
-                LoadingCircular(padding = PaddingValues(4.dp))
-            } else {
+            SearchCard(viewModel = viewModel)
+            //SortingAndFiltersBlock(viewModel = viewModel)
+            if (viewModel.loading.value)
+                LoadingCircular()
+            else
                 CardsGrid(viewModel = viewModel)
-
-                SearchCard(viewModel = viewModel)
-
-                SortingAndFiltersBlock(viewModel = viewModel)
-            }
         }
     }
 }
@@ -212,7 +208,8 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
         state = gridState,
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp)
+        contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp),
+        modifier = modifier.fillMaxSize()
     ) {
         items(cardsData.itemCount) { index ->
             val cardData = cardsData[index]
@@ -255,15 +252,15 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier 
 
             TagsFilter(viewModel = viewModel)
 
-            NutrientFilter(title = "Calories", nutrient = CALORIES_INT, viewModel = viewModel)
-            NutrientFilter(title = "Sugar", nutrient = SUGAR_INT, viewModel = viewModel)
+            NutrientFilter(title = "Calories", nutrient = CALORIES, viewModel = viewModel)
+            NutrientFilter(title = "Sugar", nutrient = SUGAR, viewModel = viewModel)
             NutrientFilter(
                 title = "Carbohydrates",
-                nutrient = CARBOHYDRATES_INT,
+                nutrient = CARBOHYDRATES,
                 viewModel = viewModel
             )
-            NutrientFilter(title = "Fat", nutrient = FAT_INT, viewModel = viewModel)
-            NutrientFilter(title = "Protein", nutrient = PROTEIN_INT, viewModel = viewModel)
+            NutrientFilter(title = "Fat", nutrient = FAT, viewModel = viewModel)
+            NutrientFilter(title = "Protein", nutrient = PROTEIN, viewModel = viewModel)
         }
     }
 }

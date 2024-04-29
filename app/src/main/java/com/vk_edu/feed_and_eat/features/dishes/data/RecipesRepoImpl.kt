@@ -90,9 +90,9 @@ class RecipesRepoImpl @Inject constructor(
                 Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
             ))
 
-        if (filters.startsWith != null) {
+        if (filters.startsWith != "") {
             query = query.whereGreaterThanOrEqualTo(NAME_FIELD, filters.startsWith)
-                .whereLessThanOrEqualTo(NAME_FIELD, "${filters.startsWith}\\uf8ff")
+                .whereLessThanOrEqualTo(NAME_FIELD, "${filters.startsWith}\uf8ff")
         }
         if (filters.tags.isNotEmpty())
             query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
@@ -114,11 +114,11 @@ class RecipesRepoImpl @Inject constructor(
         }
 
         val snapshot = if (startOfNextDocument == null && endOfPrevDocument == null) {
-            query.limit(filters.limit).get().await()
+            query.limit(filters.limit.toLong()).get().await()
         } else if (startOfNextDocument != null) {
-            query.startAfter(startOfNextDocument).limit(filters.limit).get().await()
+            query.startAfter(startOfNextDocument).limit(filters.limit.toLong()).get().await()
         } else {
-            query.endBefore(endOfPrevDocument).limitToLast(filters.limit).get().await()
+            query.endBefore(endOfPrevDocument).limitToLast(filters.limit.toLong()).get().await()
         }
         
         val queryResult = mutableListOf<Recipe>()
@@ -127,7 +127,7 @@ class RecipesRepoImpl @Inject constructor(
             queryResult.add(recipe)
         }
         val startDocument = if (snapshot.size() > 0) snapshot.documents[0] else null
-        val endDocument = if (snapshot.size().toLong() == filters.limit) snapshot.documents[snapshot.size() - 1] else null
+        val endDocument = if (snapshot.size() == filters.limit) snapshot.documents[snapshot.size() - 1] else null
         return@repoTryCatchBlock PaginationResult(
             recipes = queryResult,
             endOfPrevDocument = startDocument,

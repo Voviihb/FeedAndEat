@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,12 +26,12 @@ class SearchScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
     val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = LIMIT)) {
-        SearchPagingSource(::searchRecipes, searchFilters)
+        SearchPagingSource(::searchRecipes, LIMIT)
     }.flow.cachedIn(viewModelScope)
 
     private var currentPage = 1
 
-    private var searchFilters = SearchFilters(limit = LIMIT.toLong())
+    private var searchFilters = SearchFilters(limit = LIMIT)
 
     private val _searchForm = mutableStateOf("")
     val searchForm: State<String> = _searchForm
@@ -97,13 +99,6 @@ class SearchScreenViewModel @Inject constructor(
         _searchForm.value = value
     }
 
-    private fun getRealNutrientRange(nutrient: Int): List<String?> {
-        return listOf(
-            _filtersForm.value.nutrients[nutrient].min.ifEmpty { null },
-            _filtersForm.value.nutrients[nutrient].max.ifEmpty { null }
-        )
-    }
-
     fun setSortingAndFilters() {
         viewModelScope.launch {
             try {
@@ -158,23 +153,30 @@ class SearchScreenViewModel @Inject constructor(
         _reloadData.value = false
     }
 
-    fun searchRecipes(page: Int): List<CardDataModel> {
-        var result = listOf<CardDataModel>()
-        viewModelScope.launch {
+    suspend fun searchRecipes(page: Int): List<CardDataModel> {
+        val result = viewModelScope.async {
+            var result = listOf<CardDataModel>()
             val direction = if (page >= currentPage) Direction.FORWARD else Direction.BACK
+            if (
+                !((_startOfNextDocument == null && _endOfPrevDocument == null) ||
+                (direction == Direction.FORWARD && _startOfNextDocument != null) ||
+                (direction == Direction.BACK && _endOfPrevDocument != null))
+            ) {
+                Log.d("Scip", "me")
+                return@async result
+            }
+
             try {
-                if (
-                    (_startOfNextDocument == null && _endOfPrevDocument == null) ||
-                    (direction == Direction.FORWARD && _startOfNextDocument != null) ||
-                    (direction == Direction.BACK && _endOfPrevDocument != null)
-                ) _recipesRepo.loadSearchRecipes(
+                _recipesRepo.loadSearchRecipes(
                     filters = searchFilters,
                     endOfPrevDocument = if (direction == Direction.BACK) _endOfPrevDocument else null,
                     startOfNextDocument = if (direction == Direction.FORWARD) _startOfNextDocument else null
                 ).collect { response ->
+                    Log.d("Tag", response.toString())
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
+                            Log.d("Success", "me")
                             if (response.data.recipes.isEmpty()) {
                                 if (direction == Direction.FORWARD)
                                     _startOfNextDocument = null
@@ -195,11 +197,13 @@ class SearchScreenViewModel @Inject constructor(
                                 _startOfNextDocument = response.data.startOfNextDocument
                                 _endOfPrevDocument = response.data.endOfPrevDocument
                                 currentPage = page
+                                Log.d("Result", "me")
                             }
                         }
 
                         is Response.Failure -> {
                             onError(response.e)
+                            Log.d("Error", "me")
                         }
                     }
                 }
@@ -207,8 +211,10 @@ class SearchScreenViewModel @Inject constructor(
                 onError(e)
             }
             _loading.value = false
+            Log.d("Return", "me")
+            return@async result
         }
-        return result
+        return result.await()
     }
 
     private fun onError(message: Exception?) {
