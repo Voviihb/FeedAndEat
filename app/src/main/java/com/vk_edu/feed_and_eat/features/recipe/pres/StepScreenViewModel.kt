@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,8 +16,6 @@ class StepScreenViewModel @Inject constructor(
 
     var isRunning : MutableState<Boolean> = mutableStateOf(false)
 
-    var job : MutableState<Job?> = mutableStateOf<Job?>(null)
-
     var displaySlider : MutableState<Boolean> = mutableStateOf(true)
 
     var currentTimer : MutableState<Int> = mutableStateOf(0)
@@ -26,16 +23,16 @@ class StepScreenViewModel @Inject constructor(
     var changeValue : (Int) -> Unit = {currentTimer.value += it}
 
     fun setRemainingMillis(value : Long){
-            remainingMillis.value = value
+        remainingMillis.value = value
+        sliderPosition.value = value
+        isRunning.value = false
+        displaySlider.value = true
     }
-    fun dropTimers(){
-        currentTimer.value = 0
-    }
+
     fun clear(){
         currentTimer.value = 0
         remainingMillis.value = 0L
         isRunning.value = false
         sliderPosition.value = 0L
-        job.value = null
     }
 }

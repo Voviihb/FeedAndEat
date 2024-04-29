@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Text
@@ -177,53 +178,32 @@ fun ButtonContainer(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
             .fillMaxWidth()
+            .height(60.dp)
             .padding(4.dp)
     ) {
         val texts = listOf("back", "finish", "next")
-        Button(
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonColors(
-                colorResource(id = R.color.white_cyan),
-                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
-            onClick = {
-                if (id > 0) navigateToStep(id - 1) else navigateToRecipe(Routes.Recipe.route)
-                      clear()
-                      },
-            modifier = Modifier
-                .width(112.dp)
-                .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(8.dp))
-                .background(colorResource(id = R.color.white_cyan), RoundedCornerShape(8.dp))
-        ) {
-            Text(text = texts[0])
-        }
-        Button(
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonColors(
-                colorResource(id = R.color.dark_cyan),
-                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
-            onClick = { navigateToRecipe(Routes.Recipe.route) },
-            modifier = Modifier
-                .width(112.dp)
-                .border(2.dp, colorResource(id = R.color.white_cyan), RoundedCornerShape(8.dp))
-                .background(colorResource(id = R.color.dark_cyan), RoundedCornerShape(8.dp))
-        ) {
-            Text(text = texts[1])
-        }
-        Button(
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonColors(
-                colorResource(id = R.color.white_cyan),
-                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
-            onClick = {
-                if (id < maxId) navigateToStep(id + 1) else navigateToRecipe(Routes.Congrats.route)
-                      clear()
-                      },
-            modifier = Modifier
-                .width(112.dp)
-                .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(8.dp))
-                .background(colorResource(id = R.color.white_cyan), RoundedCornerShape(8.dp))
-        ) {
-            Text(text = texts[2])
+        val functions = listOf(
+            {if (id > 0) navigateToStep(id - 1) else navigateToRecipe(Routes.Recipe.route); clear()},
+            { navigateToRecipe(Routes.Recipe.route) },
+            {if (id < maxId) navigateToStep(id + 1) else navigateToRecipe(Routes.Congrats.route); clear()}
+            )
+        repeat(3){index ->
+            Button(
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    if (index % 2 == 0) colorResource(id = R.color.white_cyan) else colorResource(id = R.color.cyan_fae),
+                    contentColor = colorResource(R.color.black)),
+                border = BorderStroke(
+                    2.dp,
+                    color = if (index % 2 == 0) colorResource(id = R.color.dark_cyan) else colorResource(R.color.white_cyan),
+                ),
+                onClick = functions[index],
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .width(112.dp)
+            ) {
+                Text(text = texts[index])
+            }
         }
     }
 }
@@ -247,32 +227,31 @@ fun StepScreen(
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.height(300.dp)
             ){
-
-                if (!data.timers.isNullOrEmpty()){
-                    val constant = data.timers.sumOf { it.number ?: 0 }
-                    val mins = data.timers.sumOf { it.lowerLimit ?: 0 }
-                    if (mins == 0){
-                        TimeInfoCard(time = constant)
+                Column {
+                    if (!data.timers.isNullOrEmpty()){
+                        val constant = data.timers.sumOf { it.number ?: 0 }
+                        val mins = data.timers.sumOf { it.lowerLimit ?: 0 }
+                        if (mins == 0){
+                            TimeInfoCard(time = constant)
+                        } else {
+                            val maxs = data.timers.sumOf { it.upperLimit ?: 0 }
+                            TimeInfoCard(mins, maxs)
+                        }
                     } else {
-                        val maxs = data.timers.sumOf { it.upperLimit ?: 0 }
-                        TimeInfoCard(mins, maxs)
+                        TimeInfoCard(null)
                     }
-                } else {
-                    TimeInfoCard(null)
+                    TextContainer(data.paragraph)
                 }
-                TextContainer(data.paragraph)
+
             }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ){
-                if (!data.timers.isNullOrEmpty()) {
-                    CountdownListTimer(
-                        data.timers,
-                        viewModel
-                    )
-                }
+            if (!data.timers.isNullOrEmpty()) {
+                TimerContainer(
+                    data.timers,
+                    viewModel
+                )
             }
             ButtonContainer(navigateToStep, navigateToRecipe, { viewModel.clear() }, id, maxId)
         }

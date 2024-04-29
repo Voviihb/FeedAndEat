@@ -19,6 +19,7 @@
     <string name="repeat">повторить</string>
     <string name="image">так выглядит рецепт</string>
     <string name = "unlimited">не ограничено</string>
+    <string name="cangonextstep">можете переходить к следующему шагу</string>
     <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
@@ -41,6 +42,10 @@
     <string name="exception_occured">Произошла ошибка!</string>
     <string name="password_differs">Введенные пароли отличаются!</string>
     <string name="authenticated">Authenticated!</string>
+    <string name="success">успех</string>
+    <string name="to_play">запустить</string>
+    <string name="to_drop">начать заново</string>
+    <string name="to_pause">поставить на паузу</string>
     <!--    profile -->
     <string name="user_profile_icon">User profile icon</string>
     <string name="e_mail">E-Mail:</string>

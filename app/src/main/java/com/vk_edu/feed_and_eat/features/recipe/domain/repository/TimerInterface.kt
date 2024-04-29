@@ -2,13 +2,12 @@ package com.vk_edu.feed_and_eat.features.recipe.domain.repository
 
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Job
 
 interface TimerInterface{
-    fun startTimer(millis : Long)
-    fun getRunningTimers():Flow<Long>
-    fun endTimer(timer : Timer)
-    fun stopTimer(timer: Timer)
+    fun getRunningJobs(): Job
+    fun endJob()
+    fun startJob()
 }
 
 @IgnoreExtraProperties
