@@ -9,7 +9,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.google.firebase.firestore.DocumentSnapshot
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
@@ -44,9 +43,6 @@ class SearchScreenViewModel @Inject constructor(
 
     private var _reloadData = mutableStateOf(false)
     val reloadData: State<Boolean> = _reloadData
-
-    private var _startOfNextDocument: DocumentSnapshot? = null
-    private var _endOfPrevDocument: DocumentSnapshot? = null
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -153,52 +149,32 @@ class SearchScreenViewModel @Inject constructor(
         _reloadData.value = false
     }
 
-    suspend fun searchRecipes(page: Int): List<CardDataModel> {
+    suspend fun searchRecipes(pagePointer: PagePointer): CardsAndSnapshots {
         val result = viewModelScope.async {
-            var result = listOf<CardDataModel>()
-            val direction = if (page >= currentPage) Direction.FORWARD else Direction.BACK
-            if (
-                !((_startOfNextDocument == null && _endOfPrevDocument == null) ||
-                (direction == Direction.FORWARD && _startOfNextDocument != null) ||
-                (direction == Direction.BACK && _endOfPrevDocument != null))
-            ) {
-                Log.d("Scip", "me")
-                return@async result
-            }
-
+            var result = CardsAndSnapshots(listOf(), null, null)
             try {
                 _recipesRepo.loadSearchRecipes(
                     filters = searchFilters,
-                    endOfPrevDocument = if (direction == Direction.BACK) _endOfPrevDocument else null,
-                    startOfNextDocument = if (direction == Direction.FORWARD) _startOfNextDocument else null
+                    type = pagePointer.type,
+                    documentSnapshot = pagePointer.documentSnapshot
                 ).collect { response ->
                     Log.d("Tag", response.toString())
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
                             Log.d("Success", "me")
-                            if (response.data.recipes.isEmpty()) {
-                                if (direction == Direction.FORWARD)
-                                    _startOfNextDocument = null
-                                else
-                                    _endOfPrevDocument = null
+                            val cards = response.data.recipes.map { fullRecipe ->
+                                CardDataModel(
+                                    link = fullRecipe.image ?: "",
+                                    ingredients = fullRecipe.ingredients.size,
+                                    steps = fullRecipe.instructions.size,
+                                    name = fullRecipe.name,
+                                    rating = fullRecipe.rating,
+                                    cooked = fullRecipe.cooked
+                                )
                             }
-                            else {
-                                result = response.data.recipes.map { fullRecipe ->
-                                    CardDataModel(
-                                        link = fullRecipe.image ?: "",
-                                        ingredients = fullRecipe.ingredients.size,
-                                        steps = fullRecipe.instructions.size,
-                                        name = fullRecipe.name,
-                                        rating = fullRecipe.rating,
-                                        cooked = fullRecipe.cooked
-                                    )
-                                }
-                                _startOfNextDocument = response.data.startOfNextDocument
-                                _endOfPrevDocument = response.data.endOfPrevDocument
-                                currentPage = page
-                                Log.d("Result", "me")
-                            }
+                            result = CardsAndSnapshots(cards, response.data.startDocument, response.data.endDocument)
+                            Log.d("Result", "me")
                         }
 
                         is Response.Failure -> {

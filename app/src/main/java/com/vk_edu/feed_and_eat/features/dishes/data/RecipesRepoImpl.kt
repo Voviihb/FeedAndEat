@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -11,6 +10,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.Dispatchers
@@ -24,44 +24,9 @@ import javax.inject.Singleton
 class RecipesRepoImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : RecipesRepository {
-    /**
-     * Loads all recipes with pagination, order by DocID
-     * @param limit how many items to load
-     * @param startOfNextDocument is needed to calculate start point for FORWARD pagination
-     * @param endOfPrevDocument is needed to calculate start point for BACKWARD pagination
-     * */
-    override fun loadRecipes(
-        limit: Long,
-        endOfPrevDocument: DocumentSnapshot?,
-        startOfNextDocument: DocumentSnapshot?
-    ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(FieldPath.documentId())
-        val snapshot = if (startOfNextDocument == null && endOfPrevDocument == null) {
-            query.limit(limit).get().await()
-        } else if (startOfNextDocument != null) {
-            query.startAfter(startOfNextDocument).limit(limit).get().await()
-        } else {
-            query.endBefore(endOfPrevDocument).limitToLast(limit).get().await()
-        }
-
-        val queryResult = mutableListOf<Recipe>()
-        for (document in snapshot) {
-            val recipe = document.toObject<Recipe>()
-            queryResult.add(recipe)
-        }
-        val startDocument = if (snapshot.size() > 0) snapshot.documents[0] else null
-        val endDocument = if (snapshot.size().toLong() == limit) snapshot.documents[snapshot.size() - 1] else null
-        return@repoTryCatchBlock PaginationResult(
-            recipes = queryResult,
-            endOfPrevDocument = startDocument,
-            startOfNextDocument = endDocument
-        )
-    }.flowOn(Dispatchers.IO)
-
-
     override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
-        val document = db.collection(RECIPES_COLLECTION)
-            .document(id).get().await()
+        val query = db.collection(RECIPES_COLLECTION).document(id)
+        val document = query.get().await()
         return@repoTryCatchBlock document.toObject<Recipe>()
     }.flowOn(Dispatchers.IO)
 
@@ -73,8 +38,8 @@ class RecipesRepoImpl @Inject constructor(
      * */
     override fun loadSearchRecipes(
         filters: SearchFilters,
-        endOfPrevDocument: DocumentSnapshot?,
-        startOfNextDocument: DocumentSnapshot?
+        type: Type?,
+        documentSnapshot: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
             .where(Filter.and(
@@ -90,10 +55,9 @@ class RecipesRepoImpl @Inject constructor(
                 Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
             ))
 
-        if (filters.startsWith != "") {
+        if (filters.startsWith != "")
             query = query.whereGreaterThanOrEqualTo(NAME_FIELD, filters.startsWith)
                 .whereLessThanOrEqualTo(NAME_FIELD, "${filters.startsWith}\uf8ff")
-        }
         if (filters.tags.isNotEmpty())
             query = query.whereArrayContainsAny(TAGS_FIELD, filters.tags)
 
@@ -113,38 +77,36 @@ class RecipesRepoImpl @Inject constructor(
             }
         }
 
-        val snapshot = if (startOfNextDocument == null && endOfPrevDocument == null) {
-            query.limit(filters.limit.toLong()).get().await()
-        } else if (startOfNextDocument != null) {
-            query.startAfter(startOfNextDocument).limit(filters.limit.toLong()).get().await()
-        } else {
-            query.endBefore(endOfPrevDocument).limitToLast(filters.limit.toLong()).get().await()
+        val snapshot = when (type) {
+            Type.EXCLUDED_FIRST -> {
+                query.startAfter(documentSnapshot).limit(filters.limit.toLong()).get().await()
+            }
+            Type.INCLUDED_FIRST -> {
+                query.startAt(documentSnapshot).limit(filters.limit.toLong()).get().await()
+            }
+            Type.INCLUDED_LAST -> {
+                query.endAt(documentSnapshot).limitToLast(filters.limit.toLong()).get().await()
+            }
+            Type.EXCLUDED_LAST -> {
+                query.endBefore(documentSnapshot).limitToLast(filters.limit.toLong()).get().await()
+            }
+
+            else -> {
+                query.limit(filters.limit.toLong()).get().await()
+            }
         }
-        
-        val queryResult = mutableListOf<Recipe>()
-        for (document in snapshot) {
-            val recipe = document.toObject<Recipe>()
-            queryResult.add(recipe)
-        }
-        val startDocument = if (snapshot.size() > 0) snapshot.documents[0] else null
-        val endDocument = if (snapshot.size() == filters.limit) snapshot.documents[snapshot.size() - 1] else null
+
         return@repoTryCatchBlock PaginationResult(
-            recipes = queryResult,
-            endOfPrevDocument = startDocument,
-            startOfNextDocument = endDocument
+            recipes = snapshot.map { it.toObject<Recipe>() },
+            startDocument = snapshot.documents.ifEmpty { null }?.get(0),
+            endDocument = snapshot.documents.ifEmpty { null }?.get(snapshot.size() - 1)
         )
     }.flowOn(Dispatchers.IO)
 
     override fun loadTags(): Flow<Response<List<String>>> = repoTryCatchBlock {
         val query = db.collection(TAGS_COLLECTION)
         val tags = query.get().await()
-
-        val queryResult = mutableListOf<String>()
-        for (document in tags) {
-            val tag = document.toObject<Tag>()
-            queryResult.add(tag.name)
-        }
-        return@repoTryCatchBlock queryResult
+        return@repoTryCatchBlock tags.map { it.toObject<Tag>().name }
     }.flowOn(Dispatchers.IO)
 
     companion object {
