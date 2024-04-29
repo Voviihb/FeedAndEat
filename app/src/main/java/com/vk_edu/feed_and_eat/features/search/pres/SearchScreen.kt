@@ -64,8 +64,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
-import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
+import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
+import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
@@ -82,11 +83,13 @@ private const val FAT_INT = 3
 private const val PROTEIN_INT = 4
 
 @Composable
-fun SearchScreen(navigateToRoute : (String) -> Unit) {
-    val viewModel: SearchScreenViewModel = hiltViewModel()
-
+fun SearchScreen(
+    navigateToRoute: (String) -> Unit,
+    viewModel: SearchScreenViewModel = hiltViewModel()
+) {
+    val loading by viewModel.loading
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
     ) { padding ->
         Box(
             contentAlignment = Alignment.TopEnd,
@@ -94,11 +97,15 @@ fun SearchScreen(navigateToRoute : (String) -> Unit) {
                 .background(colorResource(R.color.pale_cyan))
                 .padding(padding)
         ) {
-            CardsGrid(viewModel = viewModel)
+            if (loading) {
+                LoadingCircular(padding = PaddingValues(4.dp))
+            } else {
+                CardsGrid(viewModel = viewModel)
 
-            SearchCard(viewModel = viewModel)
+                SearchCard(viewModel = viewModel)
 
-            SortingAndFiltersBlock(viewModel = viewModel)
+                SortingAndFiltersBlock(viewModel = viewModel)
+            }
         }
     }
 }
@@ -108,8 +115,10 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
     Box(modifier = modifier.padding(12.dp, 12.dp, 12.dp, 20.dp)) {
         Card(
             shape = RoundedCornerShape(26.dp),
-            colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
-                colorResource(R.color.white), colorResource(R.color.white)),
+            colors = CardColors(
+                colorResource(R.color.white), colorResource(R.color.white),
+                colorResource(R.color.white), colorResource(R.color.white)
+            ),
             modifier = Modifier
                 .height(52.dp)
                 .fillMaxWidth()
@@ -125,8 +134,16 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                 val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
                     value = viewModel.searchForm.value,
-                    textStyle = TextStyle(fontSize = LargeText, color = colorResource(R.color.black)),
-                    placeholder = { LightText(text = stringResource(R.string.searchLabel), fontSize = LargeText) },
+                    textStyle = TextStyle(
+                        fontSize = LargeText,
+                        color = colorResource(R.color.black)
+                    ),
+                    placeholder = {
+                        LightText(
+                            text = stringResource(R.string.searchLabel),
+                            fontSize = LargeText
+                        )
+                    },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = colorResource(R.color.white),
@@ -156,8 +173,10 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                 )
                 Button(
                     shape = RoundedCornerShape(22.dp),
-                    colors = ButtonColors(colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan),
-                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)),
+                    colors = ButtonColors(
+                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan),
+                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)
+                    ),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(44.dp),
                     onClick = {
@@ -238,7 +257,11 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier 
 
             NutrientFilter(title = "Calories", nutrient = CALORIES_INT, viewModel = viewModel)
             NutrientFilter(title = "Sugar", nutrient = SUGAR_INT, viewModel = viewModel)
-            NutrientFilter(title = "Carbohydrates", nutrient = CARBOHYDRATES_INT, viewModel = viewModel)
+            NutrientFilter(
+                title = "Carbohydrates",
+                nutrient = CARBOHYDRATES_INT,
+                viewModel = viewModel
+            )
             NutrientFilter(title = "Fat", nutrient = FAT_INT, viewModel = viewModel)
             NutrientFilter(title = "Protein", nutrient = PROTEIN_INT, viewModel = viewModel)
         }
@@ -246,8 +269,13 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier 
 }
 
 @Composable
-fun NutrientFilter(title: String, nutrient: Int, viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
-    Column (
+fun NutrientFilter(
+    title: String,
+    nutrient: Int,
+    viewModel: SearchScreenViewModel,
+    modifier: Modifier = Modifier
+) {
+    Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -312,7 +340,7 @@ fun NutrientFilter(title: String, nutrient: Int, viewModel: SearchScreenViewMode
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
-    Column (
+    Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -372,7 +400,8 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                                 fontSize = SmallText,
                                 modifier = Modifier
                                     .onGloballyPositioned { coordinates ->
-                                        val rowHeightDpCurrent = with(localDensity) { coordinates.size.width.toDp() } + 8.dp
+                                        val rowHeightDpCurrent =
+                                            with(localDensity) { coordinates.size.width.toDp() } + 8.dp
                                         if (rowHeightDpCurrent < rowHeightDp)
                                             rowHeightDp = rowHeightDpCurrent
                                     }
