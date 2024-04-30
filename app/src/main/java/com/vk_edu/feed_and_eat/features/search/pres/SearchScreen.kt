@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -37,9 +38,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +55,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -98,10 +102,25 @@ fun SearchScreen(
                 .padding(padding)
         ) {
             CardsGrid(viewModel = viewModel)
-
             SearchCard(viewModel = viewModel)
 
-            SortingAndFiltersBlock(viewModel = viewModel)
+            val rightBlockEnabled = remember { mutableStateOf(false) }
+            Row(modifier = Modifier.fillMaxSize()) {
+                SortingAndFiltersButton(
+                    rightBlockEnabled = rightBlockEnabled,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                )
+                if (rightBlockEnabled.value)
+                    SortingAndFiltersBlock(
+                        viewModel = viewModel,
+                        rightBlockEnabled = rightBlockEnabled,
+                        modifier = Modifier
+                            .weight(3f)
+                            .fillMaxHeight()
+                    )
+            }
         }
     }
 }
@@ -228,51 +247,103 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
         }
 }
 
-
 @Composable
-fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxHeight()
-            .fillMaxWidth(0.666667f)
-            .background(colorResource(R.color.white), RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
-            .border(
-                2.dp,
-                colorResource(R.color.dark_cyan),
-                RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp)
-            )
-            .clip(RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
-            .verticalScroll(rememberScrollState())
-    ) {
+fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, rightBlockEnabled: MutableState<Boolean>, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxHeight()) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(60.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .shadow(12.dp, RoundedCornerShape(24.dp, 0.dp, 0.dp, 0.dp))
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .shadow(12.dp, RoundedCornerShape(0.dp, 0.dp, 0.dp, 24.dp))
+            )
+        }
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .background(
+                    colorResource(R.color.white),
+                    RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp)
+                )
+                .border(
+                    2.dp,
+                    colorResource(R.color.dark_cyan),
+                    RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp)
+                )
+                .clip(RoundedCornerShape(24.dp, 0.dp, 0.dp, 24.dp))
+                .verticalScroll(rememberScrollState())
         ) {
-            Sorting(viewModel = viewModel)
-
-            TagsFilter(viewModel = viewModel)
-
-            NutrientFilter(title = "Calories", nutrient = CALORIES, viewModel = viewModel)
-            NutrientFilter(title = "Sugar", nutrient = SUGAR, viewModel = viewModel)
-            NutrientFilter(title = "Carbohydrates", nutrient = CARBOHYDRATES, viewModel = viewModel)
-            NutrientFilter(title = "Fat", nutrient = FAT, viewModel = viewModel)
-            NutrientFilter(title = "Protein", nutrient = PROTEIN, viewModel = viewModel)
-
-            OutlinedButton(
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonColors(
-                    colorResource(R.color.white_cyan), colorResource(R.color.white_cyan),
-                    colorResource(R.color.white_cyan), colorResource(R.color.white_cyan)
-                ),
-                border = BorderStroke(2.dp, colorResource(R.color.medium_cyan)),
-                contentPadding = PaddingValues(24.dp, 16.dp),
-                onClick = { viewModel.setSortingAndFilters() }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(12.dp)
             ) {
-                DarkText(text = "Apply", fontSize = MediumText)
+                Sorting(viewModel = viewModel)
+
+                TagsFilter(viewModel = viewModel)
+
+                NutrientFilter(title = "Calories", nutrient = CALORIES, viewModel = viewModel)
+                NutrientFilter(title = "Sugar", nutrient = SUGAR, viewModel = viewModel)
+                NutrientFilter(title = "Carbohydrates", nutrient = CARBOHYDRATES, viewModel = viewModel)
+                NutrientFilter(title = "Fat", nutrient = FAT, viewModel = viewModel)
+                NutrientFilter(title = "Protein", nutrient = PROTEIN, viewModel = viewModel)
+
+                OutlinedButton(
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonColors(
+                        colorResource(R.color.white_cyan), colorResource(R.color.white_cyan),
+                        colorResource(R.color.white_cyan), colorResource(R.color.white_cyan)
+                    ),
+                    border = BorderStroke(2.dp, colorResource(R.color.medium_cyan)),
+                    contentPadding = PaddingValues(36.dp, 16.dp),
+                    onClick = {
+                        rightBlockEnabled.value = false
+                        viewModel.setSortingAndFilters()
+                    }
+                ) {
+                    Text(
+                        text = "Apply",
+                        color = colorResource(R.color.dark_cyan),
+                        fontSize = MediumText
+                    )
+                }
             }
+        }
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .height(44.dp + 80.dp)
+                .width(2.dp)
+                .padding(0.dp, 80.dp, 0.dp, 0.dp)
+                .background(colorResource(R.color.white))
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(8.dp)
+                    .fillMaxWidth()
+                    .background(
+                        colorResource(R.color.dark_cyan),
+                        RoundedCornerShape(0.dp, 0.dp, 2.dp, 0.dp)
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .height(8.dp)
+                    .fillMaxWidth()
+                    .background(
+                        colorResource(R.color.dark_cyan),
+                        RoundedCornerShape(0.dp, 2.dp, 0.dp, 0.dp)
+                    )
+            )
         }
     }
 }
@@ -369,8 +440,8 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                 modifier = Modifier.padding(8.dp)
             ) {
                 val localDensity = LocalDensity.current
-                var rowHeightDp by remember { mutableStateOf(100.dp) }
                 for (index in 0 until viewModel.filtersForm.value.tags.size) {
+                    var rowHeightDp by remember { mutableStateOf(100.dp) }
                     Card(
                         shape = RoundedCornerShape(8.dp),
                         colors = CardColors(
@@ -409,8 +480,7 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                                 fontSize = SmallText,
                                 modifier = Modifier
                                     .onGloballyPositioned { coordinates ->
-                                        val rowHeightDpCurrent =
-                                            with(localDensity) { coordinates.size.width.toDp() } + 8.dp
+                                        val rowHeightDpCurrent = with(localDensity) { coordinates.size.height.toDp() } + 8.dp
                                         if (rowHeightDpCurrent < rowHeightDp)
                                             rowHeightDp = rowHeightDpCurrent
                                     }
@@ -451,6 +521,86 @@ fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
                             fontWeight = if (viewModel.sortingForm.value == index) FontWeight.Bold else FontWeight.Normal
                         ),
                         onClick = { viewModel.sortingChanged(index) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SortingAndFiltersButton(rightBlockEnabled: MutableState<Boolean>, modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.TopEnd,
+        modifier = modifier.padding(0.dp, 72.dp, 0.dp, 0.dp)
+    ) {
+        val focusManager = LocalFocusManager.current
+        Button(
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonColors(
+                colorResource(R.color.white), colorResource(R.color.white),
+                colorResource(R.color.white), colorResource(R.color.white)
+            ),
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier
+                .size(60.dp)
+                .shadow(12.dp, RoundedCornerShape(8.dp)),
+            onClick = {
+                focusManager.clearFocus()
+                rightBlockEnabled.value = !rightBlockEnabled.value
+            }
+        ) {
+            Box(
+                contentAlignment = Alignment.CenterEnd,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .border(2.dp, colorResource(R.color.dark_cyan), RoundedCornerShape(8.dp))
+                ) {
+                    Box(modifier = Modifier.padding(4.dp)) {
+                        MediumIcon(
+                            painter = painterResource(R.drawable.filter),
+                            color = colorResource(R.color.medium_cyan)
+                        )
+                    }
+                    Box(
+                        contentAlignment = Alignment.BottomEnd,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp)
+                    ) {
+                        MediumIcon(
+                            painter = painterResource(R.drawable.sorting),
+                            color = colorResource(R.color.medium_cyan)
+                        )
+                    }
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .height(44.dp)
+                        .width(2.dp)
+                        .background(colorResource(R.color.white))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .height(8.dp)
+                            .fillMaxWidth()
+                            .background(
+                                colorResource(R.color.dark_cyan),
+                                RoundedCornerShape(0.dp, 0.dp, 0.dp, 2.dp)
+                            )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .height(8.dp)
+                            .fillMaxWidth()
+                            .background(
+                                colorResource(R.color.dark_cyan),
+                                RoundedCornerShape(2.dp, 0.dp, 0.dp, 0.dp)
+                            )
                     )
                 }
             }
