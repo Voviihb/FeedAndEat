@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
@@ -75,7 +77,6 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 import kotlinx.coroutines.runBlocking
 
 
-private val TYPES_OF_SORTING = listOf("newness", "rating", "popularity")
 private const val CALORIES = 0
 private const val SUGAR = 1
 private const val CARBOHYDRATES = 2
@@ -96,12 +97,11 @@ fun SearchScreen(
                 .background(colorResource(R.color.pale_cyan))
                 .padding(padding)
         ) {
+            CardsGrid(viewModel = viewModel)
+
             SearchCard(viewModel = viewModel)
-            //SortingAndFiltersBlock(viewModel = viewModel)
-            //if (viewModel.loading.value)
-            //    LoadingCircular()
-            //else
-                CardsGrid(viewModel = viewModel)
+
+            SortingAndFiltersBlock(viewModel = viewModel)
         }
     }
 }
@@ -197,33 +197,35 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
     val gridState = rememberLazyGridState()
     val cardsData = viewModel.cardsDataPager.collectAsLazyPagingItems()
     if (viewModel.reloadData.value) {
-        runBlocking {
-            gridState.scrollToItem(0)
-        }
+        runBlocking { gridState.scrollToItem(0) }
+        viewModel.setRefreshFlag()
         cardsData.refresh()
         viewModel.reloadDataFinished()
     }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        state = gridState,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(cardsData.itemCount) { index ->
-            val cardData = cardsData[index]
-            if (cardData != null)
-                DishCard(
-                    link = cardData.link,
-                    ingredients = cardData.ingredients,
-                    steps = cardData.steps,
-                    name = cardData.name,
-                    rating = cardData.rating,
-                    cooked = cardData.cooked
-                )
+    if (viewModel.loading.value && cardsData.itemCount == 0)
+        LoadingCircular()
+    else
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            state = gridState,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp),
+            modifier = modifier.fillMaxSize()
+        ) {
+            items(cardsData.itemCount) { index ->
+                val cardData = cardsData[index]
+                if (cardData != null)
+                    DishCard(
+                        link = cardData.link,
+                        ingredients = cardData.ingredients,
+                        steps = cardData.steps,
+                        name = cardData.name,
+                        rating = cardData.rating,
+                        cooked = cardData.cooked
+                    )
+            }
         }
-    }
 }
 
 
@@ -244,6 +246,7 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier 
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(12.dp)
@@ -254,13 +257,22 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, modifier: Modifier 
 
             NutrientFilter(title = "Calories", nutrient = CALORIES, viewModel = viewModel)
             NutrientFilter(title = "Sugar", nutrient = SUGAR, viewModel = viewModel)
-            NutrientFilter(
-                title = "Carbohydrates",
-                nutrient = CARBOHYDRATES,
-                viewModel = viewModel
-            )
+            NutrientFilter(title = "Carbohydrates", nutrient = CARBOHYDRATES, viewModel = viewModel)
             NutrientFilter(title = "Fat", nutrient = FAT, viewModel = viewModel)
             NutrientFilter(title = "Protein", nutrient = PROTEIN, viewModel = viewModel)
+
+            OutlinedButton(
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonColors(
+                    colorResource(R.color.white_cyan), colorResource(R.color.white_cyan),
+                    colorResource(R.color.white_cyan), colorResource(R.color.white_cyan)
+                ),
+                border = BorderStroke(2.dp, colorResource(R.color.medium_cyan)),
+                contentPadding = PaddingValues(24.dp, 16.dp),
+                onClick = { viewModel.setSortingAndFilters() }
+            ) {
+                DarkText(text = "Apply", fontSize = MediumText)
+            }
         }
     }
 }
@@ -413,6 +425,7 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
 
 @Composable
 fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+    val typesOfSorting = listOf("newness", "rating", "popularity")
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier.fillMaxWidth()
@@ -431,7 +444,7 @@ fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
                         onClick = { viewModel.sortingChanged(index) }
                     )
                     ClickableText(
-                        text = AnnotatedString(TYPES_OF_SORTING[index]),
+                        text = AnnotatedString(typesOfSorting[index]),
                         style = TextStyle(
                             fontSize = MediumText,
                             color = colorResource(R.color.black),

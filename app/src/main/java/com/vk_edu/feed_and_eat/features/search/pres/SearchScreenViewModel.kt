@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -27,8 +27,6 @@ class SearchScreenViewModel @Inject constructor(
     val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = LIMIT)) {
         SearchPagingSource(::searchRecipes, LIMIT)
     }.flow.cachedIn(viewModelScope)
-
-    private var currentPage = 1
 
     private var searchFilters = SearchFilters(limit = LIMIT)
 
@@ -43,6 +41,8 @@ class SearchScreenViewModel @Inject constructor(
 
     private var _reloadData = mutableStateOf(false)
     val reloadData: State<Boolean> = _reloadData
+
+    private var refreshFlag = false
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -80,7 +80,9 @@ class SearchScreenViewModel @Inject constructor(
                 _loading.value = true
 
                 searchFilters = searchFilters.copy(
-                    startsWith = _searchForm.value
+                    startsWith = _searchForm.value.replaceFirstChar {
+                        it.titlecase(Locale.US)
+                    }
                 )
 
                 _reloadData.value = true
@@ -149,11 +151,19 @@ class SearchScreenViewModel @Inject constructor(
         _reloadData.value = false
     }
 
-    suspend fun searchRecipes(pagePointer: PagePointer): CardsAndSnapshots {
+    fun setRefreshFlag() {
+        refreshFlag = true
+    }
+
+    private suspend fun searchRecipes(pagePointer: PagePointer): CardsAndSnapshots {
         val result = viewModelScope.async {
             var result = CardsAndSnapshots(listOf(), null, null)
             try {
-                _recipesRepo.loadSearchRecipes(searchFilters, pagePointer.type, pagePointer.documentSnapshot).collect { response ->
+                _recipesRepo.loadSearchRecipes(
+                    searchFilters,
+                    if (refreshFlag) null else pagePointer.type,
+                    pagePointer.documentSnapshot
+                ).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
@@ -182,6 +192,7 @@ class SearchScreenViewModel @Inject constructor(
                 onError(e)
             }
             _loading.value = false
+            refreshFlag = false
             return@async result
         }
         return result.await()

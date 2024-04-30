@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -80,24 +79,19 @@ class RecipesRepoImpl @Inject constructor(
 
         val snapshot = when (type) {
             Type.EXCLUDED_FIRST -> {
-                Log.d("TYPE", Type.EXCLUDED_FIRST.toString() + documentSnapshot.toString())
-                query.startAfter(documentSnapshot).limit(filters.limit.toLong()).get().await()
+                query.startAfter(documentSnapshot!!).limit(filters.limit.toLong()).get().await()
             }
             Type.INCLUDED_FIRST -> {
-                Log.d("TYPE", Type.EXCLUDED_FIRST.toString() + documentSnapshot.toString())
-                query.startAt(documentSnapshot).limit(filters.limit.toLong()).get().await()
+                query.startAt(documentSnapshot!!).limit(filters.limit.toLong()).get().await()
             }
             Type.INCLUDED_LAST -> {
-                Log.d("TYPE", Type.EXCLUDED_FIRST.toString() + documentSnapshot.toString())
-                query.endAt(documentSnapshot).limitToLast(filters.limit.toLong()).get().await()
+                query.endAt(documentSnapshot!!).limitToLast(filters.limit.toLong()).get().await()
             }
             Type.EXCLUDED_LAST -> {
-                Log.d("TYPE", Type.EXCLUDED_FIRST.toString() + documentSnapshot.toString())
-                query.endBefore(documentSnapshot).limitToLast(filters.limit.toLong()).get().await()
+                query.endBefore(documentSnapshot!!).limitToLast(filters.limit.toLong()).get().await()
             }
 
             else -> {
-                Log.d("TYPE", "NULL")
                 query.limit(filters.limit.toLong()).get().await()
             }
         }
