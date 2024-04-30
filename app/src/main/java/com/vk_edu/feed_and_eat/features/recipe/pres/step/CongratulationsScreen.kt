@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

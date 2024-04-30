@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.cooking.domain
+package com.vk_edu.feed_and_eat.features.recipe.domain
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -21,21 +21,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
+import java.util.concurrent.TimeUnit
 
+data class TimerState(
+    val remainingSec : Int,
+    val totalSec : Int,
+    val isPaused: Boolean,
+)
 
 class TimerService : Service() {
     private val timerJobs = mutableMapOf<String, Job>()
-    private val timerValues = mutableMapOf<String, Int>()
-    private val pausedTimers = mutableMapOf<String, Int>()
+    private val timerValues = mutableMapOf<String, TimerState>()
     private var isStopWatchRunning = false
     private var updateTimer: Timer? = null
 
-    private val _activeTimerUpdates = MutableStateFlow<Map<String, Int>>(emptyMap())
-    val activeTimerUpdates: StateFlow<Map<String, Int>> = _activeTimerUpdates
-
-    private val _pausedTimerUpdates = MutableStateFlow<Map<String, Int>>(emptyMap())
-    val pausedTimerUpdates: StateFlow<Map<String, Int>> = _pausedTimerUpdates
-
+    private val _activeTimerUpdates = MutableStateFlow<Map<String, TimerState>>(emptyMap())
+    val activeTimerUpdates: StateFlow<Map<String, TimerState>> = _activeTimerUpdates
 
     inner class LocalBinder : Binder() {
         fun getService(): TimerService = this@TimerService
@@ -53,7 +54,7 @@ class TimerService : Service() {
             val timerId = intent.getStringExtra(TIMER_ID)
             val time = intent.getIntExtra(TIMER_TIME, 0)
             when (action) {
-                ACTION_START -> startTimer(timerId, time)
+                ACTION_START -> startTimer(timerId, time, time)
                 ACTION_STOP -> stopTimer(timerId)
                 ACTION_PAUSE -> pauseTimer(timerId)
                 ACTION_RESUME -> resumeTimer(timerId)
@@ -69,7 +70,6 @@ class TimerService : Service() {
             updateTimer?.scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
                     _activeTimerUpdates.tryEmit(timerValues.toMap())
-                    _pausedTimerUpdates.tryEmit(pausedTimers.toMap())
                     updateNotification()
                 }
             }, 0, 1000)
@@ -78,20 +78,21 @@ class TimerService : Service() {
         ServiceCompat.startForeground(this, 1, notification, 0)
     }
 
-    private fun startTimer(timerId: String?, time: Int) {
+    private fun startTimer(timerId: String?, remainingSec: Int, totalSec: Int) {
+        val timerClass = TimerState(remainingSec, totalSec, false)
         if (timerId != null) {
             val job = CoroutineScope(Dispatchers.IO).launch {
-                var secondsLeft = time
+                var secondsLeft = remainingSec
+                timerValues[timerId] = timerClass
                 while (secondsLeft > 0) {
                     delay(1000)
                     secondsLeft--
-                    timerValues[timerId] = secondsLeft
+                    timerValues[timerId] = timerValues[timerId]!!.copy(remainingSec = secondsLeft)
                 }
                 sendOnFinishNotification(timerId)
                 stopTimer(timerId)
             }
             timerJobs[timerId] = job
-            timerValues[timerId] = time
             moveToForeground()
             isStopWatchRunning = true
         }
@@ -102,11 +103,10 @@ class TimerService : Service() {
         timerJobs.remove(timerId)
         timerValues.remove(timerId)
         updateNotification()
-        if (timerJobs.isEmpty() && pausedTimers.isEmpty()) {
+        if (timerJobs.isEmpty()) {
             updateTimer?.cancel()
             isStopWatchRunning = false
             _activeTimerUpdates.tryEmit(timerValues.toMap())
-            _pausedTimerUpdates.tryEmit(pausedTimers.toMap())
             stopForeground(STOP_FOREGROUND_REMOVE)
         }
     }
@@ -114,20 +114,19 @@ class TimerService : Service() {
     private fun pauseTimer(timerId: String?) {
         if (timerId != null) {
             timerJobs[timerId]?.cancel()
-            pausedTimers[timerId] = timerValues[timerId] ?: 0
             timerJobs.remove(timerId)
-            timerValues.remove(timerId)
+            timerValues[timerId] = timerValues[timerId]!!.copy(isPaused = true)
             updateNotification()
         }
     }
 
     private fun resumeTimer(timerId: String?) {
         if (timerId != null) {
-            val timeLeft = pausedTimers[timerId]
-            if (timeLeft != null && timeLeft >= 0) {
-                startTimer(timerId, timeLeft)
+            timerValues[timerId] = timerValues[timerId]!!.copy(isPaused = false)
+            val timerLeft = timerValues[timerId]
+            if (timerLeft != null && timerLeft.remainingSec >= 0) {
+                startTimer(timerId, timerLeft.remainingSec, timerLeft.totalSec)
             }
-            pausedTimers.remove(timerId)
         }
     }
 
@@ -137,12 +136,9 @@ class TimerService : Service() {
         }
         timerJobs.clear()
         timerValues.clear()
-        pausedTimers.clear()
-
         updateTimer?.cancel()
         isStopWatchRunning = false
         _activeTimerUpdates.tryEmit(timerValues.toMap())
-        _pausedTimerUpdates.tryEmit(pausedTimers.toMap())
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
@@ -181,9 +177,9 @@ class TimerService : Service() {
 
         var style = NotificationCompat.InboxStyle()
         timerJobs.forEach { (timerId, _) ->
-            val hours: Int? = timerValues[timerId]?.div(60)?.div(60)
-            val minutes: Int? = timerValues[timerId]?.div(60)
-            val seconds: Int? = timerValues[timerId]?.rem(60)
+            val hours = TimeUnit.SECONDS.toHours(timerValues[timerId]!!.remainingSec.toLong())
+            val minutes = TimeUnit.SECONDS.toMinutes(timerValues[timerId]!!.remainingSec.toLong()) % 60
+            val seconds = TimeUnit.SECONDS.toSeconds(timerValues[timerId]!!.remainingSec.toLong()) % 60
             style =
                 style.addLine(
                     getString(R.string.timer_is_at).format(
@@ -194,10 +190,10 @@ class TimerService : Service() {
                     )
                 )
         }
-        pausedTimers.forEach { (timerId, _) ->
-            val hours: Int? = pausedTimers[timerId]?.div(60)?.div(60)
-            val minutes: Int? = pausedTimers[timerId]?.div(60)
-            val seconds: Int? = pausedTimers[timerId]?.rem(60)
+        timerValues.filter { it.value.isPaused == true }.forEach { (timerId, timer) ->
+            val hours = TimeUnit.SECONDS.toHours(timerValues[timerId]!!.remainingSec.toLong())
+            val minutes = TimeUnit.SECONDS.toMinutes(timerValues[timerId]!!.remainingSec.toLong()) % 60
+            val seconds = TimeUnit.SECONDS.toSeconds(timerValues[timerId]!!.remainingSec.toLong()) % 60
             style = style.addLine(
                 getString(R.string.paused_timer_is_at).format(
                     timerId,
@@ -245,7 +241,6 @@ class TimerService : Service() {
         }
         timerJobs.clear()
         timerValues.clear()
-        pausedTimers.clear()
         updateTimer = null
     }
 

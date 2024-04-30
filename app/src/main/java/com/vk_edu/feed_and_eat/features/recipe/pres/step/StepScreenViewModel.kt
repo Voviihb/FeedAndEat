@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -10,13 +10,16 @@ import javax.inject.Inject
 class StepScreenViewModel @Inject constructor(
 
 ): ViewModel(){
+    val name = mutableStateOf("")
+    val id = mutableStateOf(0)
+
     var sliderPosition : MutableState<Long> = mutableStateOf(0L)
 
     var remainingMillis : MutableState<Long> = mutableStateOf(0L)
 
     var isRunning : MutableState<Boolean> = mutableStateOf(false)
 
-    var displaySlider : MutableState<Boolean> = mutableStateOf(true)
+    var isDropped : MutableState<Boolean> = mutableStateOf(true)
 
     var currentTimer : MutableState<Int> = mutableStateOf(0)
 
@@ -26,7 +29,7 @@ class StepScreenViewModel @Inject constructor(
         remainingMillis.value = value
         sliderPosition.value = value
         isRunning.value = false
-        displaySlider.value = true
+        isDropped.value = true
     }
 
     fun clear(){

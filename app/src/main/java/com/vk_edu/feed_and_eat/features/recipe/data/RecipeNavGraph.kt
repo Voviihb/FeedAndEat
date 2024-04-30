@@ -8,9 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.recipe.data.models.Routes
-import com.vk_edu.feed_and_eat.features.recipe.pres.CongratulationScreen
-import com.vk_edu.feed_and_eat.features.recipe.pres.StartRecipe
-import com.vk_edu.feed_and_eat.features.recipe.pres.StepScreen
+import com.vk_edu.feed_and_eat.features.recipe.pres.step.CongratulationScreen
+import com.vk_edu.feed_and_eat.features.recipe.pres.preview.StartRecipe
+import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreen
 
 
 @Composable
@@ -52,11 +52,12 @@ fun RecipeNavGraph(
         ) {backStackEntry->
             val id = backStackEntry.arguments?.getString("id")
             StepScreen(
-                navigateToStep,
-                navigateToRecipe,
+                navigateToStep = navigateToStep,
+                navigateToRecipe = navigateToRecipe,
                 data = instructions[id?.toInt() ?: 0],
                 id = id?.toInt() ?: 0,
                 maxId = instructions.size - 1,
+                name = recipe.name
             )
         }
     }

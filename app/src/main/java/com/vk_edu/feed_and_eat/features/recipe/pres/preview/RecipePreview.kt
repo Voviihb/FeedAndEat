@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,11 +20,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,19 +34,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoxWithCards
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
-import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
-import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.features.recipe.data.RecipeNavGraph
-
 
 @Composable
 fun InfoSurface(
@@ -64,7 +55,7 @@ fun InfoSurface(
         model.nutrients.Fat,
         model.nutrients.Carbohydrates
     )
-    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar).map{ stringResource( id = it )}
+    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar).map{ stringResource( id = it ) }
     Surface(
         modifier = Modifier
             .padding(8.dp)
@@ -76,21 +67,24 @@ fun InfoSurface(
                 .fillMaxSize()
                 .background(colorResource(R.color.white))
         ) {
-            Text(stringResource(
+            Text(
+                stringResource(
                 id = R.string.ingridients),
                 fontSize = 18.sp,
                 color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
             )
             BoxWithCards(bigText = ingredients.map { it.name }.toList())
-            Text(stringResource(
+            Text(
+                stringResource(
                 id = R.string.tags),
                 fontSize = 18.sp,
                 color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
             )
             BoxWithCards(bigText = model.tags ?: listOf())
-            Text(stringResource(
+            Text(
+                stringResource(
                 id = R.string.energy_value),
                 modifier = Modifier.padding(4.dp),
                 fontSize = 20.sp,
@@ -134,13 +128,13 @@ fun BackButtonContainer(
             modifier = Modifier.height(650.dp)
             ,
         ) {
-                SquareArrowButton(navigateBack)
-                ExpandableInfo(width = 352, surface = {
-                    InfoSurface(352, model)
-                })
-            }
+            SquareArrowButton(navigateBack)
+            ExpandableInfo(width = 352, surface = {
+                InfoSurface(352, model)
+            })
         }
     }
+}
 
 
 @Composable
@@ -212,7 +206,8 @@ fun StartCookingContainer(
                     .fillMaxHeight(),
                 colors = ButtonColors(
                     colorResource(id = R.color.pale_cyan),
-                    colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
+                    colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)
+                ),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
                     fontSize = 15.sp,
@@ -254,7 +249,8 @@ fun AddCollectionButtons(){
                     colorResource(id = R.color.medium_cyan),
                     colorResource(R.color.white),
                     colorResource(R.color.white),
-                    colorResource(R.color.black)),
+                    colorResource(R.color.black)
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
@@ -269,7 +265,10 @@ fun AddCollectionButtons(){
             }
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
-                colors = ButtonColors(colorResource(R.color.white), colorResource(R.color.gray), colorResource(R.color.white), colorResource(R.color.black)),
+                colors = ButtonColors(
+                    colorResource(R.color.white), colorResource(R.color.gray), colorResource(
+                        R.color.white), colorResource(R.color.black)
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
@@ -366,45 +365,6 @@ fun RatingContainer(
 }
 
 @Composable
-fun RepeatButton(
-    onClick : () -> Unit,
-){
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Button(
-            onClick = onClick,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonColors(
-                colorResource(id = R.color.pale_cyan),
-                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
-            modifier = Modifier
-                .background(
-                    color = colorResource(id = R.color.pale_cyan),
-                    RoundedCornerShape(4.dp)
-                )
-                .border(
-                    2.dp,
-                    colorResource(id = R.color.cyan_fae),
-                    RoundedCornerShape(4.dp)
-                )
-                .height(40.dp)
-                .width(72.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.repeat),
-                fontSize = 12.sp,
-                overflow = TextOverflow.Visible,
-                maxLines = 1,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
-
-@Composable
 fun StartRecipe(
     navigateBack : () -> Unit,
     navigateToStep: (Int) -> Unit,
@@ -430,43 +390,6 @@ fun StartRecipe(
                     }
                 }
                 BackButtonContainer(model, navigateBack)
-            }
-        }
-    }
-}
-
-@Composable
-fun RecipeScreen(
-    navigateToRoute: (String) -> Unit,
-    navigateBack : () -> Unit,
-    id : String,
-    destination : String,
-    viewModel: RecipesScreenViewModel = hiltViewModel()
-) {
-    viewModel.loadRecipeById(id)
-    val recipe by viewModel.recipe
-
-    val reload = {
-        viewModel.loadRecipeById(id)
-        viewModel.clearError()
-    }
-    Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
-    ) {padding ->
-        if (viewModel.loading.value){
-            LoadingCircular(padding)
-        } else {
-            if (viewModel.errorMessage.value != null){
-                RepeatButton(reload)
-            } else {
-                Box(modifier = Modifier.padding(padding)){
-                    val navController = rememberNavController()
-                    RecipeNavGraph(
-                        navigateBack,
-                        navController,
-                        recipe
-                    )
-                }
             }
         }
     }

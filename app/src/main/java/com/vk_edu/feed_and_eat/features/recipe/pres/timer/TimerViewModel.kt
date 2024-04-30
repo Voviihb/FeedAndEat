@@ -1,15 +1,16 @@
-package com.vk_edu.feed_and_eat.features.cooking.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.timer
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.cooking.domain.TimerService
+import com.vk_edu.feed_and_eat.features.recipe.domain.TimerService
+import com.vk_edu.feed_and_eat.features.recipe.domain.TimerState
 import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -20,18 +21,19 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class CookingScreenViewModel @Inject constructor(
+class TimerViewModel @Inject constructor(
     @ApplicationContext appContext: Context
 ) : ViewModel() {
     private val application = getApplication(appContext)
     private val timerServiceConnection = TimerServiceConnection()
 
-    val activeTimerState = timerServiceConnection.activeTimerUpdates
-    val pausedTimerState = timerServiceConnection.pausedTimerUpdates
+    private val privateTimerFlag = mutableMapOf<String, MutableState<Boolean>>()
+    val runTimerFlag : Map<String, MutableState<Boolean>> = privateTimerFlag
 
-    /* TODO delete test counter after merge*/
-    private val _counter = mutableIntStateOf(1)
-    val counter: State<Int> = _counter
+    private val privateRunning = mutableMapOf<String, MutableState<Boolean>>()
+    val isRunning : Map<String, MutableState<Boolean>> = privateRunning
+
+    val activeTimerState = timerServiceConnection.activeTimerUpdates
 
     init {
         val intent = Intent(application, TimerService::class.java)
@@ -43,7 +45,22 @@ class CookingScreenViewModel @Inject constructor(
         application.unbindService(timerServiceConnection)
     }
 
+    fun changeTimerFlag(name: String){
+        privateTimerFlag.getValue(name).value = !privateTimerFlag.getValue(name).value
+    }
+
+    fun changeTimerState(name : String){
+        privateRunning.getValue(name).value = !privateRunning.getValue(name).value
+    }
+
+    fun changeInit(name: String){
+        privateTimerFlag[name] = mutableStateOf(true)
+        privateRunning[name] = mutableStateOf(false)
+    }
+
     fun startTimer(timerId: String, time: Int) {
+        changeTimerFlag(timerId)
+        changeTimerState(timerId)
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -61,6 +78,10 @@ class CookingScreenViewModel @Inject constructor(
     }
 
     fun stopTimer(timerId: String) {
+//      here may be mistake: do not startTimer after stopTimer without initChanges
+        privateRunning.remove(timerId)
+        privateTimerFlag.remove(timerId)
+//      mistake
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -74,6 +95,7 @@ class CookingScreenViewModel @Inject constructor(
     }
 
     fun pauseTimer(timerId: String) {
+        privateRunning[timerId]?.value = false
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -108,25 +130,15 @@ class CookingScreenViewModel @Inject constructor(
         application.startService(timerService)
     }
 
-    fun updateCounter(value: Int) {
-        _counter.intValue += value
-    }
-
 
     inner class TimerServiceConnection : ServiceConnection {
-        private val _activeTimerUpdates = MutableStateFlow<Map<String, Int>>(emptyMap())
-        val activeTimerUpdates: StateFlow<Map<String, Int>> = _activeTimerUpdates
-
-        private val _pausedTimerUpdates = MutableStateFlow<Map<String, Int>>(emptyMap())
-        val pausedTimerUpdates: StateFlow<Map<String, Int>> = _pausedTimerUpdates
+        private val _activeTimerUpdates = MutableStateFlow<Map<String, TimerState>>(emptyMap())
+        val activeTimerUpdates: StateFlow<Map<String, TimerState>> = _activeTimerUpdates
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as TimerService.LocalBinder
             binder.getService().activeTimerUpdates.onEach { update ->
                 _activeTimerUpdates.emit(update)
-            }.launchIn(viewModelScope)
-            binder.getService().pausedTimerUpdates.onEach { update ->
-                _pausedTimerUpdates.emit(update)
             }.launchIn(viewModelScope)
         }
 

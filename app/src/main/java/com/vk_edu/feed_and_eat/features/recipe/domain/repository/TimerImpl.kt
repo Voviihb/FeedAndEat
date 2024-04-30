@@ -3,7 +3,7 @@ package com.vk_edu.feed_and_eat.features.recipe.domain.repository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.vk_edu.feed_and_eat.features.recipe.pres.StepScreenViewModel
+import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

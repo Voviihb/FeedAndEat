@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
@@ -40,6 +40,7 @@ import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.recipe.data.models.Routes
+import com.vk_edu.feed_and_eat.features.recipe.pres.timer.Timer
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
@@ -216,8 +217,11 @@ fun StepScreen(
     data: Instruction,
     id : Int,
     maxId : Int,
+    name : String,
     viewModel: StepScreenViewModel = hiltViewModel()
 ){
+    viewModel.id.value = id
+    viewModel.name.value = name
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -248,7 +252,7 @@ fun StepScreen(
 
             }
             if (!data.timers.isNullOrEmpty()) {
-                TimerContainer(
+                Timer(
                     data.timers,
                     viewModel
                 )
