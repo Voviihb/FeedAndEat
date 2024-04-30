@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
@@ -33,9 +34,11 @@ class SearchPagingSource(
     override fun getRefreshKey(state: PagingState<PagePointer, CardDataModel>): PagePointer? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.let {
+                Log.d("getRefreshKey", it.type.toString())
                 PagePointer(Type.INCLUDED_FIRST, it.number + 1, it.documentSnapshot)
             }
             ?: state.closestPageToPosition(anchorPosition)?.nextKey?.let {
+                Log.d("getRefreshKey", it.type.toString())
                 PagePointer(Type.INCLUDED_LAST, it.number - 1, it.documentSnapshot)
             }
         }

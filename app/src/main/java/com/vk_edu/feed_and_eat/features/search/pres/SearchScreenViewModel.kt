@@ -153,33 +153,28 @@ class SearchScreenViewModel @Inject constructor(
         val result = viewModelScope.async {
             var result = CardsAndSnapshots(listOf(), null, null)
             try {
-                _recipesRepo.loadSearchRecipes(
-                    filters = searchFilters,
-                    type = pagePointer.type,
-                    documentSnapshot = pagePointer.documentSnapshot
-                ).collect { response ->
-                    Log.d("Tag", response.toString())
+                _recipesRepo.loadSearchRecipes(searchFilters, pagePointer.type, pagePointer.documentSnapshot).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            Log.d("Success", "me")
-                            val cards = response.data.recipes.map { fullRecipe ->
-                                CardDataModel(
-                                    link = fullRecipe.image ?: "",
-                                    ingredients = fullRecipe.ingredients.size,
-                                    steps = fullRecipe.instructions.size,
-                                    name = fullRecipe.name,
-                                    rating = fullRecipe.rating,
-                                    cooked = fullRecipe.cooked
-                                )
-                            }
-                            result = CardsAndSnapshots(cards, response.data.startDocument, response.data.endDocument)
-                            Log.d("Result", "me")
+                            result = CardsAndSnapshots(
+                                response.data.recipes.map { fullRecipe ->
+                                    CardDataModel(
+                                        link = fullRecipe.image ?: "",
+                                        ingredients = fullRecipe.ingredients.size,
+                                        steps = fullRecipe.instructions.size,
+                                        name = fullRecipe.name,
+                                        rating = fullRecipe.rating,
+                                        cooked = fullRecipe.cooked
+                                    )
+                                },
+                                response.data.startDocument,
+                                response.data.endDocument
+                            )
                         }
 
                         is Response.Failure -> {
                             onError(response.e)
-                            Log.d("Error", "me")
                         }
                     }
                 }
@@ -187,7 +182,6 @@ class SearchScreenViewModel @Inject constructor(
                 onError(e)
             }
             _loading.value = false
-            Log.d("Return", "me")
             return@async result
         }
         return result.await()

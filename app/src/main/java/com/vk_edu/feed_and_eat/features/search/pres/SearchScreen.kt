@@ -98,9 +98,9 @@ fun SearchScreen(
         ) {
             SearchCard(viewModel = viewModel)
             //SortingAndFiltersBlock(viewModel = viewModel)
-            if (viewModel.loading.value)
-                LoadingCircular()
-            else
+            //if (viewModel.loading.value)
+            //    LoadingCircular()
+            //else
                 CardsGrid(viewModel = viewModel)
         }
     }
