@@ -481,7 +481,7 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                                 modifier = Modifier
                                     .onGloballyPositioned { coordinates ->
                                         val rowHeightDpCurrent = with(localDensity) { coordinates.size.height.toDp() } + 8.dp
-                                        if (rowHeightDpCurrent < rowHeightDp)
+                                        if (rowHeightDp == 100.dp)
                                             rowHeightDp = rowHeightDpCurrent
                                     }
                             )
