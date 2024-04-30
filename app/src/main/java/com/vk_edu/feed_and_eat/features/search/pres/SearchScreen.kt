@@ -80,13 +80,6 @@ import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
 import kotlinx.coroutines.runBlocking
 
-
-private const val CALORIES = 0
-private const val SUGAR = 1
-private const val CARBOHYDRATES = 2
-private const val FAT = 3
-private const val PROTEIN = 4
-
 @Composable
 fun SearchScreen(
     navigateToRoute: (String) -> Unit,
@@ -291,11 +284,11 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, rightBlockEnabled: 
 
                 TagsFilter(viewModel = viewModel)
 
-                NutrientFilter(title = "Calories", nutrient = CALORIES, viewModel = viewModel)
-                NutrientFilter(title = "Sugar", nutrient = SUGAR, viewModel = viewModel)
-                NutrientFilter(title = "Carbohydrates", nutrient = CARBOHYDRATES, viewModel = viewModel)
-                NutrientFilter(title = "Fat", nutrient = FAT, viewModel = viewModel)
-                NutrientFilter(title = "Protein", nutrient = PROTEIN, viewModel = viewModel)
+                NutrientFilter(title = stringResource(R.string.calories), nutrient = Nutrient.CALORIES.value, viewModel = viewModel)
+                NutrientFilter(title = stringResource(R.string.sugar), nutrient = Nutrient.SUGAR.value, viewModel = viewModel)
+                NutrientFilter(title = stringResource(R.string.carbohydrates), nutrient = Nutrient.CARBOHYDRATES.value, viewModel = viewModel)
+                NutrientFilter(title = stringResource(R.string.fat), nutrient = Nutrient.FAT.value, viewModel = viewModel)
+                NutrientFilter(title = stringResource(R.string.protein), nutrient = Nutrient.PROTEIN.value, viewModel = viewModel)
 
                 OutlinedButton(
                     shape = RoundedCornerShape(8.dp),
@@ -311,7 +304,7 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, rightBlockEnabled: 
                     }
                 ) {
                     Text(
-                        text = "Apply",
+                        text = stringResource(R.string.apply),
                         color = colorResource(R.color.dark_cyan),
                         fontSize = MediumText
                     )
@@ -321,7 +314,7 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, rightBlockEnabled: 
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .height(44.dp + 80.dp)
+                .height(124.dp)
                 .width(2.dp)
                 .padding(0.dp, 80.dp, 0.dp, 0.dp)
                 .background(colorResource(R.color.white))
@@ -366,7 +359,7 @@ fun NutrientFilter(
             OutlinedTextField(
                 value = viewModel.filtersForm.value.nutrients[nutrient].min,
                 textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
-                placeholder = { LightText(text = "from", fontSize = MediumText) },
+                placeholder = { LightText(text = stringResource(R.string.from), fontSize = MediumText) },
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -391,7 +384,7 @@ fun NutrientFilter(
             OutlinedTextField(
                 value = viewModel.filtersForm.value.nutrients[nutrient].max,
                 textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
-                placeholder = { LightText(text = "to", fontSize = MediumText) },
+                placeholder = { LightText(text = stringResource(R.string.to), fontSize = MediumText) },
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -424,7 +417,7 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        LightText(text = "Tags", fontSize = MediumText)
+        LightText(text = stringResource(R.string.tags), fontSize = MediumText)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -495,12 +488,16 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
 
 @Composable
 fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
-    val typesOfSorting = listOf("newness", "rating", "popularity")
+    val typesOfSorting = listOf(
+        stringResource(R.string.newness),
+        stringResource(R.string.rating),
+        stringResource(R.string.popularity)
+    )
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier.fillMaxWidth()
     ) {
-        LightText(text = "Sort by", fontSize = MediumText)
+        LightText(text = stringResource(R.string.sort_by), fontSize = MediumText)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             for (index in 0..2) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

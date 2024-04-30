@@ -105,16 +105,16 @@ class SearchScreenViewModel @Inject constructor(
                 searchFilters = searchFilters.copy(
                     sort = _sortingForm.value,
                     tags = _filtersForm.value.tags.filter { it.ckecked }.map { it.name },
-                    caloriesMin = _filtersForm.value.nutrients[CALORIES].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    caloriesMax = _filtersForm.value.nutrients[CALORIES].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    sugarMin = _filtersForm.value.nutrients[SUGAR].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    sugarMax = _filtersForm.value.nutrients[SUGAR].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    carbohydratesMin = _filtersForm.value.nutrients[CARBOHYDRATES].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    carbohydratesMax = _filtersForm.value.nutrients[CARBOHYDRATES].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    fatMin = _filtersForm.value.nutrients[FAT].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    fatMax = _filtersForm.value.nutrients[FAT].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    proteinMin = _filtersForm.value.nutrients[PROTEIN].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    proteinMax = _filtersForm.value.nutrients[PROTEIN].max.ifEmpty { null }?.toDouble() ?: 10e9
+                    caloriesMin = _filtersForm.value.nutrients[Nutrient.CALORIES.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    caloriesMax = _filtersForm.value.nutrients[Nutrient.CALORIES.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    sugarMin = _filtersForm.value.nutrients[Nutrient.SUGAR.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    sugarMax = _filtersForm.value.nutrients[Nutrient.SUGAR.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    carbohydratesMin = _filtersForm.value.nutrients[Nutrient.CARBOHYDRATES.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    carbohydratesMax = _filtersForm.value.nutrients[Nutrient.CARBOHYDRATES.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    fatMin = _filtersForm.value.nutrients[Nutrient.FAT.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    fatMax = _filtersForm.value.nutrients[Nutrient.FAT.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
+                    proteinMin = _filtersForm.value.nutrients[Nutrient.PROTEIN.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
+                    proteinMax = _filtersForm.value.nutrients[Nutrient.PROTEIN.value].max.ifEmpty { null }?.toDouble() ?: 10e9
                 )
 
                 _reloadData.value = true
@@ -209,11 +209,5 @@ class SearchScreenViewModel @Inject constructor(
 
     companion object {
         private const val LIMIT = 20
-
-        private const val CALORIES = 0
-        private const val SUGAR = 1
-        private const val CARBOHYDRATES = 2
-        private const val FAT = 3
-        private const val PROTEIN = 4
     }
 }
