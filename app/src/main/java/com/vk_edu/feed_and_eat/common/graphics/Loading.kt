@@ -1,10 +1,8 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
@@ -19,8 +17,7 @@ import com.vk_edu.feed_and_eat.R
 fun LoadingCircular(modifier: Modifier = Modifier){
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         CircularProgressIndicator(
             color = colorResource(id = R.color.medium_cyan),

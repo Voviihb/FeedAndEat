@@ -69,7 +69,7 @@ fun ProfileScreen(
                 viewModel.loadProfileInfo()
             }
             if (loading) {
-                LoadingCircular(padding = PaddingValues(4.dp))
+                LoadingCircular(modifier = Modifier.padding(4.dp))
             } else {
                 Column(
                     modifier = Modifier
