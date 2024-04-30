@@ -41,8 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
-import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.LightText
+import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
@@ -54,7 +54,7 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
     val viewModel: HomeScreenViewModel = hiltViewModel()
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.HomeScreen.route) }
     ) { padding ->
         Column(
             modifier = Modifier

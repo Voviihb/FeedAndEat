@@ -56,10 +56,10 @@ android {
 dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.dagger:hilt-android:2.51")
+    kapt("com.google.dagger:hilt-android-compiler:2.51")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.media3:media3-common:1.3.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.51")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
@@ -70,8 +70,6 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.6.5")
 
-    implementation("com.google.dagger:hilt-android:2.51")
-    kapt("com.google.dagger:hilt-android-compiler:2.51")
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
