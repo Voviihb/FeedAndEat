@@ -170,7 +170,7 @@ class SearchScreenViewModel @Inject constructor(
                             result = CardsAndSnapshots(
                                 response.data.recipes.map { fullRecipe ->
                                     RecipeCard(
-                                        id = fullRecipe.id ?: "",
+                                        recipeId = fullRecipe.id ?: "",
                                         image = fullRecipe.image ?: "",
                                         ingredients = fullRecipe.ingredients.size,
                                         steps = fullRecipe.instructions.size,

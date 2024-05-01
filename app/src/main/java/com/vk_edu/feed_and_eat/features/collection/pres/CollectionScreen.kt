@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
+import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
@@ -31,6 +33,7 @@ import com.vk_edu.feed_and_eat.ui.theme.MediumText
 @Composable
 fun CollectionScreen(
     navigateToRoute : (String) -> Unit,
+    navigateBack : () -> Unit,
     viewModel: CollectionScreenViewModel = hiltViewModel()
 ) {
     viewModel.collectionRecipes()
@@ -38,13 +41,19 @@ fun CollectionScreen(
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
     ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .background(colorResource(R.color.pale_cyan))
+        ) {
             if (viewModel.loading.value)
                 LoadingCircular()
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(viewModel = viewModel)
             else
                 CardsGrid(viewModel = viewModel)
+
+            SquareArrowButton(onClick = navigateBack)
         }
     }
 }
@@ -58,8 +67,8 @@ fun RepeatButton(viewModel: CollectionScreenViewModel, modifier: Modifier = Modi
         Button(
             contentPadding = PaddingValues(36.dp, 16.dp),
             colors = ButtonColors(
-                colorResource(R.color.pale_cyan), colorResource(R.color.black),
-                colorResource(R.color.white), colorResource(R.color.black)
+                colorResource(R.color.pale_cyan), colorResource(R.color.pale_cyan),
+                colorResource(R.color.pale_cyan), colorResource(R.color.pale_cyan)
             ),
             border = BorderStroke(2.dp, colorResource(R.color.dark_cyan)),
             onClick = {

@@ -16,7 +16,7 @@ import javax.inject.Inject
 class CollectionScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
-    private val id = "VGyQ1LLRGcfP2JLcgoD7xs68Wme2"
+    private val id = "xJwRsIERXsZx3GtCxXch"
 
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData

@@ -64,5 +64,5 @@ data class Review(
 
 @IgnoreExtraProperties
 data class CollectionsCards (
-    val recipeCards: List<RecipeCard>
+    val recipeCards: List<RecipeCard> = listOf()
 )
