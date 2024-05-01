@@ -48,7 +48,11 @@ class TimerService : Service() {
         return binder
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         if (intent != null) {
             val action = intent.getStringExtra(ACTION)
             val timerId = intent.getStringExtra(TIMER_ID)
@@ -78,7 +82,11 @@ class TimerService : Service() {
         ServiceCompat.startForeground(this, 1, notification, 0)
     }
 
-    private fun startTimer(timerId: String?, remainingSec: Int, totalSec: Int) {
+    private fun startTimer(
+        timerId: String?,
+        remainingSec: Int,
+        totalSec: Int,
+    ) {
         val timerClass = TimerState(remainingSec, totalSec, false)
         if (timerId != null) {
             val job = CoroutineScope(Dispatchers.IO).launch {
@@ -120,7 +128,9 @@ class TimerService : Service() {
         }
     }
 
-    private fun resumeTimer(timerId: String?) {
+    private fun resumeTimer(
+        timerId: String?,
+    ) {
         if (timerId != null) {
             timerValues[timerId] = timerValues[timerId]!!.copy(isPaused = false)
             val timerLeft = timerValues[timerId]
@@ -190,7 +200,7 @@ class TimerService : Service() {
                     )
                 )
         }
-        timerValues.filter { it.value.isPaused == true }.forEach { (timerId, timer) ->
+        timerValues.filter { it.value.isPaused }.forEach { (timerId, _) ->
             val hours = TimeUnit.SECONDS.toHours(timerValues[timerId]!!.remainingSec.toLong())
             val minutes = TimeUnit.SECONDS.toMinutes(timerValues[timerId]!!.remainingSec.toLong()) % 60
             val seconds = TimeUnit.SECONDS.toSeconds(timerValues[timerId]!!.remainingSec.toLong()) % 60

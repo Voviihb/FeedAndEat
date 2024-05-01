@@ -20,6 +20,11 @@
     <string name="image">так выглядит рецепт</string>
     <string name = "unlimited">не ограничено</string>
     <string name="cangonextstep">можете переходить к следующему шагу</string>
+    <string name="backstep">к предыдущему</string>
+    <string name="nextstep">к следущему</string>
+    <string name="finish">завершить</string>
+    <string name="congratulations">Поздравляем! вы приготовили:</string>
+    <string name="to_main">на главную</string>
     <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>

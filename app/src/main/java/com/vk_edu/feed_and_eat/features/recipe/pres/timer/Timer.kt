@@ -1,5 +1,25 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.timer
 
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Button
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.ButtonDefaults
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DropdownMenu
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DropdownMenuItem
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Icon
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.IconButton
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Slider
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.SliderDefaults
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.Text
+//noinspection UsingMaterialAndMaterial3Libraries
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -16,20 +36,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,13 +53,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
-import com.vk_edu.feed_and_eat.features.recipe.domain.repository.TimerImpl
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
+import java.lang.Long.max
 import java.util.concurrent.TimeUnit
 
 
@@ -60,13 +70,13 @@ fun FinishMessage(){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .height(400.dp)
-            .width(400.dp)
-            .background(colorResource(id = R.color.white), shape = RoundedCornerShape(200.dp))
+            .size(300.dp)
+            .background(colorResource(id = R.color.white), shape = RoundedCornerShape(150.dp))
     ){
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
+//            modifier = Modifier.padding(vertical = 300.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.tick),
@@ -77,7 +87,7 @@ fun FinishMessage(){
                 stringResource(id = R.string.cangonextstep),
                 fontSize = 24.sp,
                 color = colorResource(id = R.color.gray),
-                modifier = Modifier.widthIn(200.dp, 300.dp)
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -137,22 +147,12 @@ fun DropDownTimerList(
 }
 
 @Composable
-fun  CountdownRangeTimer(
-    minMillis: Long,
-    maxMillis: Long,
-    viewModel: StepScreenViewModel,
+fun CountdownConstantTimer(
+    totalMillis: Long,
+    name : String,
+    viewModel : StepScreenViewModel = hiltViewModel()
 ) {
-    var sliderPosition by viewModel.sliderPosition
-    var remainingMillis by viewModel.remainingMillis
-    var isRunning by viewModel.isRunning
-    var displaySlider by viewModel.isDropped
-    val timerClass = TimerImpl(viewModel)
-
-    LaunchedEffect(key1 = sliderPosition, key2 = isRunning) {
-        if (isRunning) {
-            timerClass.startJob()
-        }
-    }
+    val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -161,16 +161,87 @@ fun  CountdownRangeTimer(
             .height(400.dp)
     ) {
         Box{
-            CountdownCircleAnimation(sliderPosition, remainingMillis)
-            CountdownTimerDisplay(remainingMillis)
+            if (viewModel.runTimerFlag[name]?.value == true){
+                CountdownCircleAnimation(totalMillis, totalMillis)
+                CountdownTimerDisplay(totalMillis)
+            } else {
+                activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
+                    Log.d("ACTIVE", timer.toString())
+                    CountdownCircleAnimation(timer.totalSec.toLong() * 1000, timer.remainingSec.toLong() * 1000)
+                    CountdownTimerDisplay(timer.remainingSec)
+                    if (timer.remainingSec <= 1){
+                        Log.d("OVER", "")
+                        viewModel.iterateTimerOrder(1)
+                    }
+                }
+            }
         }
 
-        if (displaySlider) {
+        if ((viewModel.isRunning[name]?.value == false) &&
+            (viewModel.runTimerFlag[name]?.value == true))
+        {
+            StartButton {
+                viewModel.startTimer(name, totalMillis.toInt() / 1000)
+            }
+        } else {
+            ButtonContainer(
+                playAction = {
+                    viewModel.resumeTimer(name)
+                    viewModel.changeTimerState(name)
+                },
+                pauseAction = {
+                    viewModel.pauseTimer(name)
+                },
+                dropAction = {
+                    viewModel.stopTimer(name)
+                    viewModel.changeInit(name)
+                    viewModel.startTimer(name, totalMillis.toInt() / 1000)
+                    viewModel.pauseTimer(name)
+                },
+                name = name,
+                viewModel = viewModel
+            )
+        }
+    }
+}
+
+@Composable
+fun CountdownRangeTimer(
+    minMillis: Long,
+    maxMillis: Long,
+    name : String,
+    viewModel : StepScreenViewModel = hiltViewModel()
+) {
+    val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
+
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .height(400.dp)
+    ) {
+        Box {
+            if ((viewModel.runTimerFlag[name]?.value == true)) {
+                CountdownCircleAnimation(minMillis, minMillis)
+                CountdownTimerDisplay(max(viewModel.sliderPosition[name]?.value ?: 0,  minMillis))
+            } else {
+                activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
+                    CountdownCircleAnimation(
+                        timer.totalSec.toLong() * 1000,
+                        timer.remainingSec.toLong() * 1000
+                    )
+                    CountdownTimerDisplay(timer.remainingSec)
+                    if (timer.remainingSec <= 1){
+                        viewModel.iterateTimerOrder(1)
+                    }
+                }
+            }
+        }
+        if (viewModel.runTimerFlag[name]?.value == true) {
             Slider(
-                value = sliderPosition.toFloat(),
+                value = viewModel.sliderPosition[name]?.value?.toFloat() ?: minMillis.toFloat(),
                 onValueChange = { newValue ->
-                    sliderPosition = newValue.toLong()
-                    remainingMillis = newValue.toLong()
+                    viewModel.changeSliderValue(name, newValue.toLong())
                 },
                 valueRange = minMillis.toFloat()..maxMillis.toFloat(),
                 colors = SliderDefaults.colors(
@@ -186,82 +257,37 @@ fun  CountdownRangeTimer(
             Box(modifier = Modifier.height(30.dp))
         }
 
-        if (!isRunning && (sliderPosition == remainingMillis)) {
-            StartButton {
-                isRunning = true
-                displaySlider = false
-            }
-        } else {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                ButtonContainer(
-                    playAction = {
-                        isRunning = true
-                        displaySlider = false
-                     },
-                    pauseAction = { isRunning = false },
-                    dropAction = {
-                        remainingMillis = sliderPosition
-                        isRunning = false
-                        displaySlider = true
-                    },
-                    viewModel = viewModel
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CountdownConstantTimer(
-    totalMillis: Long,
-    name : String,
-    timerViewModel : TimerViewModel = hiltViewModel()
-) {
-    val activeTimerState by timerViewModel.activeTimerState.collectAsState(emptyMap())
-
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .height(400.dp)
-    ) {
-        Box{
-            if (timerViewModel.runTimerFlag[name]?.value == true){
-                CountdownCircleAnimation(totalMillis, totalMillis)
-                CountdownTimerDisplay(totalMillis)
-            } else {
-                activeTimerState.filter { it.key == name }.forEach { (name, timer) ->
-                    CountdownCircleAnimation(timer.totalSec.toLong() * 1000, timer.remainingSec.toLong() * 1000)
-                    CountdownTimerDisplay(timer.remainingSec)
-                }
-            }
-        }
-
-        if ((timerViewModel.isRunning[name]?.value == false) &&
-            (timerViewModel.runTimerFlag[name]?.value == true))
+        if ((viewModel.isRunning[name]?.value == false) &&
+            (viewModel.runTimerFlag[name]?.value == true))
         {
             StartButton {
-                timerViewModel.startTimer(name, totalMillis.toInt() / 1000)
+                viewModel.startTimer(
+                    name = name,
+                    time = viewModel.sliderPosition[name]?.value?.toInt()?.div(1000)?: (minMillis.toInt() / 1000),
+                )
             }
         } else {
             ButtonContainer(
                 playAction = {
-                    timerViewModel.resumeTimer(name)
-                    timerViewModel.changeTimerState(name)
+                    viewModel.resumeTimer(name)
+                    viewModel.changeTimerState(name)
                 },
                 pauseAction = {
-                    timerViewModel.pauseTimer(name)
+                    viewModel.pauseTimer(name)
                 },
                 dropAction = {
-                    timerViewModel.stopTimer(name)
-                    timerViewModel.changeInit(name)
-                    timerViewModel.startTimer(name, totalMillis.toInt() / 1000)
-                    timerViewModel.pauseTimer(name)
+                    viewModel.stopTimer(name)
+                    viewModel.changeInit(name)
+                    viewModel.changeSliderValue(name, minMillis)
+                    viewModel.changeTimerFlag(name)
+                    viewModel.startTimer(
+                        name = name,
+                        time = viewModel.sliderPosition[name]?.value?.toInt()?.div(1000)?: (minMillis.toInt() / 1000),
+                    )
+                    viewModel.pauseTimer(name)
                 },
                 name = name,
-                viewModel = timerViewModel
+                viewModel = viewModel
             )
         }
     }
@@ -356,33 +382,13 @@ private fun CountdownTimerDisplay(remainingMillis: Long) {
     }
 }
 
-
-@Composable
-fun ButtonContainer(
-    playAction: () -> Unit,
-    pauseAction: () -> Unit,
-    dropAction: () -> Unit,
-    viewModel: StepScreenViewModel,
-){
-    Row(
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        DropButton (dropAction)
-        if (viewModel.isRunning.value){
-            PauseButton(pauseAction)
-        } else {
-            StartButton(playAction)
-        }
-    }
-}
-
 @Composable
 fun ButtonContainer(
     playAction: () -> Unit,
     pauseAction: () -> Unit,
     dropAction: () -> Unit,
     name : String,
-    viewModel: TimerViewModel,
+    viewModel: StepScreenViewModel,
 ){
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -439,24 +445,27 @@ fun Timer(
             .height(350.dp)
     ) {
         if (currentTimer < timerList.size){
+//            val timerViewModel : TimerViewModel = hiltViewModel()
+            viewModel.changeInit(name)
             if (timerList[currentTimer].type == "constant"){
-                val timerViewModel : TimerViewModel = hiltViewModel()
-                timerViewModel.changeInit(name)
                 CountdownConstantTimer(
                     totalMillis = 60 * 1000 * timerList[currentTimer].number!!.toLong(),
                     name = name,
-                    timerViewModel = timerViewModel,
+                    viewModel = viewModel
                 )
             } else {
-                viewModel.setRemainingMillis(
-                    60 * 1000 * Integer.min(timerList[currentTimer].lowerLimit!!, timerList[currentTimer].upperLimit!!).toLong(),
+                viewModel.changeSliderValue(
+                    name,
+                    60 * 1000 * Integer.min(timerList[currentTimer].lowerLimit!!,
+                    timerList[currentTimer].upperLimit!!).toLong()
                 )
                 CountdownRangeTimer(
-                    60 * 1000 * Integer.min(timerList[currentTimer].lowerLimit!!,
+                    minMillis = 60 * 1000 * Integer.min(timerList[currentTimer].lowerLimit!!,
                         timerList[currentTimer].upperLimit!!).toLong(),
-                    60 * 1000 * Math.max(timerList[currentTimer].lowerLimit!!,
-                        timerList[currentTimer].upperLimit!!).toLong(),
-                    viewModel,
+                    maxMillis = 60 * 1000 * (timerList[currentTimer].lowerLimit!!).coerceAtLeast(timerList[currentTimer].upperLimit!!)
+                        .toLong(),
+                    name = name,
+                    viewModel = viewModel
                 )
             }
         } else {

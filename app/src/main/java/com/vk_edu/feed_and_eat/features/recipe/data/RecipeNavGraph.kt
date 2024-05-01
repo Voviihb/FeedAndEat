@@ -8,8 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.recipe.data.models.Routes
-import com.vk_edu.feed_and_eat.features.recipe.pres.step.CongratulationScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.preview.StartRecipe
+import com.vk_edu.feed_and_eat.features.recipe.pres.step.CongratulationScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreen
 
 
@@ -20,7 +20,6 @@ fun RecipeNavGraph(
     recipe : Recipe,
 ){
     val instructions = recipe.instructions
-
 
     NavHost(
         navController = navController,
@@ -44,7 +43,10 @@ fun RecipeNavGraph(
             StartRecipe(navigateBack, navigateToStep, recipe)
         }
         composable(Routes.Congrats.route){
-            CongratulationScreen()
+            CongratulationScreen(
+                recipe.name,
+                navigateBack
+            )
         }
         composable(
             Routes.Step.route + "/{id}",

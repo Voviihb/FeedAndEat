@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +31,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -166,7 +166,6 @@ fun TextContainer(
     }
 }
 
-@SuppressLint("SuspiciousIndentation")
 @Composable
 fun ButtonContainer(
     navigateToStep: (Int) -> Unit,
@@ -182,10 +181,10 @@ fun ButtonContainer(
             .height(60.dp)
             .padding(4.dp)
     ) {
-        val texts = listOf("back", "finish", "next")
+        val texts = listOf(R.string.backstep, R.string.finish, R.string.nextstep).map { stringResource(it)}
         val functions = listOf(
             {if (id > 0) navigateToStep(id - 1) else navigateToRecipe(Routes.Recipe.route); clear()},
-            { navigateToRecipe(Routes.Recipe.route) },
+            { navigateToRecipe(Routes.Recipe.route); clear() },
             {if (id < maxId) navigateToStep(id + 1) else navigateToRecipe(Routes.Congrats.route); clear()}
             )
         repeat(3){index ->
@@ -193,7 +192,8 @@ fun ButtonContainer(
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
                     if (index % 2 == 0) colorResource(id = R.color.white_cyan) else colorResource(id = R.color.cyan_fae),
-                    contentColor = colorResource(R.color.black)),
+                    contentColor = colorResource(R.color.black)
+                ),
                 border = BorderStroke(
                     2.dp,
                     color = if (index % 2 == 0) colorResource(id = R.color.dark_cyan) else colorResource(R.color.white_cyan),
@@ -203,7 +203,10 @@ fun ButtonContainer(
                 modifier = Modifier
                     .width(112.dp)
             ) {
-                Text(text = texts[index])
+                Text(
+                    text = texts[index],
+                    overflow = TextOverflow.Visible
+                )
             }
         }
     }
@@ -249,7 +252,6 @@ fun StepScreen(
                     }
                     TextContainer(data.paragraph)
                 }
-
             }
             if (!data.timers.isNullOrEmpty()) {
                 Timer(
