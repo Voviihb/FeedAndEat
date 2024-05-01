@@ -9,9 +9,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class SearchScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
-    val cardsDataPager: Flow<PagingData<CardDataModel>> = Pager(PagingConfig(pageSize = LIMIT)) {
+    val cardsDataPager: Flow<PagingData<RecipeCard>> = Pager(PagingConfig(pageSize = LIMIT)) {
         SearchPagingSource(::searchRecipes, LIMIT)
     }.flow.cachedIn(viewModelScope)
 
@@ -58,7 +58,7 @@ class SearchScreenViewModel @Inject constructor(
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
                             _filtersForm.value = _filtersForm.value.copy(
-                                tags = response.data.map { TagChecking(it, false) }
+                                tags = response.data.map { TagChecking(it.name, false) }
                             )
                         }
 
@@ -169,8 +169,9 @@ class SearchScreenViewModel @Inject constructor(
                         is Response.Success -> {
                             result = CardsAndSnapshots(
                                 response.data.recipes.map { fullRecipe ->
-                                    CardDataModel(
-                                        link = fullRecipe.image ?: "",
+                                    RecipeCard(
+                                        id = fullRecipe.id ?: "",
+                                        image = fullRecipe.image ?: "",
                                         ingredients = fullRecipe.ingredients.size,
                                         steps = fullRecipe.instructions.size,
                                         name = fullRecipe.name,

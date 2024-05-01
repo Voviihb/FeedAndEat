@@ -27,6 +27,7 @@ data class Nutrients(
 
 @IgnoreExtraProperties
 data class Recipe(
+    val id: String? = null,
     val name: String = "",
     val image: String? = null,
     val instructions: List<Instruction> = listOf(),
@@ -61,3 +62,7 @@ data class Review(
     val message: String? = null
 )
 
+@IgnoreExtraProperties
+data class CollectionsCards (
+    val recipeCards: List<RecipeCard>
+)

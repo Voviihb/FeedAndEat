@@ -229,7 +229,7 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
                 val cardData = cardsData[index]
                 if (cardData != null)
                     DishCard(
-                        link = cardData.link,
+                        link = cardData.image,
                         ingredients = cardData.ingredients,
                         steps = cardData.steps,
                         name = cardData.name,

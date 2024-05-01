@@ -87,7 +87,7 @@ fun CardsGrid(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifie
     ) {
         items(viewModel.cardsData.value) { cardData ->
             DishCard(
-                link = cardData.link,
+                link = cardData.image,
                 ingredients = cardData.ingredients,
                 steps = cardData.steps,
                 name = cardData.name,
