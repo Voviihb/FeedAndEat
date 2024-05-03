@@ -39,6 +39,7 @@ fun CollectionScreen(
     viewModel.collectionRecipes()
     viewModel.loadAllUserCollections()
 
+
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
     ) { padding ->

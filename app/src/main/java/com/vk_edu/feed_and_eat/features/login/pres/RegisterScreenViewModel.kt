@@ -90,8 +90,7 @@ class RegisterScreenViewModel @Inject constructor(
                         collectionsIdList = listOf(
                             Compilation(
                                 id = favouritesCollectionId,
-                                name = FAVOURITES,
-                                recipes = mutableListOf()
+                                name = FAVOURITES
                             )
                         )
                     )

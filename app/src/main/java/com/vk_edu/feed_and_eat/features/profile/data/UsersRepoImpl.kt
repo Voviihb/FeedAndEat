@@ -67,12 +67,12 @@ class UsersRepoImpl @Inject constructor(
     ): Flow<Response<Void>> =
         repoTryCatchBlock {
             db.collection(USERS_COLLECTION).document(userId)
-                .update(COLLECTIONS_FIELD, FieldValue.arrayUnion(collection)).await()
+                .update(COLLECTIONS_ID_LIST_FIELD, FieldValue.arrayUnion(collection)).await()
         }.flowOn(Dispatchers.IO)
 
 
     companion object {
         private const val USERS_COLLECTION = "users"
-        private const val COLLECTIONS_FIELD = "collections"
+        private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
     }
 }

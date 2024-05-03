@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -21,7 +22,7 @@ class CollectionScreenViewModel @Inject constructor(
     private val _usersRepo: UsersRepoImpl,
     private val _authRepo: AuthRepoImpl
 ) : ViewModel() {
-    private val id = "EsnDuK3RbBVAgHDn6hMH"
+    private val id = "vCrv6EvaBsSKUNTKstRr" /* TODO */
 
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData
@@ -72,6 +73,7 @@ class CollectionScreenViewModel @Inject constructor(
                                         _collectionsData.value += collection
                                     }
                                 }
+                                Log.d("Taag", _collectionsData.value.toString())
                             }
 
                             is Response.Failure -> {
@@ -79,6 +81,50 @@ class CollectionScreenViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
+    fun createNewUserCollection(name: String) {
+        viewModelScope.launch {
+            try {
+                val userId = _authRepo.getUserId()
+                if (userId != null) {
+                    var newCollectionId = ""
+                    _recipesRepo.createNewCollection().collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                newCollectionId = response.data
+                            }
+
+                            is Response.Failure -> onError(response.e)
+                        }
+                    }
+
+                    _usersRepo.addNewUserCollection(
+                        userId = userId,
+                        collection = Compilation(
+                            id = newCollectionId,
+                            name = name,
+                            picture = null
+                        )
+                    ).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+
+                            }
+
+                            is Response.Failure -> onError(response.e)
+                        }
+                    }
+
                 }
 
             } catch (e: Exception) {
