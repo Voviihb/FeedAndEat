@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,16 +26,21 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
@@ -60,15 +65,26 @@ fun InfoSurface(
         model.nutrients.Carbohydrates
     )
     val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar).map{ stringResource( id = it ) }
+    val configuration = LocalConfiguration.current
+
+    val width = configuration.screenWidthDp
+//    val context = LocalContext.current
+//    val displayMetrics = context.resources.displayMetrics
+//    val width = displayMetrics.widthPixels
+//    Log.d("ЦШВЕР", width.toString())
     Surface(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(12.dp)
+            .width((width - 100).dp)
+            .fillMaxHeight()
+            .background(colorResource(R.color.white), RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .border(2.dp, colorResource(id = R.color.cyan_fae), RoundedCornerShape(12.dp))
     ) {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(R.color.white))
         ) {
             Text(
                 stringResource(
@@ -109,48 +125,20 @@ fun InfoSurface(
                         )
                         Text(text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm))
                     }
-
+                }
                 }
             }
         }
     }
 }
 
-//@Composable
-//fun BackButtonContainer(
-//    model: Recipe,
-//    navigateBack : () -> Unit
-//){
-//    val drawerState = rememberDrawerState(DrawerValue.Closed)
-//    val scope = rememberCoroutineScope()
-//    ModalNavigationDrawer(
-//        drawerState = drawerState,
-//        modifier = Modifier.height(650.dp),
-//        drawerContent = {
-//            InfoSurface(352, model)
-//        }
-//    ) {
-//        Row(
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.Top,
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            SquareArrowButton(navigateBack)
-//            InfoSquareButton({
-//                scope.launch {drawerState.open()}
-//            })
-//        }
-//    }
-//}
-
-
 @Composable
 fun RecipeImageContainer(
-    model : Recipe
+    model : Recipe,
+    modifier : Modifier = Modifier
 ){
     Column(
-        modifier = Modifier
-            .heightIn(0.dp, 280.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.Top
     ) {
         if (model.image != null){
@@ -349,7 +337,7 @@ fun RatingContainer(
 ){
     Column(
         modifier = modifier
-            .height(52.dp)
+            .padding(4.dp)
     ){
         Spacer(modifier = Modifier.height(20.dp))
         Row(modifier = Modifier
@@ -381,41 +369,38 @@ fun StartRecipe(
     navigateBack : () -> Unit,
     navigateToStep: (Int) -> Unit,
     recipe : Recipe
-){
+) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    listOf(recipe).forEach{ model ->
+    listOf(recipe).forEach { model ->
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             ModalNavigationDrawer(
                 drawerState = drawerState,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(colorResource(id = R.color.white)),
                 drawerContent = {
-                    Box() {
-                        Row(){
-                            InfoSquareButton({
-                                scope.launch {drawerState.open()}
-                            })
-                            InfoSurface(model)
-                        }
-                    }
+                    InfoSurface(model)
                 },
-            ){
+            ) {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
                 Box {
-                    Column{
-                        RecipeImageContainer(model)
+                    Column {
                         Column(
                             verticalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
                                 .fillMaxSize()
                         ) {
+                            RecipeImageContainer(model, Modifier.weight(5f))
                             RatingContainer(model, Modifier.weight(1f))
                             TextContainer(model, Modifier.weight(6f))
                             AddCollectionButtons(Modifier.weight(1f))
-                            StartCookingContainer(model, navigateToStep,
+                            StartCookingContainer(
+                                model, navigateToStep,
                                 Modifier
                                     .weight(1f)
-                                    .height(40.dp))
+                                    .height(40.dp)
+                            )
                         }
                     }
                     Row(
@@ -424,14 +409,13 @@ fun StartRecipe(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         SquareArrowButton(navigateBack)
-                        if (drawerState.currentValue == DrawerValue.Closed){
-                            InfoSquareButton({
-                                scope.launch {drawerState.open()}
-                            })
+                        InfoSquareButton({
+                            scope.launch { drawerState.open() }
+                        })
                         }
-
                     }
                 }
             }
         }
     }
+}

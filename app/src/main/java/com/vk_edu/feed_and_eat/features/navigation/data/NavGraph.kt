@@ -87,7 +87,6 @@ fun NavGraph(
         composable(Screen.RecipeScreen.route + "/{id}",
             arguments = listOf(navArgument("id"){ type = NavType.StringType })
         ) {backStackEntry ->
-            Log.d("TAG", backStackEntry.destination.toString())
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 id = backStackEntry.arguments?.getString("id") ?: "",
