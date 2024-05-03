@@ -18,7 +18,7 @@ interface RecipesRepository {
         filters: SearchFilters,
         type: Type?,
         documentSnapshot: DocumentSnapshot?
-    ) : Flow<Response<PaginationResult>>
+    ): Flow<Response<PaginationResult>>
 
     fun loadTags(): Flow<Response<List<Tag>>>
 
@@ -28,4 +28,6 @@ interface RecipesRepository {
         collectionId: String,
         recipe: RecipeCard
     ): Flow<Response<Void>>
+
+    fun createNewCollection(): Flow<Response<String>>
 }

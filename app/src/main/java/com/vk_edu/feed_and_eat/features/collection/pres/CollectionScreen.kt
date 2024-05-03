@@ -37,6 +37,7 @@ fun CollectionScreen(
     viewModel: CollectionScreenViewModel = hiltViewModel()
 ) {
     viewModel.collectionRecipes()
+    viewModel.loadAllUserCollections()
 
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }

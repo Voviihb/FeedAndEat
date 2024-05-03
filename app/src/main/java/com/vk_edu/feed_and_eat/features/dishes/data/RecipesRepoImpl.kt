@@ -146,6 +146,14 @@ class RecipesRepoImpl @Inject constructor(
         docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayUnion(recipe)).await()
     }.flowOn(Dispatchers.IO)
 
+    override fun createNewCollection(): Flow<Response<String>> = repoTryCatchBlock {
+        val result = db.collection(COLLECTIONS_COLLECTION).document()
+        result.set(
+            hashMapOf<String, List<RecipeCard>>(RECIPE_CARDS_FIELD to listOf())
+        ).await()
+        return@repoTryCatchBlock result.id
+    }
+
     companion object {
         private const val TAGS_COLLECTION = "tags"
         private const val RECIPES_COLLECTION = "recipes"
