@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -22,7 +21,7 @@ class CollectionScreenViewModel @Inject constructor(
     private val _usersRepo: UsersRepoImpl,
     private val _authRepo: AuthRepoImpl
 ) : ViewModel() {
-    private val id = "xJwRsIERXsZx3GtCxXch"
+    private val id = "EsnDuK3RbBVAgHDn6hMH"
 
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData
@@ -69,11 +68,10 @@ class CollectionScreenViewModel @Inject constructor(
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 if (response.data != null) {
-                                    for (collection in response.data){
+                                    for (collection in response.data) {
                                         _collectionsData.value += collection
                                     }
                                 }
-                                Log.d("Taag", _collectionsData.value.toString())
                             }
 
                             is Response.Failure -> {

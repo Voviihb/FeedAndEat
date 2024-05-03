@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -225,7 +224,6 @@ class SearchScreenViewModel @Inject constructor(
     private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false
-        Log.d("Taag", message.toString())
     }
 
     fun clearError() {
