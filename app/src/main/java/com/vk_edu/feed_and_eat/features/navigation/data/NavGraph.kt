@@ -10,7 +10,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
+import com.vk_edu.feed_and_eat.features.collection.pres.AllCollectionsScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
 import com.vk_edu.feed_and_eat.features.login.pres.RegisterScreen
@@ -58,7 +58,7 @@ fun NavGraph(
             SearchScreen(navigateToRoute)
         }
         composable(BottomScreen.CollectionScreen.route) {
-            CollectionScreen(
+            AllCollectionsScreen(
                 navigateToRoute,
                 navigateBack
             )

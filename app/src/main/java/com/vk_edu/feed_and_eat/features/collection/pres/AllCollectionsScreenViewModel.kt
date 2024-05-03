@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -17,16 +16,11 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class CollectionScreenViewModel @Inject constructor(
+class AllCollectionsScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl,
     private val _usersRepo: UsersRepoImpl,
     private val _authRepo: AuthRepoImpl
 ) : ViewModel() {
-    private val id = "vCrv6EvaBsSKUNTKstRr" /* TODO */
-
-    private val _cardsData = mutableStateOf(listOf<RecipeCard>())
-    var cardsData: State<List<RecipeCard>> = _cardsData
-
     private val _collectionsData = mutableStateOf(listOf<Compilation>())
     val collectionsData: State<List<Compilation>> = _collectionsData
 
@@ -35,29 +29,6 @@ class CollectionScreenViewModel @Inject constructor(
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
-
-    fun collectionRecipes() {
-        viewModelScope.launch {
-            try {
-                _recipesRepo.loadCollectionRecipes(id).collect { response ->
-                    when (response) {
-                        is Response.Loading -> _loading.value = true
-                        is Response.Success -> {
-                            if (response.data != null)
-                                _cardsData.value = response.data.recipeCards
-                        }
-
-                        is Response.Failure -> {
-                            onError(response.e)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                onError(e)
-            }
-            _loading.value = false
-        }
-    }
 
     fun loadAllUserCollections() {
         viewModelScope.launch {
@@ -69,11 +40,11 @@ class CollectionScreenViewModel @Inject constructor(
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 if (response.data != null) {
+                                    _collectionsData.value = mutableListOf()
                                     for (collection in response.data) {
                                         _collectionsData.value += collection
                                     }
                                 }
-                                Log.d("Taag", _collectionsData.value.toString())
                             }
 
                             is Response.Failure -> {
@@ -125,6 +96,33 @@ class CollectionScreenViewModel @Inject constructor(
                         }
                     }
 
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
+    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
+        viewModelScope.launch {
+            try {
+                val user = _authRepo.getUserId()
+                if (user != null) {
+                    _recipesRepo.addRecipeToUserCollection(user, collectionId, recipe)
+                        .collect { response ->
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
+
+                                }
+
+                                is Response.Failure -> {
+                                    onError(response.e)
+                                }
+                            }
+                        }
                 }
 
             } catch (e: Exception) {

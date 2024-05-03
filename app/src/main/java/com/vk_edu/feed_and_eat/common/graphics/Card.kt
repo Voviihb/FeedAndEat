@@ -128,7 +128,7 @@ fun DishCard(
                     onClick = {
                         if (addToFavourites != null) {
                             if (recipeCard != null) {
-                                addToFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
+                                addToFavourites("5lPqaQLR1sseTJ9DeVG4", recipeCard)
                                 /*TODO set userFavouritesCollectionId here*/
                             }
                         }

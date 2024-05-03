@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -31,13 +33,14 @@ import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
 
 @Composable
-fun CollectionScreen(
+fun AllCollectionsScreen(
     navigateToRoute : (String) -> Unit,
     navigateBack : () -> Unit,
-    viewModel: CollectionScreenViewModel = hiltViewModel()
+    viewModel: AllCollectionsScreenViewModel = hiltViewModel()
 ) {
-    viewModel.collectionRecipes()
     viewModel.loadAllUserCollections()
+    val collections by viewModel.collectionsData
+    val gridState = rememberLazyGridState()
 
 
     Scaffold(
@@ -53,7 +56,24 @@ fun CollectionScreen(
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(viewModel = viewModel)
             else
-                CardsGrid(viewModel = viewModel)
+                /* TODO replace sample*/
+                LazyVerticalGrid(columns = GridCells.Fixed(2),
+                    state = gridState,
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp),
+                    modifier = Modifier.fillMaxSize()) {
+                    items(collections) {collection ->
+                        DishCard(
+                            link = collection.picture?: "",
+                            ingredients = -1,
+                            steps = -1,
+                            name = collection.name,
+                            rating = -1.0,
+                            cooked = -1,
+                        )
+                    }
+                }
 
             SquareArrowButton(onClick = navigateBack)
         }
@@ -61,7 +81,7 @@ fun CollectionScreen(
 }
 
 @Composable
-fun RepeatButton(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifier) {
+fun RepeatButton(viewModel: AllCollectionsScreenViewModel, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
@@ -75,37 +95,13 @@ fun RepeatButton(viewModel: CollectionScreenViewModel, modifier: Modifier = Modi
             border = BorderStroke(2.dp, colorResource(R.color.dark_cyan)),
             onClick = {
                 viewModel.clearError()
-                viewModel.collectionRecipes()
+                viewModel.loadAllUserCollections()
             }
         ) {
             Text(
                 text = stringResource(R.string.repeat),
                 color = colorResource(R.color.dark_cyan),
                 fontSize = MediumText
-            )
-        }
-    }
-}
-
-@Composable
-fun CardsGrid(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifier) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(12.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(viewModel.cardsData.value) { cardData ->
-            DishCard(
-                link = cardData.image,
-                ingredients = cardData.ingredients,
-                steps = cardData.steps,
-                name = cardData.name,
-                rating = cardData.rating,
-                cooked = cardData.cooked,
-                recipeCard = cardData,
-                addToFavourites = null
             )
         }
     }
