@@ -152,13 +152,21 @@ class RecipesRepoImpl @Inject constructor(
         userDoc.update(COLLECTIONS_ID_LIST_FIELD, user?.collectionsIdList).await()
     }.flowOn(Dispatchers.IO)
 
+    override fun removeRecipeFromUserCollection(
+        collectionId: String,
+        recipe: RecipeCard
+    ): Flow<Response<Void>> = repoTryCatchBlock {
+        val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
+        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayRemove(recipe)).await()
+    }.flowOn(Dispatchers.IO)
+
     override fun createNewCollection(): Flow<Response<String>> = repoTryCatchBlock {
         val result = db.collection(COLLECTIONS_COLLECTION).document()
         result.set(
             hashMapOf<String, List<RecipeCard>>(RECIPE_CARDS_FIELD to listOf())
         ).await()
         return@repoTryCatchBlock result.id
-    }
+    }.flowOn(Dispatchers.IO)
 
     companion object {
         private const val TAGS_COLLECTION = "tags"

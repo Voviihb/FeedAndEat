@@ -132,6 +132,29 @@ class AllCollectionsScreenViewModel @Inject constructor(
         }
     }
 
+    fun removeRecipeFromUserCollection(collectionId: String, recipe: RecipeCard) {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe)
+                    .collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
     private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false

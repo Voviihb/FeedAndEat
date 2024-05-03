@@ -30,5 +30,10 @@ interface RecipesRepository {
         recipe: RecipeCard
     ): Flow<Response<Void>>
 
+    fun removeRecipeFromUserCollection(
+        collectionId: String,
+        recipe: RecipeCard
+    ): Flow<Response<Void>>
+
     fun createNewCollection(): Flow<Response<String>>
 }
