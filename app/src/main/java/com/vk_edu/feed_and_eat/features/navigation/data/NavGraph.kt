@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.navigation.data
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
