@@ -16,9 +16,4 @@ interface UsersRepository {
 
     fun addNewUserCollection(userId: String, collection: Compilation): Flow<Response<Void>>
 
-//    fun addToUserCollection(
-//        userId: String,
-//        collectionName: String,
-//        recipe: RecipeDataModel /* TODO replace model type*/
-//    ): Flow<Response<Void>>
 }

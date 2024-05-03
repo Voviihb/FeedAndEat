@@ -70,26 +70,9 @@ class UsersRepoImpl @Inject constructor(
                 .update(COLLECTIONS_FIELD, FieldValue.arrayUnion(collection)).await()
         }.flowOn(Dispatchers.IO)
 
-    /**
-     * Adds new recipes to already existing collection
-     * @param collectionName pass here name of collection
-     * @param recipe pass here new recipe
-     * */
-//    override fun addToUserCollection(
-//        userId: String,
-//        collectionName: String,
-//        recipe: RecipeDataModel
-//    ): Flow<Response<Void>> = repoTryCatchBlock {
-//        val docRef = db.collection(USERS_COLLECTION).document(userId)
-//        val document = docRef.get().await()
-//        val user = document.toObject<UserModel>()
-//        user?.collections?.filter { it.name == collectionName }?.map { it.recipeList += recipe }
-//        docRef.update(COLLECTIONS_FIELD, user?.collections).await()
-//    }.flowOn(Dispatchers.IO)
 
     companion object {
         private const val USERS_COLLECTION = "users"
-        private const val COLLECTIONS_COLLECTION = "collections"
         private const val COLLECTIONS_FIELD = "collections"
     }
 }

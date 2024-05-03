@@ -22,22 +22,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallIconSize
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 @Composable
-fun DishCard(link: String,
-             ingredients: Int,
-             steps: Int, name: String,
-             rating: Double, cooked: Int,
-             modifier: Modifier = Modifier,
-             largeCard: Boolean = false) {
+fun DishCard(
+    link: String,
+    ingredients: Int,
+    steps: Int, name: String,
+    rating: Double, cooked: Int,
+    modifier: Modifier = Modifier,
+    largeCard: Boolean = false,
+    recipeCard: RecipeCard? = null,
+    addToFavourites: ((String, RecipeCard) -> Unit)? = null
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
-            colorResource(R.color.white), colorResource(R.color.white)),
+        colors = CardColors(
+            colorResource(R.color.white), colorResource(R.color.white),
+            colorResource(R.color.white), colorResource(R.color.white)
+        ),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
         onClick = { /* TODO add function */ }
     ) {
@@ -63,7 +70,8 @@ fun DishCard(link: String,
                     LightText(
                         text = (if (largeCard) stringResource(R.string.ingredients)
                         else stringResource(R.string.small_ingredients)) + " $ingredients",
-                        fontSize = ExtraSmallText)
+                        fontSize = ExtraSmallText
+                    )
                     LightText(
                         text = stringResource(R.string.steps) + " $steps",
                         fontSize = ExtraSmallText
@@ -83,7 +91,11 @@ fun DishCard(link: String,
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        RatingBar(rating.toFloat(), stars = 1, modifier = Modifier.height(SmallIconSize))
+                        RatingBar(
+                            rating.toFloat(),
+                            stars = 1,
+                            modifier = Modifier.height(SmallIconSize)
+                        )
                         DarkText(
                             text = rating.toString(),
                             fontSize = SmallText,
@@ -94,7 +106,10 @@ fun DishCard(link: String,
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
-                        SmallIcon(painter = painterResource(R.drawable.cooked_icon), color = colorResource(R.color.gray))
+                        SmallIcon(
+                            painter = painterResource(R.drawable.cooked_icon),
+                            color = colorResource(R.color.gray)
+                        )
                         DarkText(
                             text = cooked.toString(),
                             fontSize = SmallText,
@@ -104,13 +119,24 @@ fun DishCard(link: String,
                 }
                 Button(
                     shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 0.dp),
-                    colors = ButtonColors(colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan),
-                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)),
+                    colors = ButtonColors(
+                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan),
+                        colorResource(R.color.medium_cyan), colorResource(R.color.medium_cyan)
+                    ),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
-                    onClick = { /* TODO add function */ }
+                    onClick = {
+                        if (addToFavourites != null) {
+                            if (recipeCard != null) {
+                                addToFavourites("xJwRsIERXsZx3GtCxXch", recipeCard)
+                            }
+                        }
+                    }
                 ) {
-                    SmallIcon(painter = painterResource(R.drawable.like_icon), color = colorResource(R.color.white))
+                    SmallIcon(
+                        painter = painterResource(R.drawable.like_icon),
+                        color = colorResource(R.color.white)
+                    )
                 }
             }
         }

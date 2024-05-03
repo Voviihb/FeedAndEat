@@ -1,15 +1,17 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
@@ -43,18 +45,26 @@ class RecipesRepoImpl @Inject constructor(
         documentSnapshot: DocumentSnapshot?
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
         var query = db.collection(RECIPES_COLLECTION)
-            .where(Filter.and(
-                Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, filters.carbohydratesMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_CARBOHYDRATES_FIELD, filters.carbohydratesMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMax),
-                Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMin),
-                Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
-            ))
+            .where(
+                Filter.and(
+                    Filter.greaterThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMin),
+                    Filter.lessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, filters.caloriesMax),
+                    Filter.greaterThanOrEqualTo(
+                        NUTRIENTS_CARBOHYDRATES_FIELD,
+                        filters.carbohydratesMin
+                    ),
+                    Filter.lessThanOrEqualTo(
+                        NUTRIENTS_CARBOHYDRATES_FIELD,
+                        filters.carbohydratesMax
+                    ),
+                    Filter.greaterThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMin),
+                    Filter.lessThanOrEqualTo(NUTRIENTS_FAT_FIELD, filters.fatMax),
+                    Filter.greaterThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMin),
+                    Filter.lessThanOrEqualTo(NUTRIENTS_PROTEIN_FIELD, filters.proteinMax),
+                    Filter.greaterThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMin),
+                    Filter.lessThanOrEqualTo(NUTRIENTS_SUGAR_FIELD, filters.sugarMax),
+                )
+            )
 
         if (filters.startsWith != "")
             query = query.whereGreaterThanOrEqualTo(NAME_FIELD, filters.startsWith)
@@ -66,9 +76,11 @@ class RecipesRepoImpl @Inject constructor(
             SORT_NEWNESS -> {
                 query.orderBy(CREATED, Query.Direction.DESCENDING)
             }
+
             SORT_RATING -> {
                 query.orderBy(RATING, Query.Direction.DESCENDING)
             }
+
             SORT_POPULARITY -> {
                 query.orderBy(COOKED, Query.Direction.DESCENDING)
             }
@@ -82,14 +94,18 @@ class RecipesRepoImpl @Inject constructor(
             Type.EXCLUDED_FIRST -> {
                 query.startAfter(documentSnapshot!!).limit(filters.limit.toLong()).get().await()
             }
+
             Type.INCLUDED_FIRST -> {
                 query.startAt(documentSnapshot!!).limit(filters.limit.toLong()).get().await()
             }
+
             Type.INCLUDED_LAST -> {
                 query.endAt(documentSnapshot!!).limitToLast(filters.limit.toLong()).get().await()
             }
+
             Type.EXCLUDED_LAST -> {
-                query.endBefore(documentSnapshot!!).limitToLast(filters.limit.toLong()).get().await()
+                query.endBefore(documentSnapshot!!).limitToLast(filters.limit.toLong()).get()
+                    .await()
             }
 
             else -> {
@@ -110,16 +126,31 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock tags.map { it.toObject<Tag>() }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadCollectionRecipes(id: String): Flow<Response<CollectionsCards?>> = repoTryCatchBlock {
-        val query = db.collection(COLLECTIONS_COLLECTION).document(id)
-        val collections = query.get().await()
-        return@repoTryCatchBlock collections.toObject<CollectionsCards>()
+    override fun loadCollectionRecipes(id: String): Flow<Response<CollectionsCards?>> =
+        repoTryCatchBlock {
+            val query = db.collection(COLLECTIONS_COLLECTION).document(id)
+            val collections = query.get().await()
+            return@repoTryCatchBlock collections.toObject<CollectionsCards>()
+        }.flowOn(Dispatchers.IO)
+
+    /**
+     * Adds new recipes to already existing collection
+     * @param collectionId pass here id of collection
+     * @param recipe pass here new recipe
+     * */
+    override fun addRecipeToUserCollection(
+        collectionId: String,
+        recipe: RecipeCard
+    ): Flow<Response<Void>> = repoTryCatchBlock {
+        val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
+        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayUnion(recipe)).await()
     }.flowOn(Dispatchers.IO)
 
     companion object {
         private const val TAGS_COLLECTION = "tags"
         private const val RECIPES_COLLECTION = "recipes"
         private const val COLLECTIONS_COLLECTION = "collections"
+        private const val RECIPE_CARDS_FIELD = "recipeCards"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"

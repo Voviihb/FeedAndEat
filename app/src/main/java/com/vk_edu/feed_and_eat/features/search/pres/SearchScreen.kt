@@ -234,7 +234,9 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
                         steps = cardData.steps,
                         name = cardData.name,
                         rating = cardData.rating,
-                        cooked = cardData.cooked
+                        cooked = cardData.cooked,
+                        recipeCard = cardData,
+                        addToFavourites = viewModel::addRecipeToUserCollection
                     )
             }
         }

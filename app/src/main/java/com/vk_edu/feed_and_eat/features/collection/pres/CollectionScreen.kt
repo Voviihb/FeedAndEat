@@ -101,7 +101,9 @@ fun CardsGrid(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifie
                 steps = cardData.steps,
                 name = cardData.name,
                 rating = cardData.rating,
-                cooked = cardData.cooked
+                cooked = cardData.cooked,
+                recipeCard = cardData,
+                addToFavourites = null
             )
         }
     }

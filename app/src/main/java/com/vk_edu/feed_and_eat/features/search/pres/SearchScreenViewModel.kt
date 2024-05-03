@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.search.pres
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -155,6 +156,28 @@ class SearchScreenViewModel @Inject constructor(
         refreshFlag = true
     }
 
+    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.addRecipeToUserCollection(collectionId, recipe).collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
     private suspend fun searchRecipes(pagePointer: PagePointer): CardsAndSnapshots {
         val result = viewModelScope.async {
             var result = CardsAndSnapshots(listOf(), null, null)
@@ -202,6 +225,7 @@ class SearchScreenViewModel @Inject constructor(
     private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false
+        Log.d("Taag", message.toString())
     }
 
     fun clearError() {
