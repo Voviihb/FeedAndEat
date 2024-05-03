@@ -11,6 +11,7 @@ import androidx.paging.cachedIn
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
+import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -22,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl
+    private val _recipesRepo: RecipesRepoImpl,
+    private val _authRepo: AuthRepoImpl
 ) : ViewModel() {
     val cardsDataPager: Flow<PagingData<RecipeCard>> = Pager(PagingConfig(pageSize = LIMIT)) {
         SearchPagingSource(::searchRecipes, LIMIT)
@@ -105,16 +107,26 @@ class SearchScreenViewModel @Inject constructor(
                 searchFilters = searchFilters.copy(
                     sort = _sortingForm.value,
                     tags = _filtersForm.value.tags.filter { it.ckecked }.map { it.name },
-                    caloriesMin = _filtersForm.value.nutrients[Nutrient.CALORIES.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    caloriesMax = _filtersForm.value.nutrients[Nutrient.CALORIES.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    sugarMin = _filtersForm.value.nutrients[Nutrient.SUGAR.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    sugarMax = _filtersForm.value.nutrients[Nutrient.SUGAR.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    carbohydratesMin = _filtersForm.value.nutrients[Nutrient.CARBOHYDRATES.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    carbohydratesMax = _filtersForm.value.nutrients[Nutrient.CARBOHYDRATES.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    fatMin = _filtersForm.value.nutrients[Nutrient.FAT.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    fatMax = _filtersForm.value.nutrients[Nutrient.FAT.value].max.ifEmpty { null }?.toDouble() ?: 10e9,
-                    proteinMin = _filtersForm.value.nutrients[Nutrient.PROTEIN.value].min.ifEmpty { null }?.toDouble() ?: 0.0,
-                    proteinMax = _filtersForm.value.nutrients[Nutrient.PROTEIN.value].max.ifEmpty { null }?.toDouble() ?: 10e9
+                    caloriesMin = _filtersForm.value.nutrients[Nutrient.CALORIES.value].min.ifEmpty { null }
+                        ?.toDouble() ?: 0.0,
+                    caloriesMax = _filtersForm.value.nutrients[Nutrient.CALORIES.value].max.ifEmpty { null }
+                        ?.toDouble() ?: 10e9,
+                    sugarMin = _filtersForm.value.nutrients[Nutrient.SUGAR.value].min.ifEmpty { null }
+                        ?.toDouble() ?: 0.0,
+                    sugarMax = _filtersForm.value.nutrients[Nutrient.SUGAR.value].max.ifEmpty { null }
+                        ?.toDouble() ?: 10e9,
+                    carbohydratesMin = _filtersForm.value.nutrients[Nutrient.CARBOHYDRATES.value].min.ifEmpty { null }
+                        ?.toDouble() ?: 0.0,
+                    carbohydratesMax = _filtersForm.value.nutrients[Nutrient.CARBOHYDRATES.value].max.ifEmpty { null }
+                        ?.toDouble() ?: 10e9,
+                    fatMin = _filtersForm.value.nutrients[Nutrient.FAT.value].min.ifEmpty { null }
+                        ?.toDouble() ?: 0.0,
+                    fatMax = _filtersForm.value.nutrients[Nutrient.FAT.value].max.ifEmpty { null }
+                        ?.toDouble() ?: 10e9,
+                    proteinMin = _filtersForm.value.nutrients[Nutrient.PROTEIN.value].min.ifEmpty { null }
+                        ?.toDouble() ?: 0.0,
+                    proteinMax = _filtersForm.value.nutrients[Nutrient.PROTEIN.value].max.ifEmpty { null }
+                        ?.toDouble() ?: 10e9
                 )
 
                 _reloadData.value = true
@@ -158,18 +170,23 @@ class SearchScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                _recipesRepo.addRecipeToUserCollection(collectionId, recipe).collect { response ->
-                    when (response) {
-                        is Response.Loading -> _loading.value = true
-                        is Response.Success -> {
+                val user = _authRepo.getUserId()
+                if (user != null) {
+                    _recipesRepo.addRecipeToUserCollection(user, collectionId, recipe)
+                        .collect { response ->
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
 
-                        }
+                                }
 
-                        is Response.Failure -> {
-                            onError(response.e)
+                                is Response.Failure -> {
+                                    onError(response.e)
+                                }
+                            }
                         }
-                    }
                 }
+
             } catch (e: Exception) {
                 onError(e)
             }

@@ -6,5 +6,5 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 data class Compilation(
     val id: String? = null,
     val name : String = "",
-    val picture : String? = null,
+    var picture : String? = null,
 )

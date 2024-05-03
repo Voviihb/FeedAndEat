@@ -16,6 +16,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -139,11 +140,16 @@ class RecipesRepoImpl @Inject constructor(
      * @param recipe pass here new recipe
      * */
     override fun addRecipeToUserCollection(
+        userId: String,
         collectionId: String,
         recipe: RecipeCard
     ): Flow<Response<Void>> = repoTryCatchBlock {
         val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
         docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayUnion(recipe)).await()
+        val userDoc = db.collection(USERS_COLLECTION).document(userId)
+        val user = userDoc.get().await().toObject<UserModel>()
+        user?.collectionsIdList?.filter { it.id == collectionId }?.map { it.picture = recipe.image }
+        userDoc.update(COLLECTIONS_ID_LIST_FIELD, user?.collectionsIdList).await()
     }.flowOn(Dispatchers.IO)
 
     override fun createNewCollection(): Flow<Response<String>> = repoTryCatchBlock {
@@ -158,7 +164,9 @@ class RecipesRepoImpl @Inject constructor(
         private const val TAGS_COLLECTION = "tags"
         private const val RECIPES_COLLECTION = "recipes"
         private const val COLLECTIONS_COLLECTION = "collections"
+        private const val USERS_COLLECTION = "users"
         private const val RECIPE_CARDS_FIELD = "recipeCards"
+        private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"

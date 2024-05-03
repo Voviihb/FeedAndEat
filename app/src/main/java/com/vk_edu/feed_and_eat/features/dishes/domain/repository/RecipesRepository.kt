@@ -25,6 +25,7 @@ interface RecipesRepository {
     fun loadCollectionRecipes(id: String): Flow<Response<CollectionsCards?>>
 
     fun addRecipeToUserCollection(
+        userId: String,
         collectionId: String,
         recipe: RecipeCard
     ): Flow<Response<Void>>
