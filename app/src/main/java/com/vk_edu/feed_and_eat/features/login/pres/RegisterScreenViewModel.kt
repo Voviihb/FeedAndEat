@@ -11,7 +11,6 @@ import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
-import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -75,10 +74,10 @@ class RegisterScreenViewModel @Inject constructor(
                 if (userId != null) {
                     val data = UserModel(
                         userId = userId,
-                        collections = listOf(
+                        collectionsIdList = listOf(
                             Compilation(
                                 FAVOURITES,
-                                mutableListOf<RecipeDataModel>()
+                                mutableListOf()
                             )
                         )
                     )

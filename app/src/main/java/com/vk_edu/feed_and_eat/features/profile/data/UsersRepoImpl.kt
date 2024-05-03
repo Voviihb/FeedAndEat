@@ -8,7 +8,6 @@ import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
-import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -35,7 +34,7 @@ class UsersRepoImpl @Inject constructor(
         repoTryCatchBlock {
             val document = db.collection(USERS_COLLECTION).document(userId).get().await()
             val user = document.toObject<UserModel>()
-            return@repoTryCatchBlock user?.collections
+            return@repoTryCatchBlock user?.collectionsIdList
         }
 
     /**
@@ -76,20 +75,21 @@ class UsersRepoImpl @Inject constructor(
      * @param collectionName pass here name of collection
      * @param recipe pass here new recipe
      * */
-    override fun addToUserCollection(
-        userId: String,
-        collectionName: String,
-        recipe: RecipeDataModel
-    ): Flow<Response<Void>> = repoTryCatchBlock {
-        val docRef = db.collection(USERS_COLLECTION).document(userId)
-        val document = docRef.get().await()
-        val user = document.toObject<UserModel>()
-        user?.collections?.filter { it.name == collectionName }?.map { it.recipeList += recipe }
-        docRef.update(COLLECTIONS_FIELD, user?.collections).await()
-    }.flowOn(Dispatchers.IO)
+//    override fun addToUserCollection(
+//        userId: String,
+//        collectionName: String,
+//        recipe: RecipeDataModel
+//    ): Flow<Response<Void>> = repoTryCatchBlock {
+//        val docRef = db.collection(USERS_COLLECTION).document(userId)
+//        val document = docRef.get().await()
+//        val user = document.toObject<UserModel>()
+//        user?.collections?.filter { it.name == collectionName }?.map { it.recipeList += recipe }
+//        docRef.update(COLLECTIONS_FIELD, user?.collections).await()
+//    }.flowOn(Dispatchers.IO)
 
     companion object {
         private const val USERS_COLLECTION = "users"
+        private const val COLLECTIONS_COLLECTION = "collections"
         private const val COLLECTIONS_FIELD = "collections"
     }
 }
