@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.navigation.data
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ fun NavGraph(
     context: Context,
     viewModel: NavBarViewModel = hiltViewModel()
 ) {
+
     val navigateToRoute: (String) -> Unit = {
         navController.navigate(it) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -41,31 +43,31 @@ fun NavGraph(
             restoreState = true
         }
     }
-    val navigateBack: () -> Unit = {
-        val previous = navController.previousBackStackEntry?.destination?.route
-        if (previous != null) {
-            navController.navigate(previous)
-        }
-    }
 
     NavHost(
         navController = navController,
         startDestination = viewModel.getStartDestination(),
         modifier = Modifier.padding(0.dp)
     ) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
         composable(BottomScreen.HomeScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.HomeScreen.route)
             HomeScreen(navigateToRoute)
         }
         composable(BottomScreen.SearchScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.SearchScreen.route)
             SearchScreen(navigateToRoute)
         }
         composable(BottomScreen.CollectionScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.CollectionScreen.route)
             CollectionScreen(navigateToRoute)
         }
         composable(BottomScreen.InProgressScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.InProgressScreen.route)
             InProgressScreen(navigateToRoute)
         }
         composable(BottomScreen.ProfileScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.ProfileScreen.route)
             ProfileScreen(navigateToRoute)
         }
         composable(Screen.LoginScreen.route) {
@@ -85,11 +87,11 @@ fun NavGraph(
         composable(Screen.RecipeScreen.route + "/{id}",
             arguments = listOf(navArgument("id"){ type = NavType.StringType })
         ) {backStackEntry ->
+            Log.d("TAG", backStackEntry.destination.toString())
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
                 id = backStackEntry.arguments?.getString("id") ?: "",
-                destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.InProgressScreen.route
+                destination = currentRoute ?: BottomScreen.InProgressScreen.route
             )
         }
     }

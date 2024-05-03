@@ -28,11 +28,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 
 @Composable
 fun CongratulationScreen(
     name : String,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToRoute: (String) -> Unit
 ){
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -91,12 +93,12 @@ fun CongratulationScreen(
                 2.dp,
                 colorResource(id = R.color.dark_cyan),
             ),
-            onClick = { navigateBack() },
+            onClick = { navigateToRoute(BottomScreen.HomeScreen.route) },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .width(112.dp)
         ) {
-            androidx.compose.material3.Text(
+            Text(
                 text = stringResource(id = R.string.to_main),
                 overflow = TextOverflow.Visible
             )

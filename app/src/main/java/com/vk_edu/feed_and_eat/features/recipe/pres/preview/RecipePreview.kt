@@ -20,9 +20,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,14 +41,14 @@ import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoxWithCards
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
-import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
+import com.vk_edu.feed_and_eat.common.graphics.InfoSquareButton
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import kotlinx.coroutines.launch
 
 @Composable
 fun InfoSurface(
-    surfaceWidth : Int,
     model : Recipe,
 ){
     val ingredients = model.ingredients
@@ -59,7 +63,6 @@ fun InfoSurface(
     Surface(
         modifier = Modifier
             .padding(8.dp)
-            .width(surfaceWidth.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -113,28 +116,32 @@ fun InfoSurface(
     }
 }
 
-@Composable
-fun BackButtonContainer(
-    model: Recipe,
-    navigateBack : () -> Unit
-){
-    Surface(
-        color = colorResource(id = R.color.transparent),
-        modifier = Modifier.height(650.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier.height(650.dp)
-            ,
-        ) {
-            SquareArrowButton(navigateBack)
-            ExpandableInfo(width = 352, surface = {
-                InfoSurface(352, model)
-            })
-        }
-    }
-}
+//@Composable
+//fun BackButtonContainer(
+//    model: Recipe,
+//    navigateBack : () -> Unit
+//){
+//    val drawerState = rememberDrawerState(DrawerValue.Closed)
+//    val scope = rememberCoroutineScope()
+//    ModalNavigationDrawer(
+//        drawerState = drawerState,
+//        modifier = Modifier.height(650.dp),
+//        drawerContent = {
+//            InfoSurface(352, model)
+//        }
+//    ) {
+//        Row(
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.Top,
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            SquareArrowButton(navigateBack)
+//            InfoSquareButton({
+//                scope.launch {drawerState.open()}
+//            })
+//        }
+//    }
+//}
 
 
 @Composable
@@ -174,11 +181,12 @@ fun RecipeImageContainer(
 fun StartCookingContainer(
     model: Recipe,
     navigateToStep: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ){
     val steps = model.instructions
     val ingredients = model.ingredients
     Column(
-        modifier = Modifier
+        modifier = modifier
             .height(40.dp)
             .fillMaxWidth()
             .background(colorResource(id = R.color.pale_cyan))
@@ -188,9 +196,10 @@ fun StartCookingContainer(
             )
     ){
         Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
         ){
             Text(text = stringResource(R.string.ingr) + " :" + ingredients.size,
                 modifier = Modifier
@@ -215,7 +224,7 @@ fun StartCookingContainer(
                     maxLines = 1
                 )
             }
-            Text(text = stringResource(R.string.steps) + ": " + steps.size,
+            Text(text = stringResource(R.string.step) + ": " + steps.size,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 12.dp),
@@ -226,9 +235,11 @@ fun StartCookingContainer(
 }
 
 @Composable
-fun AddCollectionButtons(){
+fun AddCollectionButtons(
+    modifier: Modifier = Modifier
+){
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 12.dp)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -287,13 +298,13 @@ fun AddCollectionButtons(){
 
 @Composable
 fun TextContainer(
-    model : Recipe
+    model : Recipe,
+    modifier: Modifier = Modifier
 ){
     val description = model.instructions.map { it.paragraph }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(280.dp)
             .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -306,7 +317,7 @@ fun TextContainer(
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
             userScrollEnabled = true,
-            modifier = Modifier
+            modifier = modifier
                 .background(
                     colorResource(id = R.color.white_cyan),
                     shape = RoundedCornerShape(20.dp),
@@ -333,10 +344,11 @@ fun TextContainer(
 
 @Composable
 fun RatingContainer(
-    model : Recipe
+    model : Recipe,
+    modifier: Modifier = Modifier
 ){
     Column(
-        modifier = Modifier
+        modifier = modifier
             .height(52.dp)
     ){
         Spacer(modifier = Modifier.height(20.dp))
@@ -370,27 +382,56 @@ fun StartRecipe(
     navigateToStep: (Int) -> Unit,
     recipe : Recipe
 ){
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     listOf(recipe).forEach{ model ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.white))
-        ) {
-            Box{
-                Column{
-                    RecipeImageContainer(model)
-                    Column(
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxSize()
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorResource(id = R.color.white)),
+                drawerContent = {
+                    Box() {
+                        Row(){
+                            InfoSquareButton({
+                                scope.launch {drawerState.open()}
+                            })
+                            InfoSurface(model)
+                        }
+                    }
+                },
+            ){
+                Box {
+                    Column{
+                        RecipeImageContainer(model)
+                        Column(
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            RatingContainer(model, Modifier.weight(1f))
+                            TextContainer(model, Modifier.weight(6f))
+                            AddCollectionButtons(Modifier.weight(1f))
+                            StartCookingContainer(model, navigateToStep,
+                                Modifier
+                                    .weight(1f)
+                                    .height(40.dp))
+                        }
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        RatingContainer(model)
-                        TextContainer(model)
-                        AddCollectionButtons()
-                        StartCookingContainer(model, navigateToStep)
+                        SquareArrowButton(navigateBack)
+                        if (drawerState.currentValue == DrawerValue.Closed){
+                            InfoSquareButton({
+                                scope.launch {drawerState.open()}
+                            })
+                        }
+
                     }
                 }
-                BackButtonContainer(model, navigateBack)
             }
         }
     }
-}

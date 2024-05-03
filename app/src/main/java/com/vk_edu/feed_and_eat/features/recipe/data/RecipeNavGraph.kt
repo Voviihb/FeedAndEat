@@ -16,6 +16,7 @@ import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreen
 @Composable
 fun RecipeNavGraph(
     navigateBack: () -> Unit,
+    navigateToRoute: (String) -> Unit,
     navController: NavHostController,
     recipe : Recipe,
 ){
@@ -45,7 +46,8 @@ fun RecipeNavGraph(
         composable(Routes.Congrats.route){
             CongratulationScreen(
                 recipe.name,
-                navigateBack
+                navigateBack,
+                navigateToRoute
             )
         }
         composable(

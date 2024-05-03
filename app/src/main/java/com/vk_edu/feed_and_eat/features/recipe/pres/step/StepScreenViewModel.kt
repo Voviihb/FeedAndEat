@@ -94,10 +94,10 @@ class StepScreenViewModel @Inject constructor(
         application.startService(timerService)
     }
 
-    fun stopTimer(timerId: String) {
+    fun stopTimer(name: String) {
 //      here may be mistake: do not startTimer after stopTimer without initChanges
-        privateRunning.remove(timerId)
-        privateTimerFlag.remove(timerId)
+        privateRunning.remove(name)
+        privateTimerFlag.remove(name)
 //      mistake
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
@@ -106,13 +106,14 @@ class StepScreenViewModel @Inject constructor(
         )
         timerService.putExtra(
             TimerService.TIMER_ID,
-            timerId
+            name
         )
         application.startService(timerService)
     }
 
-    fun pauseTimer(timerId: String) {
-        privateRunning[timerId]?.value = false
+    fun pauseTimer(name: String) {
+        changeTimerState(name)
+//        privateRunning[timerId]?.value = false
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -120,12 +121,13 @@ class StepScreenViewModel @Inject constructor(
         )
         timerService.putExtra(
             TimerService.TIMER_ID,
-            timerId
+            name
         )
         application.startService(timerService)
     }
 
-    fun resumeTimer(timerId: String) {
+    fun resumeTimer(name: String) {
+        changeTimerState(name)
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -133,7 +135,7 @@ class StepScreenViewModel @Inject constructor(
         )
         timerService.putExtra(
             TimerService.TIMER_ID,
-            timerId
+            name
         )
         application.startService(timerService)
     }

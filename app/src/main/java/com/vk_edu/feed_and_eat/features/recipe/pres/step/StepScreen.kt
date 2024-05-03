@@ -117,14 +117,15 @@ fun TimeInfoCard(time1 : Int, time2 : Int, modifier: Modifier = Modifier) {
 
 @Composable
 fun TextContainer(
-    text : String
+    text : String,
+    modifier: Modifier = Modifier,
 ){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(200.dp)
+//            .height(200.dp)
             .padding(horizontal = 15.dp)
             .background(colorResource(R.color.transparent)),
     ) {
@@ -173,10 +174,11 @@ fun ButtonContainer(
     clear: () -> Unit,
     id : Int,
     maxId : Int,
+    modifier: Modifier = Modifier,
 ){
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(60.dp)
             .padding(4.dp)
@@ -232,33 +234,28 @@ fun StepScreen(
             .fillMaxSize()
             .background(colorResource(id = R.color.pale_cyan))
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.height(300.dp)
-            ){
-                Column {
-                    if (!data.timers.isNullOrEmpty()){
-                        val constant = data.timers.sumOf { it.number ?: 0 }
-                        val mins = data.timers.sumOf { it.lowerLimit ?: 0 }
-                        if (mins == 0){
-                            TimeInfoCard(time = constant)
-                        } else {
-                            val maxs = data.timers.sumOf { it.upperLimit ?: 0 }
-                            TimeInfoCard(mins, maxs)
-                        }
-                    } else {
-                        TimeInfoCard(null)
-                    }
-                    TextContainer(data.paragraph)
+            if (!data.timers.isNullOrEmpty()){
+                val constant = data.timers.sumOf { it.number ?: 0 }
+                val minimums = data.timers.sumOf { it.lowerLimit ?: 0 }
+                if (minimums == 0){
+                    TimeInfoCard(time = constant, Modifier.weight(1.2f))
+                } else {
+                    val maximums = data.timers.sumOf { it.upperLimit ?: 0 }
+                    TimeInfoCard(minimums, maximums, Modifier.weight(1.2f))
                 }
+            } else {
+                TimeInfoCard(null, Modifier.weight(1.2f))
             }
+            TextContainer(data.paragraph, Modifier.weight(3f))
             if (!data.timers.isNullOrEmpty()) {
                 Timer(
                     data.timers,
-                    viewModel
+                    viewModel,
+                    Modifier.weight(5f)
                 )
+            } else {
+                Box(modifier = Modifier.weight(5f))
             }
-            ButtonContainer(navigateToStep, navigateToRecipe, { viewModel.clear() }, id, maxId)
+            ButtonContainer(navigateToStep, navigateToRecipe, { viewModel.clear() }, id, maxId, Modifier.weight(1f))
         }
     }

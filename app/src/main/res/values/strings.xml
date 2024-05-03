@@ -5,6 +5,7 @@
     <string name="add_to_favourite">Добавить в любимое</string>
     <string name="add_to_playlist">Добавить в подборку</string>
     <string name="ingr">Ингр</string>
+    <string name="step">Шаги</string>
     <string name="start_cooking">Начать готовить</string>
     <string name="ingridients">Ингредиенты</string>
     <string name="tags">Тэги</string>
@@ -19,9 +20,9 @@
     <string name="repeat">повторить</string>
     <string name="image">так выглядит рецепт</string>
     <string name = "unlimited">не ограничено</string>
-    <string name="cangonextstep">можете переходить к следующему шагу</string>
+    <string name="cangonextstep">Вы можете переходить к следующему шагу</string>
     <string name="backstep">к предыдущему</string>
-    <string name="nextstep">к следущему</string>
+    <string name="nextstep">к следующему</string>
     <string name="finish">завершить</string>
     <string name="congratulations">Поздравляем! вы приготовили:</string>
     <string name="to_main">на главную</string>

@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.data.RecipeNavGraph
 
 
@@ -74,7 +75,6 @@ fun RepeatButton(
 @Composable
 fun RecipeScreen(
     navigateToRoute: (String) -> Unit,
-    navigateBack : () -> Unit,
     id : String,
     destination : String,
     viewModel: RecipesScreenViewModel = hiltViewModel()
@@ -98,7 +98,8 @@ fun RecipeScreen(
                 Box(modifier = Modifier.padding(padding)){
                     val navController = rememberNavController()
                     RecipeNavGraph(
-                        navigateBack,
+                        { navigateToRoute(Screen.RecipeScreen.route + "/$id") },
+                        navigateToRoute,
                         navController,
                         recipe
                     )
