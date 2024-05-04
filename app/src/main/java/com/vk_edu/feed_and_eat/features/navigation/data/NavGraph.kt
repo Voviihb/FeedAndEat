@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -12,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
@@ -32,6 +34,7 @@ fun NavGraph(
     context: Context,
     viewModel: NavBarViewModel = hiltViewModel()
 ) {
+    val navId = stringResource(id = R.string.nav_id)
 
     val navigateToRoute: (String) -> Unit = {
         navController.navigate(it) {
@@ -86,13 +89,13 @@ fun NavGraph(
             NewRecipeScreen(navigateToRoute)
         }
         composable(
-            route = Screen.RecipeScreen.route + "/{id}",
-            arguments = listOf(navArgument("id"){ type = NavType.StringType })
+            route = Screen.RecipeScreen.route + "/{" + navId + "}",
+            arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {entry ->
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
-                id = entry.arguments?.getString("id") ?: "",
+                id = entry.arguments?.getString(navId) ?: "",
                 destination = currentRoute ?: BottomScreen.InProgressScreen.route
             )
         }
