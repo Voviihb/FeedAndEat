@@ -99,7 +99,7 @@ fun DropDownTimerList(
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 painter = painterResource(id = R.drawable.clock),
-                tint = colorResource(id = R.color.cyan_fae),
+                tint = colorResource(id = R.color.dark_cyan),
                 contentDescription = stringResource(id = R.string.list)
             )
         }
@@ -243,8 +243,8 @@ fun CountdownRangeTimer(
                 },
                 valueRange = minMillis.toFloat()..maxMillis.toFloat(),
                 colors = SliderDefaults.colors(
-                    thumbColor = colorResource(id = R.color.cyan_fae),
-                    activeTrackColor = colorResource(id = R.color.cyan_fae),
+                    thumbColor = colorResource(id = R.color.dark_cyan),
+                    activeTrackColor = colorResource(id = R.color.dark_cyan),
                     inactiveTrackColor = colorResource(id = R.color.gray)
                 ),
                 modifier = Modifier
@@ -430,7 +430,7 @@ private fun CountdownCircleAnimation(
     )
 
     val stroke = with(LocalDensity.current) { Stroke(8.dp.toPx()) }
-    val paleCyan = colorResource(id = R.color.cyan_fae)
+    val paleCyan = colorResource(id = R.color.dark_cyan)
 
     Canvas(
         modifier = Modifier

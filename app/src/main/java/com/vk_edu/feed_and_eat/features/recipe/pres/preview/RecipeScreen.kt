@@ -28,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.data.RecipeNavGraph
 
 
@@ -55,7 +54,7 @@ fun RepeatButton(
                 )
                 .border(
                     2.dp,
-                    colorResource(id = R.color.cyan_fae),
+                    colorResource(id = R.color.dark_cyan),
                     RoundedCornerShape(4.dp)
                 )
                 .height(40.dp)

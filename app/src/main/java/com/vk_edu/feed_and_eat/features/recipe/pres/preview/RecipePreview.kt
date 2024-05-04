@@ -73,7 +73,7 @@ fun InfoSurface(
             .fillMaxHeight()
             .background(colorResource(R.color.white), RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .border(2.dp, colorResource(id = R.color.cyan_fae), RoundedCornerShape(12.dp))
+            .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
         Column(
@@ -308,7 +308,7 @@ fun TextContainer(
                 .height(280.dp)
                 .border(
                     1.dp,
-                    colorResource(id = R.color.cyan_fae),
+                    colorResource(id = R.color.dark_cyan),
                     shape = RoundedCornerShape(20.dp)
                 ),
         ){

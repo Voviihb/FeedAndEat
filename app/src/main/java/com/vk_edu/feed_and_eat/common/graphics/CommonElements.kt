@@ -37,7 +37,7 @@ fun SquareArrowButton(
             .width(60.dp)
             .border(
                 2.dp,
-                color = colorResource(id = R.color.cyan_fae),
+                color = colorResource(id = R.color.dark_cyan),
                 shape = RoundedCornerShape(4.dp)
             )
             .background(colorResource(R.color.white), shape = RoundedCornerShape(4.dp))
@@ -46,7 +46,7 @@ fun SquareArrowButton(
         Icon(
             painter = painterResource(id = R.drawable.arrowback),
             contentDescription = stringResource(id = R.string.back),
-            tint = colorResource(id = R.color.cyan_fae),
+            tint = colorResource(id = R.color.dark_cyan),
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)
@@ -72,14 +72,14 @@ fun InfoSquareButton(
             .clip(shape = RoundedCornerShape(4.dp))
             .border(
                 2.dp,
-                color = colorResource(id = R.color.cyan_fae),
+                color = colorResource(id = R.color.dark_cyan),
                 shape = RoundedCornerShape(4.dp)
             ),
     ){
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = stringResource(id = R.string.info),
-            tint = colorResource(id = R.color.cyan_fae),
+            tint = colorResource(id = R.color.dark_cyan),
             modifier = Modifier
                 .height(50.dp)
                 .width(50.dp)

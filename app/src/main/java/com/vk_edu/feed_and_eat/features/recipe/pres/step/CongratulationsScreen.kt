@@ -52,7 +52,7 @@ fun CongratulationScreen(
                 .clip(RoundedCornerShape(24.dp))
                 .border(
                     4.dp,
-                    colorResource(id = R.color.cyan_fae),
+                    colorResource(id = R.color.dark_cyan),
                     RoundedCornerShape(24.dp)
                 )
         ) {

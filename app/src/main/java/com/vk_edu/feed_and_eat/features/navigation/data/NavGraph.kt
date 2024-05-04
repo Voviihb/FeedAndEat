@@ -43,6 +43,8 @@ fun NavGraph(
         }
     }
 
+    val navigateBack = { navigateToRoute(viewModel.currentBottomState.value) }
+
     NavHost(
         navController = navController,
         startDestination = viewModel.getStartDestination(),
@@ -89,7 +91,7 @@ fun NavGraph(
         ) {entry ->
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
-                navigateBack = { navigateToRoute(viewModel.currentBottomState.value) },
+                navigateBack = navigateBack,
                 id = entry.arguments?.getString("id") ?: "",
                 destination = currentRoute ?: BottomScreen.InProgressScreen.route
             )

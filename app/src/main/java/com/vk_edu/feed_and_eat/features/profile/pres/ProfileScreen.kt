@@ -163,7 +163,7 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                 .clip(RoundedCornerShape(12.dp))
                 .border(
                     1.dp,
-                    colorResource(id = R.color.cyan_fae),
+                    colorResource(id = R.color.dark_cyan),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .background(Color.Transparent)
@@ -207,7 +207,7 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
             .padding(vertical = 16.dp)
             .border(
                 1.dp,
-                colorResource(id = R.color.cyan_fae),
+                colorResource(id = R.color.dark_cyan),
                 shape = RoundedCornerShape(12.dp)
             )
 

@@ -164,7 +164,7 @@ fun TextContainer(
                 .height(280.dp)
                 .border(
                     1.dp,
-                    colorResource(R.color.cyan_fae),
+                    colorResource(R.color.dark_cyan),
                     shape = RoundedCornerShape(20.dp)
                 ),
         ){
@@ -207,7 +207,7 @@ fun ButtonContainer(
             Button(
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
-                    if (index % 2 == 0) colorResource(id = R.color.white_cyan) else colorResource(id = R.color.cyan_fae),
+                    if (index % 2 == 0) colorResource(id = R.color.white_cyan) else colorResource(id = R.color.dark_cyan),
                     contentColor = colorResource(R.color.black)
                 ),
                 border = BorderStroke(
