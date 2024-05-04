@@ -28,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.data.RecipeNavGraph
 
 
@@ -91,7 +90,7 @@ fun RecipeScreen(
         bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
     ) {padding ->
         if (viewModel.loading.value){
-            LoadingCircular(padding)
+            LoadingCircular()
         } else {
             if (viewModel.errorMessage.value != null){
                 RepeatButton(reload)

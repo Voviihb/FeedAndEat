@@ -107,4 +107,15 @@
     <string name="timer_is_at">⏱️ %1$s %2$02d:%3$02d:%4$02d</string>
     <string name="paused_timer_is_at">⏸️ %1$s paused, %2$02d:%3$02d:%4$02d left</string>
     <string name="timer_is_done">⌛️ %1$s is done!</string>
+    <!-- search screen -->
+    <string name="carbohydrates">Carbohydrates</string>
+    <string name="fat">Fat</string>
+    <string name="protein">Protein</string>
+    <string name="apply">Apply</string>
+    <string name="from">from</string>
+    <string name="to">to</string>
+    <string name="newness">newness</string>
+    <string name="rating">rating</string>
+    <string name="popularity">popularity</string>
+    <string name="sort_by">Sort by</string>
 </resources>
