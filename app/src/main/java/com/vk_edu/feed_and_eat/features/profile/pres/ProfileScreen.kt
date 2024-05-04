@@ -163,7 +163,7 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                 .clip(RoundedCornerShape(12.dp))
                 .border(
                     1.dp,
-                    colorResource(id = R.color.cyan_fae),
+                    colorResource(id = R.color.dark_cyan),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .background(Color.Transparent)
@@ -174,9 +174,9 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                 onValueChange = { viewModel.aboutMeChanged(it) },
                 modifier = Modifier.fillMaxSize(),
                 colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = colorResource(id = R.color.light_cyan_fae),
-                    focusedContainerColor = colorResource(id = R.color.light_cyan_fae),
-                    errorContainerColor = colorResource(id = R.color.light_cyan_fae),
+                    unfocusedContainerColor = colorResource(id = R.color.white_cyan),
+                    focusedContainerColor = colorResource(id = R.color.white_cyan),
+                    errorContainerColor = colorResource(id = R.color.white_cyan),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
@@ -198,16 +198,16 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
         onClick = { viewModel.updateUserProfile() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
-            containerColor = colorResource(id = R.color.light_cyan_fae),
+            containerColor = colorResource(id = R.color.white_cyan),
             contentColor = colorResource(id = R.color.black),
-            disabledContainerColor = colorResource(id = R.color.light_cyan_fae),
+            disabledContainerColor = colorResource(id = R.color.white_cyan),
             disabledContentColor = colorResource(id = R.color.black)
         ),
         modifier = Modifier
             .padding(vertical = 16.dp)
             .border(
                 1.dp,
-                colorResource(id = R.color.cyan_fae),
+                colorResource(id = R.color.dark_cyan),
                 shape = RoundedCornerShape(12.dp)
             )
 

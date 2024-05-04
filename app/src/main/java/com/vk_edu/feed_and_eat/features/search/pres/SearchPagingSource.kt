@@ -2,14 +2,14 @@ package com.vk_edu.feed_and_eat.features.search.pres
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
-import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
 
 class SearchPagingSource(
     private val searchRecipes: suspend (PagePointer) -> CardsAndSnapshots,
     private val limit: Int
-): PagingSource<PagePointer, CardDataModel>() {
-    override suspend fun load(params: LoadParams<PagePointer>): LoadResult<PagePointer, CardDataModel> {
+): PagingSource<PagePointer, RecipeCard>() {
+    override suspend fun load(params: LoadParams<PagePointer>): LoadResult<PagePointer, RecipeCard> {
         return try {
             val page = params.key ?: PagePointer(null, 1, null)
             val response = searchRecipes(page)
@@ -30,7 +30,7 @@ class SearchPagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<PagePointer, CardDataModel>): PagePointer? {
+    override fun getRefreshKey(state: PagingState<PagePointer, RecipeCard>): PagePointer? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.let {
                 PagePointer(Type.INCLUDED_FIRST, it.number + 1, it.documentSnapshot)

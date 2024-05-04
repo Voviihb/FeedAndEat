@@ -58,7 +58,10 @@ fun NavGraph(
             SearchScreen(navigateToRoute)
         }
         composable(BottomScreen.CollectionScreen.route) {
-            CollectionScreen(navigateToRoute)
+            CollectionScreen(
+                navigateToRoute,
+                navigateBack
+            )
         }
         composable(BottomScreen.InProgressScreen.route) {
             InProgressScreen(navigateToRoute)

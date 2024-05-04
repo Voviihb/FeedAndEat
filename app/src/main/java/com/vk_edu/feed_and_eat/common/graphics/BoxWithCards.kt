@@ -35,7 +35,7 @@ fun TextBox(text : String){
 
 @Composable
 fun BoxWithCards(bigText : List<String?>){
-    val turquoise = colorResource(id = R.color.cyan_fae)
+    val turquoise = colorResource(id = R.color.dark_cyan)
     val lightBlue = colorResource(id = R.color.pale_cyan)
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Adaptive(70.dp),

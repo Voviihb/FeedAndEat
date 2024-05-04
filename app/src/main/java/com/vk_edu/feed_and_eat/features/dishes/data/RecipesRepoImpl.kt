@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
@@ -97,21 +98,28 @@ class RecipesRepoImpl @Inject constructor(
         }
 
         return@repoTryCatchBlock PaginationResult(
-            recipes = snapshot.map { it.toObject<Recipe>() },
+            recipes = snapshot.map { it.toObject<Recipe>().copy(id = it.id) },
             startDocument = snapshot.documents.ifEmpty { null }?.get(0),
             endDocument = snapshot.documents.ifEmpty { null }?.get(snapshot.size() - 1)
         )
     }.flowOn(Dispatchers.IO)
 
-    override fun loadTags(): Flow<Response<List<String>>> = repoTryCatchBlock {
+    override fun loadTags(): Flow<Response<List<Tag>>> = repoTryCatchBlock {
         val query = db.collection(TAGS_COLLECTION)
         val tags = query.get().await()
-        return@repoTryCatchBlock tags.map { it.toObject<Tag>().name }
+        return@repoTryCatchBlock tags.map { it.toObject<Tag>() }
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadCollectionRecipes(id: String): Flow<Response<CollectionsCards?>> = repoTryCatchBlock {
+        val query = db.collection(COLLECTIONS_COLLECTION).document(id)
+        val collections = query.get().await()
+        return@repoTryCatchBlock collections.toObject<CollectionsCards>()
     }.flowOn(Dispatchers.IO)
 
     companion object {
         private const val TAGS_COLLECTION = "tags"
         private const val RECIPES_COLLECTION = "recipes"
+        private const val COLLECTIONS_COLLECTION = "collections"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
