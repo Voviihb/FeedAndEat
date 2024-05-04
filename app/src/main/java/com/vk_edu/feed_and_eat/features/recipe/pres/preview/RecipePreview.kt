@@ -90,7 +90,7 @@ fun InfoSurface(
             BoxWithCards(bigText = ingredients.map { it.name }.toList())
             Text(
                 stringResource(
-                id = R.string.tags),
+                id = R.string.tags_data),
                 fontSize = 18.sp,
                 color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
