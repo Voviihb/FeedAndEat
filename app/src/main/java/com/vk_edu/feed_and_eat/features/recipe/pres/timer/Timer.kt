@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.timer
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -51,6 +50,7 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
 import java.lang.Long.max
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
@@ -85,6 +85,7 @@ fun FinishMessage(){
 @Composable
 fun DropDownTimerList(
     timerList: List<Timer>,
+    name : String,
     viewModel: StepScreenViewModel
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -107,34 +108,25 @@ fun DropDownTimerList(
         ) {
             var text: String
             timerList.forEachIndexed { index, timer ->
-                if (timer.type == "constant") {
-                    text = (String.format(
-                        "%02d:%02d:%02d",
-                        timer.number!! / 60,
-                        timer.number % 60,
-                        0
-                    ))
+                text = if (timer.type == "constant") {
+                    String.format(Locale.getDefault(), "%02d:%02d:%02d", timer.number!! / 60, timer.number % 60, 0)
                 } else {
-                    text = (String.format(
+                    String.format(Locale.getDefault(),
                         "%02d:%02d:%02d - %02d:%02d:%02d",
-                        timer.lowerLimit!! / 60,
-                        timer.lowerLimit % 60,
-                        0,
-                        timer.upperLimit!! / 60,
-                        timer.upperLimit% 60,
-                        0,
-                    ))
+                        timer.lowerLimit!! / 60, timer.lowerLimit % 60, 0,
+                        timer.upperLimit!! / 60, timer.upperLimit% 60, 0,
+                    )
                 }
                 DropdownMenuItem(
                     onClick = {
-                        viewModel.currentTimer.value = index
+                        viewModel.changeTimerOrder(name, index)
                     },
                     text = { Text(text) }
                 )
-                }
             }
         }
     }
+}
 
 @Composable
 fun CountdownConstantTimer(
@@ -143,6 +135,15 @@ fun CountdownConstantTimer(
     viewModel : StepScreenViewModel = hiltViewModel()
 ) {
     val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
+    activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
+        if (timer.remainingSec != timer.totalSec){
+            if (!timer.isPaused){
+                viewModel.revertInit(name, true)
+            } else {
+                viewModel.revertInit(name, false)
+            }
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -156,12 +157,10 @@ fun CountdownConstantTimer(
                 CountdownTimerDisplay(totalMillis)
             } else {
                 activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
-                    Log.d("ACTIVE", timer.toString())
                     CountdownCircleAnimation(timer.totalSec.toLong() * 1000, timer.remainingSec.toLong() * 1000)
                     CountdownTimerDisplay(timer.remainingSec)
                     if (timer.remainingSec <= 1){
-                        Log.d("OVER", "")
-                        viewModel.iterateTimerOrder(1)
+                        viewModel.iterateTimerOrder(name, 1)
                     }
                 }
             }
@@ -200,6 +199,15 @@ fun CountdownRangeTimer(
     viewModel : StepScreenViewModel = hiltViewModel()
 ) {
     val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
+    activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
+        if (timer.remainingSec != timer.totalSec){
+            if (!timer.isPaused){
+                viewModel.revertInit(name, true)
+            } else {
+                viewModel.revertInit(name, false)
+            }
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -219,7 +227,7 @@ fun CountdownRangeTimer(
                     )
                     CountdownTimerDisplay(timer.remainingSec)
                     if (timer.remainingSec <= 1){
-                        viewModel.iterateTimerOrder(1)
+                        viewModel.iterateTimerOrder(name, 1)
                     }
                 }
             }
@@ -347,7 +355,7 @@ private fun CountdownTimerDisplay(remainingMillis: Int) {
         modifier = Modifier.size(250.dp)
     ){
         Text(
-            text = String.format("%02d:%02d:%02d", hours, minutes, seconds),
+            text = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds),
             fontSize = 32.sp,
             color = colorResource(id = R.color.gray),
         )
@@ -364,7 +372,7 @@ private fun CountdownTimerDisplay(remainingMillis: Long) {
         modifier = Modifier.size(250.dp)
     ){
         Text(
-            text = String.format("%02d:%02d:%02d", hours, minutes, seconds),
+            text = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds),
             fontSize = 32.sp,
             color = colorResource(id = R.color.gray),
         )
@@ -427,47 +435,52 @@ fun Timer(
     viewModel : StepScreenViewModel,
     modifier: Modifier = Modifier,
 ){
-    val name = "${viewModel.name.value} - step ${viewModel.id.value}:"
-    val currentTimer by viewModel.currentTimer
+    val name = "${viewModel.name.value} - step ${viewModel.id.intValue}:"
+    if (viewModel.currentTimerMap.getOrDefault(name, "") == ""){
+        viewModel.initTimer(name)
+    }
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .height(350.dp)
     ) {
-        if (currentTimer < timerList.size){
-            viewModel.changeInit(name)
-            if (timerList[currentTimer].type == "constant"){
-                CountdownConstantTimer(
-                    totalMillis = 60 * 1000 * timerList[currentTimer].number!!.toLong(),
-                    name = name,
-                    viewModel = viewModel
-                )
+        viewModel.currentTimerMap.filter { it.key == name }.forEach{ (_, timerNumber) ->
+            if (timerNumber.value < timerList.size){
+                viewModel.changeInit(name)
+                if (timerList[timerNumber.value].type == "constant"){
+                    CountdownConstantTimer(
+                        totalMillis = 60 * 1000 * timerList[timerNumber.value].number!!.toLong(),
+                        name = name,
+                        viewModel = viewModel
+                    )
+                } else {
+                    viewModel.changeSliderValue(
+                        name,
+                        60 * 1000 * Integer.min(timerList[timerNumber.value].lowerLimit!!,
+                            timerList[timerNumber.value].upperLimit!!).toLong()
+                    )
+                    CountdownRangeTimer(
+                        minMillis = 60 * 1000 * Integer.min(timerList[timerNumber.value].lowerLimit!!,
+                            timerList[timerNumber.value].upperLimit!!).toLong(),
+                        maxMillis = 60 * 1000 * (timerList[timerNumber.value].lowerLimit!!).coerceAtLeast(timerList[timerNumber.value].upperLimit!!)
+                            .toLong(),
+                        name = name,
+                        viewModel = viewModel
+                    )
+                }
             } else {
-                viewModel.changeSliderValue(
+                FinishMessage()
+            }
+            Box(
+                contentAlignment = Alignment.TopStart,
+                modifier = Modifier.fillMaxSize()
+            ){
+                DropDownTimerList(
+                    timerList,
                     name,
-                    60 * 1000 * Integer.min(timerList[currentTimer].lowerLimit!!,
-                    timerList[currentTimer].upperLimit!!).toLong()
-                )
-                CountdownRangeTimer(
-                    minMillis = 60 * 1000 * Integer.min(timerList[currentTimer].lowerLimit!!,
-                        timerList[currentTimer].upperLimit!!).toLong(),
-                    maxMillis = 60 * 1000 * (timerList[currentTimer].lowerLimit!!).coerceAtLeast(timerList[currentTimer].upperLimit!!)
-                        .toLong(),
-                    name = name,
-                    viewModel = viewModel
+                    viewModel
                 )
             }
-        } else {
-            FinishMessage()
-        }
-        Box(
-            contentAlignment = Alignment.TopStart,
-            modifier = Modifier.fillMaxSize()
-        ){
-            DropDownTimerList(
-                timerList,
-                viewModel
-            )
         }
     }
 }

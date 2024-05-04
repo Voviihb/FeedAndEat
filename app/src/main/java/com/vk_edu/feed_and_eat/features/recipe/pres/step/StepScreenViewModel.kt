@@ -5,8 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,9 +27,10 @@ class StepScreenViewModel @Inject constructor(
     @ApplicationContext appContext: Context
 ): ViewModel(){
     val name = mutableStateOf("")
-    val id = mutableStateOf(0)
+    val id = mutableIntStateOf(0)
 
-    var currentTimer : MutableState<Int> = mutableStateOf(0)
+    private var privateTimerMap = mutableMapOf<String, MutableState<Int>>()
+    val currentTimerMap : Map<String, MutableState<Int>> = privateTimerMap
 
     private val application = Contexts.getApplication(appContext)
     private val timerServiceConnection = TimerServiceConnection()
@@ -54,22 +56,44 @@ class StepScreenViewModel @Inject constructor(
         application.unbindService(timerServiceConnection)
     }
 
-    fun changeTimerFlag(name: String){
+    fun revertInit(name: String, pause : Boolean){
+        privateTimerFlag[name] = mutableStateOf(false)
+        privateRunning[name] = mutableStateOf(pause)
+        privateSlider[name] = mutableLongStateOf(0L)
+    }
+
+    private fun changeTimerFlag(name: String){
         privateTimerFlag.getValue(name).value = !privateTimerFlag.getValue(name).value
     }
 
-    fun changeTimerState(name : String){
+    private fun changeTimerState(name : String){
         privateRunning.getValue(name).value = !privateRunning.getValue(name).value
     }
 
     fun changeInit(name: String){
         privateTimerFlag[name] = mutableStateOf(true)
         privateRunning[name] = mutableStateOf(false)
-        privateSlider[name] = mutableStateOf(0L)
+        privateSlider[name] = mutableLongStateOf(0L)
     }
 
     fun changeSliderValue(name : String, value : Long){
         privateSlider.getValue(name).value = value
+    }
+
+    var iterateTimerOrder : (String, Int) -> Unit = {name: String, value : Int ->
+        privateTimerMap[name]?.value = currentTimerMap[name]?.value?.plus(value) ?: value
+    }
+
+    var changeTimerOrder : (String, Int) -> Unit = { name : String, value : Int ->
+        privateTimerMap[name]?.value = value
+    }
+
+    fun initTimer(name: String){
+        privateTimerMap[name] = mutableIntStateOf(0)
+    }
+
+    fun clear(name : String) {
+        currentTimerMap[name]?.value = 0
     }
 
     fun startTimer(
@@ -95,10 +119,8 @@ class StepScreenViewModel @Inject constructor(
     }
 
     fun stopTimer(name: String) {
-//      here may be mistake: do not startTimer after stopTimer without initChanges
         privateRunning.remove(name)
         privateTimerFlag.remove(name)
-//      mistake
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -113,7 +135,6 @@ class StepScreenViewModel @Inject constructor(
 
     fun pauseTimer(name: String) {
         changeTimerState(name)
-//        privateRunning[timerId]?.value = false
         val timerService = Intent(application, TimerService::class.java)
         timerService.putExtra(
             TimerService.ACTION,
@@ -155,12 +176,5 @@ class StepScreenViewModel @Inject constructor(
         }
     }
 
-    var iterateTimerOrder : (Int) -> Unit = {
-        currentTimer.value += it
-        Log.d("CHANGE", "")
-    }
 
-    fun clear() {
-        currentTimer.value = 0
-    }
 }

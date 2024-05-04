@@ -83,12 +83,14 @@ fun NavGraph(
         composable(Screen.NewRecipeScreen.route) {
             NewRecipeScreen(navigateToRoute)
         }
-        composable(Screen.RecipeScreen.route + "/{id}",
+        composable(
+            route = Screen.RecipeScreen.route + "/{id}",
             arguments = listOf(navArgument("id"){ type = NavType.StringType })
-        ) {backStackEntry ->
+        ) {entry ->
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
-                id = backStackEntry.arguments?.getString("id") ?: "",
+                navigateBack = { navigateToRoute(viewModel.currentBottomState.value) },
+                id = entry.arguments?.getString("id") ?: "",
                 destination = currentRoute ?: BottomScreen.InProgressScreen.route
             )
         }

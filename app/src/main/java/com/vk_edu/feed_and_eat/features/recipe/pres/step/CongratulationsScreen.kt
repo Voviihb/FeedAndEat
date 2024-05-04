@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,8 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -33,7 +31,6 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 @Composable
 fun CongratulationScreen(
     name : String,
-    navigateBack: () -> Unit,
     navigateToRoute: (String) -> Unit
 ){
     Column(

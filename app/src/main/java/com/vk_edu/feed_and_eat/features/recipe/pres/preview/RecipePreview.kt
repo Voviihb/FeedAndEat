@@ -66,10 +66,6 @@ fun InfoSurface(
     val configuration = LocalConfiguration.current
 
     val width = configuration.screenWidthDp
-//    val context = LocalContext.current
-//    val displayMetrics = context.resources.displayMetrics
-//    val width = displayMetrics.widthPixels
-//    Log.d("ЦШВЕР", width.toString())
     Surface(
         modifier = Modifier
             .padding(12.dp)
@@ -363,7 +359,7 @@ fun RatingContainer(
 }
 
 @Composable
-fun StartRecipe(
+fun RecipePreview(
     navigateBack : () -> Unit,
     navigateToStep: (Int) -> Unit,
     recipe : Recipe
@@ -394,7 +390,8 @@ fun StartRecipe(
                             TextContainer(model, Modifier.weight(6f))
                             AddCollectionButtons(Modifier.weight(1f))
                             StartCookingContainer(
-                                model, navigateToStep,
+                                model,
+                                navigateToStep,
                                 Modifier
                                     .weight(1f)
                                     .height(40.dp)

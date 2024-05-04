@@ -125,7 +125,6 @@ fun TextContainer(
         verticalArrangement = Arrangement.Top,
         modifier = modifier
             .fillMaxWidth()
-//            .height(200.dp)
             .padding(horizontal = 15.dp)
             .background(colorResource(R.color.transparent)),
     ) {
@@ -225,8 +224,9 @@ fun StepScreen(
     name : String,
     viewModel: StepScreenViewModel = hiltViewModel()
 ){
-    viewModel.id.value = id
+    viewModel.id.intValue = id
     viewModel.name.value = name
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -256,6 +256,6 @@ fun StepScreen(
             } else {
                 Box(modifier = Modifier.weight(5f))
             }
-            ButtonContainer(navigateToStep, navigateToRecipe, { viewModel.clear() }, id, maxId, Modifier.weight(1f))
+            ButtonContainer(navigateToStep, navigateToRecipe, { viewModel.clear("${viewModel.name.value} - step ${viewModel.id.intValue}:") }, id, maxId, Modifier.weight(1f))
         }
     }

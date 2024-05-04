@@ -71,7 +71,7 @@ class TimerService : Service() {
     private fun moveToForeground() {
         if (!isStopWatchRunning) {
             updateTimer = Timer()
-            updateTimer?.scheduleAtFixedRate(object : TimerTask() {
+            updateTimer?.schedule(object : TimerTask() {
                 override fun run() {
                     _activeTimerUpdates.tryEmit(timerValues.toMap())
                     updateNotification()
@@ -95,7 +95,7 @@ class TimerService : Service() {
                 while (secondsLeft > 0) {
                     delay(1000)
                     secondsLeft--
-                    timerValues[timerId] = timerValues[timerId]!!.copy(remainingSec = secondsLeft)
+                    timerValues[timerId] = timerValues[timerId]?.copy(remainingSec = secondsLeft) ?: TimerState(secondsLeft, totalSec, true)
                 }
                 sendOnFinishNotification(timerId)
                 stopTimer(timerId)

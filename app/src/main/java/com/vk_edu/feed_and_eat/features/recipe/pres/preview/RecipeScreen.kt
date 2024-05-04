@@ -75,6 +75,7 @@ fun RepeatButton(
 @Composable
 fun RecipeScreen(
     navigateToRoute: (String) -> Unit,
+    navigateBack : () -> Unit,
     id : String,
     destination : String,
     viewModel: RecipesScreenViewModel = hiltViewModel()
@@ -98,8 +99,8 @@ fun RecipeScreen(
                 Box(modifier = Modifier.padding(padding)){
                     val navController = rememberNavController()
                     RecipeNavGraph(
-                        { navigateToRoute(Screen.RecipeScreen.route + "/$id") },
                         navigateToRoute,
+                        navigateBack = navigateBack,
                         navController,
                         recipe
                     )
