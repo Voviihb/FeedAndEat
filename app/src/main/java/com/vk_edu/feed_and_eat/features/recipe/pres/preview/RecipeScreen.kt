@@ -61,7 +61,7 @@ fun RepeatButton(
                 .width(72.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.repeat),
+                text = stringResource(id = R.string.repeating),
                 fontSize = 12.sp,
                 overflow = TextOverflow.Visible,
                 maxLines = 1,
