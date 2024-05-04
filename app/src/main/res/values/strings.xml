@@ -26,6 +26,10 @@
     <string name="finish">завершить</string>
     <string name="congratulations">Поздравляем! вы приготовили:</string>
     <string name="to_main">на главную</string>
+    <string name="timer_template">%02d:%02d:%02d</string>
+    <string name="range_timer_template">%02d:%02d:%02d - %02d:%02d:%02d</string>
+    <string name="minutes">мин</string>
+    <string name="hours">ч</string>
     <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
@@ -52,6 +56,7 @@
     <string name="to_play">запустить</string>
     <string name="to_drop">начать заново</string>
     <string name="to_pause">поставить на паузу</string>
+    <string name="list">список элементов</string>
     <!--    profile -->
     <string name="user_profile_icon">User profile icon</string>
     <string name="e_mail">E-Mail:</string>
@@ -74,6 +79,7 @@
     <string name="collection">Коллекция</string>
     <string name="inProgress">В процессе</string>
     <string name="profile">Профиль</string>
+    <string name="nav_id">id</string>
     <!--    screen names-->
     <string name="HomeScreen">HomeScreen</string>
     <string name="CollectionScreen">CollectionScreen</string>

@@ -20,7 +20,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 fun InProgressScreen(
     navigateToRoute : (String) -> Unit,
 ) {
-    val id = "07m5Gu5D5RVv7myAC8SW"
+    val id = "3HJYVJkuAmC8GbW97Oot"
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.InProgressScreen.route) }
     ) {padding ->

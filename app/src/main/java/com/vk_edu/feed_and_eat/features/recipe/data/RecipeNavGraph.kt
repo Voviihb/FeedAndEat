@@ -1,14 +1,14 @@
 package com.vk_edu.feed_and_eat.features.recipe.data
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.data.models.Routes
 import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipePreview
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.CongratulationScreen
@@ -23,6 +23,7 @@ fun RecipeNavGraph(
     recipe : Recipe,
 ){
     val instructions = recipe.instructions
+    val navId = stringResource(id = R.string.nav_id)
 
     NavHost(
         navController = navController,
@@ -56,10 +57,10 @@ fun RecipeNavGraph(
             )
         }
         composable(
-            Routes.Step.route + "/{id}",
-            arguments = listOf(navArgument("id"){ type = NavType.StringType })
+            Routes.Step.route + "/{" + navId + "}",
+            arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {backStackEntry->
-            val id = backStackEntry.arguments?.getString("id")
+            val id = backStackEntry.arguments?.getString(navId)
             StepScreen(
                 navigateToStep = navigateToStep,
                 navigateToRecipe = navigateToRecipe,

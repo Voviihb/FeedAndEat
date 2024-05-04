@@ -72,7 +72,9 @@ fun TimeInfoCard(time : Int?, modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 if (time != null){
-                    LightText(text = time.toString(), fontSize = LargeText)
+                    val minutes = stringResource(id = R.string.minutes)
+                    val hours = stringResource(id = R.string.hours)
+                    LightText(text = if (time < 60) "$time $minutes" else "${time / 60} $hours ${time % 60} $minutes", fontSize = LargeText)
                 } else {
                     LightText(text = stringResource(id = R.string.unlimited), fontSize = LargeText)
                 }
@@ -83,6 +85,19 @@ fun TimeInfoCard(time : Int?, modifier: Modifier = Modifier) {
 
 @Composable
 fun TimeInfoCard(time1 : Int, time2 : Int, modifier: Modifier = Modifier) {
+    val minutes = stringResource(id = R.string.minutes)
+    val hours = stringResource(id = R.string.hours)
+    val (minimums, maximums) = listOf(time1, time2).sorted()
+    val minText = if (minimums % 60 == 0){
+        "${minimums / 60} $hours"
+    } else {
+        if (minimums < 60) "$minimums $minutes" else "${minimums / 60} $hours ${minimums % 60} $minutes"
+    }
+    val maxText = if (maximums % 60 == 0){
+        "${maximums / 60} $hours"
+    } else {
+        if (maximums < 60) "$maximums $minutes" else "${maximums / 60} $hours ${maximums % 60} $minutes"
+    }
     Box(modifier = modifier.padding(12.dp, 12.dp, 12.dp, 20.dp)) {
         Card(
             shape = RoundedCornerShape(24.dp),
@@ -109,7 +124,7 @@ fun TimeInfoCard(time1 : Int, time2 : Int, modifier: Modifier = Modifier) {
                     modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                LightText(text = if (time2 > time1) "$time1 - $time2" else "$time2 - $time1", fontSize = LargeText)
+                LightText(text = "$minText - $maxText", fontSize = LargeText)
             }
         }
     }
@@ -241,7 +256,7 @@ fun StepScreen(
                     TimeInfoCard(time = constant, Modifier.weight(1.2f))
                 } else {
                     val maximums = data.timers.sumOf { it.upperLimit ?: 0 }
-                    TimeInfoCard(minimums, maximums, Modifier.weight(1.2f))
+                    TimeInfoCard(minimums + constant, maximums + constant, Modifier.weight(1.2f))
                 }
             } else {
                 TimeInfoCard(null, Modifier.weight(1.2f))

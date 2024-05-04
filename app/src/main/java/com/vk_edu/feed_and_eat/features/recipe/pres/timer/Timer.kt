@@ -3,12 +3,13 @@ package com.vk_edu.feed_and_eat.features.recipe.pres.timer
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +36,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.TimerTypes
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
 import java.lang.Long.max
 import java.util.Locale
@@ -99,7 +100,7 @@ fun DropDownTimerList(
             Icon(
                 painter = painterResource(id = R.drawable.clock),
                 tint = colorResource(id = R.color.cyan_fae),
-                contentDescription = "More"
+                contentDescription = stringResource(id = R.string.list)
             )
         }
         DropdownMenu(
@@ -108,13 +109,15 @@ fun DropDownTimerList(
         ) {
             var text: String
             timerList.forEachIndexed { index, timer ->
-                text = if (timer.type == "constant") {
-                    String.format(Locale.getDefault(), "%02d:%02d:%02d", timer.number!! / 60, timer.number % 60, 0)
-                } else {
+                text = if (timer.type == TimerTypes.Constant.type) {
                     String.format(Locale.getDefault(),
-                        "%02d:%02d:%02d - %02d:%02d:%02d",
+                        stringResource(id = R.string.timer_template), timer.number!! / 60, timer.number % 60, 0)
+                } else {
+                    String.format(
+                        Locale.getDefault(),
+                        stringResource(id = R.string.range_timer_template),
                         timer.lowerLimit!! / 60, timer.lowerLimit % 60, 0,
-                        timer.upperLimit!! / 60, timer.upperLimit% 60, 0,
+                        timer.upperLimit!! / 60, timer.upperLimit % 60, 0,
                     )
                 }
                 DropdownMenuItem(
@@ -169,9 +172,9 @@ fun CountdownConstantTimer(
         if ((viewModel.isRunning[name]?.value == false) &&
             (viewModel.runTimerFlag[name]?.value == true))
         {
-            StartButton {
+            StartButton ({
                 viewModel.startTimer(name, totalMillis.toInt() / 1000)
-            }
+            })
         } else {
             ButtonContainer(
                 playAction = {
@@ -255,12 +258,12 @@ fun CountdownRangeTimer(
         if ((viewModel.isRunning[name]?.value == false) &&
             (viewModel.runTimerFlag[name]?.value == true))
         {
-            StartButton {
+            StartButton ({
                 viewModel.startTimer(
                     name = name,
                     time = viewModel.sliderPosition[name]?.value?.toInt()?.div(1000)?: (minMillis.toInt() / 1000),
                 )
-            }
+            })
         } else {
             ButtonContainer(
                 playAction = {
@@ -282,18 +285,23 @@ fun CountdownRangeTimer(
 }
 
 @Composable
-private fun StartButton(onClick: () -> Unit) {
+private fun StartButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
             colorResource(id = R.color.black)
         ),
-        modifier = Modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(colorResource(id = R.color.white), RoundedCornerShape(12.dp))
-            .border(2.dp, colorResource(id = R.color.black), RoundedCornerShape(12.dp))
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            2.dp,
+            colorResource(id = R.color.black)
+        ),
+        modifier = modifier.padding(horizontal = 8.dp)
     ) {
         Icon(
             painter = painterResource(id = R.drawable.play),
@@ -303,18 +311,23 @@ private fun StartButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun PauseButton(onClick: () -> Unit) {
+private fun PauseButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
-            colorResource(id = R.color.black),
+            colorResource(id = R.color.black)
         ),
-        modifier = Modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(colorResource(id = R.color.white), RoundedCornerShape(12.dp))
-            .border(2.dp, colorResource(id = R.color.black), RoundedCornerShape(12.dp))
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            2.dp,
+            colorResource(id = R.color.black)
+        ),
+        modifier = modifier.padding(horizontal = 8.dp)
     ) {
         Icon(
             painter = painterResource(id = R.drawable.pause),
@@ -324,18 +337,23 @@ private fun PauseButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun DropButton(onClick: () -> Unit) {
+private fun DropButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
             colorResource(id = R.color.black)
         ),
-        modifier = Modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(colorResource(id = R.color.white), RoundedCornerShape(12.dp))
-            .border(2.dp, colorResource(id = R.color.black), RoundedCornerShape(12.dp))
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            2.dp,
+            colorResource(id = R.color.black)
+        ),
+        modifier = modifier.padding(horizontal = 8.dp)
     ) {
         Icon(
             painter = painterResource(id = R.drawable.drop),
@@ -355,7 +373,7 @@ private fun CountdownTimerDisplay(remainingMillis: Int) {
         modifier = Modifier.size(250.dp)
     ){
         Text(
-            text = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds),
+            text = String.format(Locale.getDefault(), stringResource(id = R.string.timer_template), hours, minutes, seconds),
             fontSize = 32.sp,
             color = colorResource(id = R.color.gray),
         )
@@ -372,7 +390,7 @@ private fun CountdownTimerDisplay(remainingMillis: Long) {
         modifier = Modifier.size(250.dp)
     ){
         Text(
-            text = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds),
+            text = String.format(Locale.getDefault(), stringResource(id = R.string.timer_template), hours, minutes, seconds),
             fontSize = 32.sp,
             color = colorResource(id = R.color.gray),
         )
@@ -389,6 +407,7 @@ fun ButtonContainer(
 ){
     Row(
         horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         DropButton (dropAction)
         if (viewModel.isRunning[name]?.value == true){
@@ -447,7 +466,7 @@ fun Timer(
         viewModel.currentTimerMap.filter { it.key == name }.forEach{ (_, timerNumber) ->
             if (timerNumber.value < timerList.size){
                 viewModel.changeInit(name)
-                if (timerList[timerNumber.value].type == "constant"){
+                if (timerList[timerNumber.value].type == TimerTypes.Constant.type){
                     CountdownConstantTimer(
                         totalMillis = 60 * 1000 * timerList[timerNumber.value].number!!.toLong(),
                         name = name,

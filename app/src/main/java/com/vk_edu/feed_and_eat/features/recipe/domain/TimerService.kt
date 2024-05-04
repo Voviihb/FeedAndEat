@@ -187,9 +187,10 @@ class TimerService : Service() {
 
         var style = NotificationCompat.InboxStyle()
         timerJobs.forEach { (timerId, _) ->
-            val hours = TimeUnit.SECONDS.toHours(timerValues[timerId]!!.remainingSec.toLong())
-            val minutes = TimeUnit.SECONDS.toMinutes(timerValues[timerId]!!.remainingSec.toLong()) % 60
-            val seconds = TimeUnit.SECONDS.toSeconds(timerValues[timerId]!!.remainingSec.toLong()) % 60
+            val time = timerValues[timerId]?.remainingSec?.toLong() ?: 0
+            val hours = TimeUnit.SECONDS.toHours(time)
+            val minutes = TimeUnit.SECONDS.toMinutes(time) % 60
+            val seconds = TimeUnit.SECONDS.toSeconds(time) % 60 % 60
             style =
                 style.addLine(
                     getString(R.string.timer_is_at).format(
@@ -201,9 +202,10 @@ class TimerService : Service() {
                 )
         }
         timerValues.filter { it.value.isPaused }.forEach { (timerId, _) ->
-            val hours = TimeUnit.SECONDS.toHours(timerValues[timerId]!!.remainingSec.toLong())
-            val minutes = TimeUnit.SECONDS.toMinutes(timerValues[timerId]!!.remainingSec.toLong()) % 60
-            val seconds = TimeUnit.SECONDS.toSeconds(timerValues[timerId]!!.remainingSec.toLong()) % 60
+            val time = timerValues[timerId]?.remainingSec?.toLong() ?: 0
+            val hours = TimeUnit.SECONDS.toHours(time)
+            val minutes = TimeUnit.SECONDS.toMinutes(time) % 60
+            val seconds = TimeUnit.SECONDS.toSeconds(time) % 60 % 60
             style = style.addLine(
                 getString(R.string.paused_timer_is_at).format(
                     timerId,

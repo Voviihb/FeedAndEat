@@ -61,3 +61,8 @@ data class Review(
     val message: String? = null
 )
 
+sealed class TimerTypes(val type: String){
+    data object Constant : TimerTypes(type = "constant")
+    data object Range : TimerTypes(type = "range")
+}
+
