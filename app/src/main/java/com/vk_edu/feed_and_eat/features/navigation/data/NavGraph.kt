@@ -8,8 +8,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
@@ -20,7 +22,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.NavBarViewModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.newrecipe.pres.NewRecipeScreen
 import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
-import com.vk_edu.feed_and_eat.features.recipe.pres.RecipeScreen
+import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipeScreen
 import com.vk_edu.feed_and_eat.features.search.pres.SearchScreen
 
 
@@ -30,6 +32,7 @@ fun NavGraph(
     context: Context,
     viewModel: NavBarViewModel = hiltViewModel()
 ) {
+
     val navigateToRoute: (String) -> Unit = {
         navController.navigate(it) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -39,31 +42,31 @@ fun NavGraph(
             restoreState = true
         }
     }
-    val navigateBack: () -> Unit = {
-        val previous = navController.previousBackStackEntry?.destination?.route
-        if (previous != null) {
-            navController.navigate(previous)
-        }
-    }
 
     NavHost(
         navController = navController,
         startDestination = viewModel.getStartDestination(),
         modifier = Modifier.padding(0.dp)
     ) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
         composable(BottomScreen.HomeScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.HomeScreen.route)
             HomeScreen(navigateToRoute)
         }
         composable(BottomScreen.SearchScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.SearchScreen.route)
             SearchScreen(navigateToRoute)
         }
         composable(BottomScreen.CollectionScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.CollectionScreen.route)
             CollectionScreen(navigateToRoute)
         }
         composable(BottomScreen.InProgressScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.InProgressScreen.route)
             InProgressScreen(navigateToRoute)
         }
         composable(BottomScreen.ProfileScreen.route) {
+            viewModel.changeBottomDestination(BottomScreen.ProfileScreen.route)
             ProfileScreen(navigateToRoute)
         }
         composable(Screen.LoginScreen.route) {
@@ -80,10 +83,15 @@ fun NavGraph(
         composable(Screen.NewRecipeScreen.route) {
             NewRecipeScreen(navigateToRoute)
         }
-        composable(Screen.RecipeScreen.route) {
+        composable(
+            route = Screen.RecipeScreen.route + "/{id}",
+            arguments = listOf(navArgument("id"){ type = NavType.StringType })
+        ) {entry ->
             RecipeScreen(
-                navigateToRoute,
-                navigateBack
+                navigateToRoute = navigateToRoute,
+                navigateBack = { navigateToRoute(viewModel.currentBottomState.value) },
+                id = entry.arguments?.getString("id") ?: "",
+                destination = currentRoute ?: BottomScreen.InProgressScreen.route
             )
         }
     }

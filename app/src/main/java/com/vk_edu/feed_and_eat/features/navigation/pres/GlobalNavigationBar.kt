@@ -1,12 +1,12 @@
 package com.vk_edu.feed_and_eat.features.navigation.pres
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -37,7 +37,7 @@ fun GlobalNavigationBar(
     )
     val bottomBarData = MutableList(5){BottomData(R.color.light_cyan, 40)}
     val currentIndex = barScreens.map { it.route }.indexOf(currentDestination)
-    if (currentIndex < bottomBarData.size){
+    if (currentIndex in bottomBarData.indices){
         bottomBarData[currentIndex] = BottomData(R.color.medium_cyan, 45)
     }
 

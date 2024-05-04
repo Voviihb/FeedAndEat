@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

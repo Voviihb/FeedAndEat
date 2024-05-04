@@ -1,21 +1,36 @@
 <resources>
-<!--    single recipe-->
+    <!--    single recipe-->
     <string name="app_name">FeedAndEat</string>
     <string name="short_recipe">Краткий рецепт</string>
     <string name="add_to_favourite">Добавить в любимое</string>
     <string name="add_to_playlist">Добавить в подборку</string>
     <string name="ingr">Ингр</string>
+    <string name="step">Шаги</string>
     <string name="start_cooking">Начать готовить</string>
     <string name="ingridients">Ингредиенты</string>
+    <string name="tags">Тэги</string>
     <string name="energy_value">Энергетическая Ценность</string>
+    <string name="calories">Калории</string>
     <string name="fats">Жиры</string>
     <string name="proteins">Белки</string>
     <string name="carbons">Углеводы</string>
+    <string name="sugar">Сахар</string>
     <string name="gramm">гр</string>
     <string name="info">информация</string>
     <string name="repeat">повторить</string>
     <string name="image">так выглядит рецепт</string>
-<!--    login-->
+    <string name = "unlimited">не ограничено</string>
+    <string name="cangonextstep">Вы можете переходить к следующему шагу</string>
+    <string name="backstep">к предыдущему</string>
+    <string name="nextstep">к следующему</string>
+    <string name="finish">завершить</string>
+    <string name="congratulations">Поздравляем! вы приготовили:</string>
+    <string name="to_main">на главную</string>
+    <string name="timer_template">%02d:%02d:%02d</string>
+    <string name="range_timer_template">%02d:%02d:%02d - %02d:%02d:%02d</string>
+    <string name="minutes">мин</string>
+    <string name="hours">ч</string>
+    <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
     <string name="hide_password">Спрятать пароль</string>
@@ -37,6 +52,11 @@
     <string name="exception_occured">Произошла ошибка!</string>
     <string name="password_differs">Введенные пароли отличаются!</string>
     <string name="authenticated">Authenticated!</string>
+    <string name="success">успех</string>
+    <string name="to_play">запустить</string>
+    <string name="to_drop">начать заново</string>
+    <string name="to_pause">поставить на паузу</string>
+    <string name="list">список элементов</string>
     <!--    profile -->
     <string name="user_profile_icon">User profile icon</string>
     <string name="e_mail">E-Mail:</string>
@@ -59,7 +79,8 @@
     <string name="collection">Коллекция</string>
     <string name="inProgress">В процессе</string>
     <string name="profile">Профиль</string>
-<!--    screen names-->
+    <string name="nav_id">id</string>
+    <!--    screen names-->
     <string name="HomeScreen">HomeScreen</string>
     <string name="CollectionScreen">CollectionScreen</string>
     <string name="ProfileScreen">ProfileScreen</string>
@@ -69,12 +90,12 @@
     <string name="RegisterScreen">RegisterScreen</string>
     <string name="RecipeScreen">RecipeScreen</string>
     <string name="inProgressScreen">inProgressScreen</string>
-<!-- card -->
+    <!-- card -->
     <string name="imageDescription">Image of this dish</string>
     <string name="icon">Icon</string>
     <string name="small_ingredients">Ingr.:</string>
     <string name="ingredients">Ingredients:</string>
-    <string name="steps">Steps:</string>
+    <string name="steps">Steps</string>
     <string name="searchLabel">Search</string>
     <string name="title1">Recipe of the day</string>
     <string name="title2">Top of the week</string>
@@ -86,18 +107,4 @@
     <string name="timer_is_at">⏱️ %1$s %2$02d:%3$02d:%4$02d</string>
     <string name="paused_timer_is_at">⏸️ %1$s paused, %2$02d:%3$02d:%4$02d left</string>
     <string name="timer_is_done">⌛️ %1$s is done!</string>
-<!-- search screen -->
-    <string name="calories">Calories</string>
-    <string name="sugar">Sugar</string>
-    <string name="carbohydrates">Carbohydrates</string>
-    <string name="fat">Fat</string>
-    <string name="protein">Protein</string>
-    <string name="apply">Apply</string>
-    <string name="from">from</string>
-    <string name="to">to</string>
-    <string name="tags">Tags</string>
-    <string name="newness">newness</string>
-    <string name="rating">rating</string>
-    <string name="popularity">popularity</string>
-    <string name="sort_by">Sort by</string>
 </resources>

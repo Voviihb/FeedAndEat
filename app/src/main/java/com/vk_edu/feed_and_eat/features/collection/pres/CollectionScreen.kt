@@ -26,6 +26,4 @@ fun CollectionScreen(
             Text(stringResource(id = R.string.CollectionScreen))
         }
     }
-
-    
 }

@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.vk_edu.feed_and_eat.MainActivity
-import com.vk_edu.feed_and_eat.features.cooking.domain.TimerService
+import com.vk_edu.feed_and_eat.features.recipe.domain.TimerService
 
 object Notifications {
     fun requestPermission(activity: Activity) {

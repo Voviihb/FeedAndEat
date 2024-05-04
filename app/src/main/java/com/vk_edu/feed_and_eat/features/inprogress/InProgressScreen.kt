@@ -20,6 +20,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 fun InProgressScreen(
     navigateToRoute : (String) -> Unit,
 ) {
+    val id = "3HJYVJkuAmC8GbW97Oot"
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.InProgressScreen.route) }
     ) {padding ->
@@ -32,7 +33,7 @@ fun InProgressScreen(
                 modifier = Modifier.fillMaxSize()
             ){
                 Text(stringResource(id = R.string.inProgressScreen))
-                Button(onClick = {navigateToRoute(Screen.RecipeScreen.route)}) {
+                Button(onClick = {navigateToRoute(Screen.RecipeScreen.route + "/$id")}) {
                     Text(text = "Load Recipe")
                 }
             }
