@@ -62,7 +62,7 @@ fun InfoSurface(
         model.nutrients.Fat,
         model.nutrients.Carbohydrates
     )
-    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar).map{ stringResource( id = it ) }
+    val names = listOf(R.string.calories_data, R.string.fats_data, R.string.proteins_data, R.string.carbons_data, R.string.sugar_data).map{ stringResource( id = it ) }
     val configuration = LocalConfiguration.current
 
     val width = configuration.screenWidthDp

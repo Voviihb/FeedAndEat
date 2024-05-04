@@ -10,11 +10,11 @@
     <string name="ingridients">Ингредиенты</string>
     <string name="tags">Тэги</string>
     <string name="energy_value">Энергетическая Ценность</string>
-    <string name="calories">Калории</string>
-    <string name="fats">Жиры</string>
-    <string name="proteins">Белки</string>
-    <string name="carbons">Углеводы</string>
-    <string name="sugar">Сахар</string>
+    <string name="calories_data">Калории</string>
+    <string name="fats_data">Жиры</string>
+    <string name="proteins_data">Белки</string>
+    <string name="carbons_data">Углеводы</string>
+    <string name="sugar_data">Сахар</string>
     <string name="gramm">гр</string>
     <string name="info">информация</string>
     <string name="repeat">повторить</string>
