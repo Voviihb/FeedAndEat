@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -40,7 +39,6 @@ fun DishCard(
     modifier: Modifier = Modifier,
     largeCard: Boolean = false,
 ) {
-    Log.d("RECIPE ID", id)
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),

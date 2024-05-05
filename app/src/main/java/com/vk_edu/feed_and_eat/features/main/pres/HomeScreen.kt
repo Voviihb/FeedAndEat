@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -193,7 +192,6 @@ fun CardsRow(
         ) {
 
             items(cards) { cardData ->
-                Log.d("HOME", cardData.recipeId)
                 DishCard(
                     link = cardData.image,
                     ingredients = cardData.ingredients,
