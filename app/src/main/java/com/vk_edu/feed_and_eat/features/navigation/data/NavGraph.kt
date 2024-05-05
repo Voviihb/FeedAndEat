@@ -35,10 +35,12 @@ fun NavGraph(
     viewModel: NavBarViewModel = hiltViewModel()
 ) {
     val navId = stringResource(id = R.string.nav_id)
+    val recipe = stringResource(id = R.string.recipe)
 
     val navigateToRoute: (String) -> Unit = {route ->
+
         navController.navigate(route) {
-            if (route.substring(0, 6) != "Recipe"){
+            if (route.substring(0, 6) != recipe){
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                 }
