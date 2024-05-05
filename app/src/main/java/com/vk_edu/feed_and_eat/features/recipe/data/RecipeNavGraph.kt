@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.data
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
