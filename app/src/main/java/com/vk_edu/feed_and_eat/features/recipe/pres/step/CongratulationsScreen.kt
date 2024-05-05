@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -64,21 +65,24 @@ fun CongratulationScreen(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Text(
-                text = name,
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                color = colorResource(id = R.color.red),
-                modifier = Modifier
-                    .background(colorResource(id = R.color.yellow), RoundedCornerShape(12.dp))
-                    .clip(RoundedCornerShape(12.dp))
-                    .border(
-                        2.dp,
-                        colorResource(id = R.color.red),
-                        RoundedCornerShape(12.dp)
-                    )
-                    .padding(vertical = 4.dp, horizontal = 8.dp)
-            )
+            Box(modifier = Modifier.padding(8.dp)){
+                Text(
+                    text = name,
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
+                    color = colorResource(id = R.color.red),
+                    modifier = Modifier
+                        .background(colorResource(id = R.color.yellow), RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(
+                            2.dp,
+                            colorResource(id = R.color.red),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(60.dp))
         }
         Button(

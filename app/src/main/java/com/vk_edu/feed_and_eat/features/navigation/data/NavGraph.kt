@@ -35,25 +35,34 @@ fun NavGraph(
     viewModel: NavBarViewModel = hiltViewModel()
 ) {
     val navId = stringResource(id = R.string.nav_id)
+    val recipe = stringResource(id = R.string.recipe)
 
-    val navigateToRoute: (String) -> Unit = {
-        navController.navigate(it) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
+    val navigateToRoute: (String) -> Unit = {route ->
+
+        navController.navigate(route) {
+            if (route.substring(0, 6) != recipe){
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
             }
             launchSingleTop = true
             restoreState = true
         }
     }
 
-    val navigateBack = { navigateToRoute(viewModel.currentBottomState.value) }
+    val navigateBack = {
+        val previous = navController.previousBackStackEntry?.destination?.route
+        navController.navigate(previous ?: BottomScreen.HomeScreen.route){
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     NavHost(
         navController = navController,
         startDestination = viewModel.getStartDestination(),
         modifier = Modifier.padding(0.dp)
     ) {
-        val currentRoute = navController.currentBackStackEntry?.destination?.route
         composable(BottomScreen.HomeScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.HomeScreen.route)
             HomeScreen(navigateToRoute)
@@ -95,11 +104,12 @@ fun NavGraph(
             route = Screen.RecipeScreen.route + "/{" + navId + "}",
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {entry ->
+            val id = entry.arguments?.getString(navId)
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
-                id = entry.arguments?.getString(navId) ?: "",
-                destination = currentRoute ?: BottomScreen.InProgressScreen.route
+                id = id ?: "",
+                destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
             )
         }
     }
