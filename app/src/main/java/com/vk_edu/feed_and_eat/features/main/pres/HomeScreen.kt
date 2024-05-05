@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,7 +66,7 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
             SearchCard()
 
             viewModel.getLargeCardData()
-            LargeCard(cardData = viewModel.largeCardData.value)
+            LargeCard(cardData = viewModel.largeCardData.value, navigateToRoute = navigateToRoute)
 
             var columnWidthDp by remember { mutableStateOf(0.dp) }
             val localDensity = LocalDensity.current
@@ -74,6 +75,7 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
                 title = stringResource(R.string.title2),
                 cards = viewModel.cardsDataOfRow1.value,
                 columnWidthDp = columnWidthDp,
+                navigateToRoute = navigateToRoute,
                 modifier = Modifier
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
@@ -85,14 +87,16 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
             CardsRow(
                 title = stringResource(R.string.title3),
                 cards = viewModel.cardsDataOfRow2.value,
-                columnWidthDp = columnWidthDp
+                columnWidthDp = columnWidthDp,
+                navigateToRoute = navigateToRoute
             )
 
             viewModel.getCardsDataOfRow3()
             CardsRow(
                 title = stringResource(R.string.title4),
                 cards = viewModel.cardsDataOfRow3.value,
-                columnWidthDp = columnWidthDp
+                columnWidthDp = columnWidthDp,
+                navigateToRoute = navigateToRoute
             )
 
             Spacer(modifier = Modifier.size(12.dp))
@@ -140,7 +144,11 @@ fun SearchCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LargeCard(cardData: RecipeCard, modifier: Modifier = Modifier) {
+fun LargeCard(
+    cardData: RecipeCard,
+    navigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -154,14 +162,22 @@ fun LargeCard(cardData: RecipeCard, modifier: Modifier = Modifier) {
             name = cardData.name,
             rating = cardData.rating,
             cooked = cardData.cooked,
+            id = cardData.recipeId,
+            navigateToRoute = navigateToRoute,
+            modifier = Modifier.fillMaxWidth(0.7f),
             largeCard = true,
-            modifier = Modifier.fillMaxWidth(0.7f)
         )
     }
 }
 
 @Composable
-fun CardsRow(title: String, cards: List<RecipeCard>, columnWidthDp: Dp, modifier: Modifier = Modifier) {
+fun CardsRow(
+    title: String,
+    cards: List<RecipeCard>,
+    columnWidthDp: Dp,
+    navigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.padding(0.dp, 20.dp, 0.dp, 0.dp)
@@ -175,7 +191,9 @@ fun CardsRow(title: String, cards: List<RecipeCard>, columnWidthDp: Dp, modifier
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(12.dp, 0.dp)
         ) {
+
             items(cards) { cardData ->
+                Log.d("HOME", cardData.recipeId)
                 DishCard(
                     link = cardData.image,
                     ingredients = cardData.ingredients,
@@ -183,6 +201,8 @@ fun CardsRow(title: String, cards: List<RecipeCard>, columnWidthDp: Dp, modifier
                     name = cardData.name,
                     rating = cardData.rating,
                     cooked = cardData.cooked,
+                    id = cardData.recipeId,
+                    navigateToRoute = navigateToRoute,
                     modifier = Modifier.width((columnWidthDp - 44.dp) / 2)
                 )
             }

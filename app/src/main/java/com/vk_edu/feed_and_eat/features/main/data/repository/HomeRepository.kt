@@ -7,6 +7,7 @@ import javax.inject.Inject
 class HomeRepository @Inject constructor() : HomeRepoInter {
     private val cards = List(8) {
         RecipeCard(
+            recipeId = "qN4RbtLwAi6WmfFwHvfq",
             image = "https://img.spoonacular.com/recipes/641732-556x370.jpg",
             ingredients = 15,
             steps = 10,

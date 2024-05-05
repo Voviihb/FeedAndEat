@@ -1,8 +1,10 @@
 package com.vk_edu.feed_and_eat.features.navigation.data
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,24 +38,34 @@ fun NavGraph(
 ) {
     val navId = stringResource(id = R.string.nav_id)
 
-    val navigateToRoute: (String) -> Unit = {
-        navController.navigate(it) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
+    val navigateToRoute: (String) -> Unit = {route ->
+        Log.d("ROUTE", route)
+        Log.d("ROUTE 2", route.substring(0, 6))
+        navController.navigate(route) {
+            if (route.substring(0, 6) != "Recipe"){
+                Log.d("SAVED", route)
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
             }
             launchSingleTop = true
             restoreState = true
         }
     }
 
-    val navigateBack = { navigateToRoute(viewModel.currentBottomState.value) }
+    val navigateBack = {
+        val previous = navController.previousBackStackEntry?.destination?.route
+        navController.navigate(previous ?: BottomScreen.HomeScreen.route){
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     NavHost(
         navController = navController,
         startDestination = viewModel.getStartDestination(),
         modifier = Modifier.padding(0.dp)
     ) {
-        val currentRoute = navController.currentBackStackEntry?.destination?.route
         composable(BottomScreen.HomeScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.HomeScreen.route)
             HomeScreen(navigateToRoute)
@@ -95,11 +107,13 @@ fun NavGraph(
             route = Screen.RecipeScreen.route + "/{" + navId + "}",
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {entry ->
+            val id = entry.arguments?.getString(navId)
+            Log.d("ID", entry.toString())
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
-                id = entry.arguments?.getString(navId) ?: "",
-                destination = currentRoute ?: BottomScreen.InProgressScreen.route
+                id = id ?: "",
+                destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
             )
         }
     }

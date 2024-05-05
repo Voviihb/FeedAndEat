@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.recipe.data
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -61,6 +62,7 @@ fun RecipeNavGraph(
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {backStackEntry->
             val id = backStackEntry.arguments?.getString(navId)
+            Log.d("STEP ID", id.toString())
             StepScreen(
                 navigateToStep = navigateToStep,
                 navigateToRecipe = navigateToRecipe,

@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +52,7 @@ fun CollectionScreen(
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(viewModel = viewModel)
             else
-                CardsGrid(viewModel = viewModel)
+                CardsGrid(viewModel = viewModel, navigateToRoute)
 
             SquareArrowButton(onClick = navigateBack)
         }
@@ -86,7 +87,11 @@ fun RepeatButton(viewModel: CollectionScreenViewModel, modifier: Modifier = Modi
 }
 
 @Composable
-fun CardsGrid(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifier) {
+fun CardsGrid(
+    viewModel: CollectionScreenViewModel,
+    navigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -101,7 +106,9 @@ fun CardsGrid(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifie
                 steps = cardData.steps,
                 name = cardData.name,
                 rating = cardData.rating,
-                cooked = cardData.cooked
+                cooked = cardData.cooked,
+                id = cardData.recipeId,
+                navigateToRoute = navigateToRoute
             )
         }
     }
