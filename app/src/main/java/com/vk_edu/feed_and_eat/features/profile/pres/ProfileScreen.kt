@@ -69,7 +69,7 @@ fun ProfileScreen(
                 viewModel.loadProfileInfo()
             }
             if (loading) {
-                LoadingCircular(padding = PaddingValues(4.dp))
+                LoadingCircular(modifier = Modifier.padding(4.dp))
             } else {
                 Column(
                     modifier = Modifier
@@ -174,9 +174,9 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                 onValueChange = { viewModel.aboutMeChanged(it) },
                 modifier = Modifier.fillMaxSize(),
                 colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = colorResource(id = R.color.light_cyan_fae),
-                    focusedContainerColor = colorResource(id = R.color.light_cyan_fae),
-                    errorContainerColor = colorResource(id = R.color.light_cyan_fae),
+                    unfocusedContainerColor = colorResource(id = R.color.white_cyan),
+                    focusedContainerColor = colorResource(id = R.color.white_cyan),
+                    errorContainerColor = colorResource(id = R.color.white_cyan),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
@@ -198,9 +198,9 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
         onClick = { viewModel.updateUserProfile() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
-            containerColor = colorResource(id = R.color.light_cyan_fae),
+            containerColor = colorResource(id = R.color.white_cyan),
             contentColor = colorResource(id = R.color.black),
-            disabledContainerColor = colorResource(id = R.color.light_cyan_fae),
+            disabledContainerColor = colorResource(id = R.color.white_cyan),
             disabledContentColor = colorResource(id = R.color.black)
         ),
         modifier = Modifier

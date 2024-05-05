@@ -53,6 +53,7 @@ fun DishCard(link: String,
                     text = name,
                     fontSize = MediumText,
                     lineHeight = SmallText,
+                    fixLinesNumber = !largeCard,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Row(

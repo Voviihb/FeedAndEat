@@ -35,14 +35,20 @@ fun DarkText(text: String, fontSize: TextUnit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BoldText(text: String, fontSize: TextUnit, lineHeight: TextUnit = TextUnit.Unspecified,
-             modifier: Modifier = Modifier) {
+fun BoldText(
+    text: String,
+    fontSize: TextUnit,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    fixLinesNumber: Boolean = false,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = text,
         fontSize = fontSize,
         fontWeight = FontWeight.Bold,
         color = colorResource(R.color.black),
         overflow = TextOverflow.Ellipsis,
+        minLines = if (fixLinesNumber) 2 else 1,
         maxLines = 2,
         lineHeight = lineHeight,
         modifier = modifier

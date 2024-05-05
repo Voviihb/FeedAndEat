@@ -64,7 +64,10 @@ fun NavGraph(
         }
         composable(BottomScreen.CollectionScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.CollectionScreen.route)
-            CollectionScreen(navigateToRoute)
+            CollectionScreen(
+                navigateToRoute,
+                navigateBack
+            )
         }
         composable(BottomScreen.InProgressScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.InProgressScreen.route)

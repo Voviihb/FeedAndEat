@@ -43,7 +43,7 @@ import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
-import com.vk_edu.feed_and_eat.features.main.domain.models.CardDataModel
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
@@ -140,7 +140,7 @@ fun SearchCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LargeCard(cardData: CardDataModel, modifier: Modifier = Modifier) {
+fun LargeCard(cardData: RecipeCard, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -148,7 +148,7 @@ fun LargeCard(cardData: CardDataModel, modifier: Modifier = Modifier) {
     ) {
         BoldText(text = stringResource(R.string.title1), fontSize = ExtraLargeText)
         DishCard(
-            link = cardData.link,
+            link = cardData.image,
             ingredients = cardData.ingredients,
             steps = cardData.steps,
             name = cardData.name,
@@ -161,7 +161,7 @@ fun LargeCard(cardData: CardDataModel, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CardsRow(title: String, cards: List<CardDataModel>, columnWidthDp: Dp, modifier: Modifier = Modifier) {
+fun CardsRow(title: String, cards: List<RecipeCard>, columnWidthDp: Dp, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.padding(0.dp, 20.dp, 0.dp, 0.dp)
@@ -177,7 +177,7 @@ fun CardsRow(title: String, cards: List<CardDataModel>, columnWidthDp: Dp, modif
         ) {
             items(cards) { cardData ->
                 DishCard(
-                    link = cardData.link,
+                    link = cardData.image,
                     ingredients = cardData.ingredients,
                     steps = cardData.steps,
                     name = cardData.name,

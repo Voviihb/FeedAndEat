@@ -4,6 +4,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 
 data class PaginationResult(
     val recipes: List<Recipe>,
-    val endOfPrevDocument: DocumentSnapshot?,
-    val startOfNextDocument: DocumentSnapshot?
+    val startDocument: DocumentSnapshot?,
+    val endDocument: DocumentSnapshot?
 )

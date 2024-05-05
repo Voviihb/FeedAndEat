@@ -2,35 +2,43 @@ package com.vk_edu.feed_and_eat.features.search.pres
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.vk_edu.feed_and_eat.features.search.domain.models.CardDataModel
-import com.vk_edu.feed_and_eat.features.search.domain.repository.SearchRepoInter
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 
 class SearchPagingSource(
-    private val repo: SearchRepoInter,
-    private val requestBody: String,
-    private val sort: String,
-    private val filters: HashMap<String, List<String?>>,
+    private val searchRecipes: suspend (PagePointer) -> CardsAndSnapshots,
     private val limit: Int
-): PagingSource<Int, CardDataModel>() {
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CardDataModel> {
+): PagingSource<PagePointer, RecipeCard>() {
+    override suspend fun load(params: LoadParams<PagePointer>): LoadResult<PagePointer, RecipeCard> {
         return try {
-            val page = params.key ?: 1
-            val response = repo.getCardsData(requestBody, sort, filters, page, limit)
+            val page = params.key ?: PagePointer(null, 1, null)
+            val response = searchRecipes(page)
 
             LoadResult.Page(
-                data = response,
-                prevKey = if (page == 1) null else page - 1,
-                nextKey = if (response.isEmpty() || response.size < limit) null else page + 1
+                data = response.cards,
+                prevKey = if (page.number <= 1 || response.firstDocument == null)
+                    null
+                else
+                    PagePointer(Type.EXCLUDED_LAST, page.number - 1, response.firstDocument),
+                nextKey = if (response.cards.size < limit || response.lastDocument == null)
+                    null
+                else
+                    PagePointer(Type.EXCLUDED_FIRST, page.number + 1, response.lastDocument)
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, CardDataModel>): Int? {
+    override fun getRefreshKey(state: PagingState<PagePointer, RecipeCard>): PagePointer? {
         return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+            state.closestPageToPosition(anchorPosition)?.prevKey?.let {
+                PagePointer(Type.INCLUDED_FIRST, it.number + 1, it.documentSnapshot)
+            }
+            ?: state.closestPageToPosition(anchorPosition)?.nextKey?.let {
+                PagePointer(Type.INCLUDED_LAST, it.number - 1, it.documentSnapshot)
+            }
         }
     }
 }
+
