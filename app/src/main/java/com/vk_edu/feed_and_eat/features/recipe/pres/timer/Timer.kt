@@ -141,11 +141,6 @@ fun CountdownConstantTimer(
     activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
         if (timer.remainingSec != timer.totalSec){
             viewModel.revertInit(name, !timer.isPaused)
-//            if (!timer.isPaused){
-//                viewModel.revertInit(name, true)
-//            } else {
-//                viewModel.revertInit(name, false)
-//            }
         }
     }
 
@@ -205,11 +200,7 @@ fun CountdownRangeTimer(
     val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
     activeTimerState.filter { it.key == name }.forEach { (_, timer) ->
         if (timer.remainingSec != timer.totalSec){
-            if (!timer.isPaused){
-                viewModel.revertInit(name, true)
-            } else {
-                viewModel.revertInit(name, false)
-            }
+            viewModel.revertInit(name, !timer.isPaused)
         }
     }
 

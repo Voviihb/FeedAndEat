@@ -62,7 +62,6 @@ fun RecipeNavGraph(
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {backStackEntry->
             val id = backStackEntry.arguments?.getString(navId)
-            Log.d("STEP ID", id.toString())
             StepScreen(
                 navigateToStep = navigateToStep,
                 navigateToRecipe = navigateToRecipe,
