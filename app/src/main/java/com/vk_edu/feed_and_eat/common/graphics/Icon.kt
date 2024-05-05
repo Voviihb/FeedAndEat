@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.FloatingActionButtonDefaults.LargeIconSize
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

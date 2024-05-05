@@ -90,7 +90,7 @@ fun RecipeScreen(
         bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
     ) {padding ->
         if (viewModel.loading.value){
-            LoadingCircular(padding)
+            LoadingCircular()
         } else {
             if (viewModel.errorMessage.value != null){
                 RepeatButton(reload)

@@ -5,6 +5,8 @@
     <string name="add_to_favourite">Добавить в любимое</string>
     <string name="add_to_playlist">Добавить в подборку</string>
     <string name="ingr">Ингр</string>
+    <string name="step">Шаги</string>
+    <string name="repeat">Повторить</string>
     <string name="start_cooking">Начать готовить</string>
     <string name="ingridients">Ингредиенты</string>
     <string name="tags_data">Тэги</string>
