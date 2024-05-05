@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
