@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.pres
+package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,55 +6,52 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoxWithCards
-import com.vk_edu.feed_and_eat.common.graphics.ExpandableInfo
-import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
+import com.vk_edu.feed_and_eat.common.graphics.DishImage
+import com.vk_edu.feed_and_eat.common.graphics.InfoSquareButton
 import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
-import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun InfoSurface(
-    surfaceWidth : Int,
     model : Recipe,
 ){
     val ingredients = model.ingredients
@@ -65,33 +62,42 @@ fun InfoSurface(
         model.nutrients.Fat,
         model.nutrients.Carbohydrates
     )
-    val names = listOf(R.string.calories, R.string.fats, R.string.proteins, R.string.carbons, R.string.sugar).map{ stringResource( id = it )}
+    val names = listOf(R.string.calories_data, R.string.fats_data, R.string.proteins_data, R.string.carbons_data, R.string.sugar_data).map{ stringResource( id = it ) }
+    val configuration = LocalConfiguration.current
+
+    val width = configuration.screenWidthDp
     Surface(
         modifier = Modifier
-            .padding(8.dp)
-            .width(surfaceWidth.dp)
+            .padding(12.dp)
+            .width((width - 100).dp)
+            .fillMaxHeight()
+            .background(colorResource(R.color.white), RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
     ) {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(R.color.white))
         ) {
-            Text(stringResource(
+            Text(
+                stringResource(
                 id = R.string.ingridients),
                 fontSize = 18.sp,
                 color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
             )
             BoxWithCards(bigText = ingredients.map { it.name }.toList())
-            Text(stringResource(
-                id = R.string.tags),
+            Text(
+                stringResource(
+                id = R.string.tags_data),
                 fontSize = 18.sp,
                 color = colorResource(R.color.gray),
                 modifier = Modifier.padding(4.dp)
             )
             BoxWithCards(bigText = model.tags ?: listOf())
-            Text(stringResource(
+            Text(
+                stringResource(
                 id = R.string.energy_value),
                 modifier = Modifier.padding(4.dp),
                 fontSize = 20.sp,
@@ -113,33 +119,8 @@ fun InfoSurface(
                         )
                         Text(text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm))
                     }
-
                 }
-            }
-        }
-    }
-}
-
-
-
-@Composable
-fun BackButtonContainer(
-    model: Recipe,
-    navigateBack : () -> Unit
-){
-    Column {
-        LazyRow(modifier = Modifier
-            .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
-        ) {
-            item {
-                SquareArrowButton(navigateBack)
-            }
-            item {
-                ExpandableInfo(width = 352, surface = {
-                    InfoSurface(352, model)
-                })
+                }
             }
         }
     }
@@ -147,20 +128,19 @@ fun BackButtonContainer(
 
 @Composable
 fun RecipeImageContainer(
-    model : Recipe
+    model : Recipe,
+    modifier : Modifier = Modifier
 ){
     Column(
-        modifier = Modifier
-            .heightIn(0.dp, 280.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.Top
     ) {
-        AsyncImage(
-            model = model.image,
-            contentDescription = stringResource(id = R.string.image),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
+        if (model.image != null){
+            DishImage(
+                model.image,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         LazyColumn(
             verticalArrangement = Arrangement.Bottom,
             modifier = Modifier
@@ -181,12 +161,14 @@ fun RecipeImageContainer(
 
 @Composable
 fun StartCookingContainer(
-    model: Recipe
+    model: Recipe,
+    navigateToStep: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ){
     val steps = model.instructions
     val ingredients = model.ingredients
     Column(
-        modifier = Modifier
+        modifier = modifier
             .height(40.dp)
             .fillMaxWidth()
             .background(colorResource(id = R.color.pale_cyan))
@@ -196,11 +178,12 @@ fun StartCookingContainer(
             )
     ){
         Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
         ){
-            Text(text = stringResource(R.string.ingridients) + " :" + ingredients.size,
+            Text(text = stringResource(R.string.ingr) + " :" + ingredients.size,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 12.dp),
@@ -208,13 +191,14 @@ fun StartCookingContainer(
                 maxLines = 1
             )
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navigateToStep(0) },
                 modifier = Modifier
                     .weight(2f)
                     .fillMaxHeight(),
                 colors = ButtonColors(
                     colorResource(id = R.color.pale_cyan),
-                    colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
+                    colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)
+                ),
             ) {
                 Text(text = stringResource(R.string.start_cooking),
                     fontSize = 15.sp,
@@ -222,7 +206,7 @@ fun StartCookingContainer(
                     maxLines = 1
                 )
             }
-            Text(text = stringResource(R.string.steps) + ": " + steps.size,
+            Text(text = stringResource(R.string.step) + ": " + steps.size,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 12.dp),
@@ -233,9 +217,11 @@ fun StartCookingContainer(
 }
 
 @Composable
-fun AddCollectionButtons(){
+fun AddCollectionButtons(
+    modifier: Modifier = Modifier
+){
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 12.dp)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -256,7 +242,8 @@ fun AddCollectionButtons(){
                     colorResource(id = R.color.medium_cyan),
                     colorResource(R.color.white),
                     colorResource(R.color.white),
-                    colorResource(R.color.black)),
+                    colorResource(R.color.black)
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
@@ -271,7 +258,10 @@ fun AddCollectionButtons(){
             }
             Button(onClick = { /*TODO*/ },
                 shape = RectangleShape,
-                colors = ButtonColors(colorResource(R.color.white), colorResource(R.color.gray), colorResource(R.color.white), colorResource(R.color.black)),
+                colors = ButtonColors(
+                    colorResource(R.color.white), colorResource(R.color.gray), colorResource(
+                        R.color.white), colorResource(R.color.black)
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .height(32.dp)
@@ -290,13 +280,13 @@ fun AddCollectionButtons(){
 
 @Composable
 fun TextContainer(
-    model : Recipe
+    model : Recipe,
+    modifier: Modifier = Modifier
 ){
     val description = model.instructions.map { it.paragraph }
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(280.dp)
             .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -309,7 +299,7 @@ fun TextContainer(
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(
             userScrollEnabled = true,
-            modifier = Modifier
+            modifier = modifier
                 .background(
                     colorResource(id = R.color.white_cyan),
                     shape = RoundedCornerShape(20.dp),
@@ -336,11 +326,12 @@ fun TextContainer(
 
 @Composable
 fun RatingContainer(
-    model : Recipe
+    model : Recipe,
+    modifier: Modifier = Modifier
 ){
     Column(
-        modifier = Modifier
-            .height(52.dp)
+        modifier = modifier
+            .padding(4.dp)
     ){
         Spacer(modifier = Modifier.height(20.dp))
         Row(modifier = Modifier
@@ -368,89 +359,54 @@ fun RatingContainer(
 }
 
 @Composable
-fun RepeatButton(
-    onClick : () -> Unit,
-){
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Button(
-            onClick = onClick,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonColors(
-                colorResource(id = R.color.pale_cyan),
-                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)),
-            modifier = Modifier
-                .background(
-                    color = colorResource(id = R.color.pale_cyan),
-                    RoundedCornerShape(4.dp)
-                )
-                .border(
-                    2.dp,
-                    colorResource(id = R.color.dark_cyan),
-                    RoundedCornerShape(4.dp)
-                )
-                .height(40.dp)
-                .width(72.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.repeat),
-                fontSize = 12.sp,
-                overflow = TextOverflow.Visible,
-                maxLines = 1,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
-
-@Composable
-fun RecipeScreen(
-    navigateToRoute: (String) -> Unit,
+fun RecipePreview(
     navigateBack : () -> Unit,
-    viewModel: RecipesScreenViewModel = hiltViewModel()
+    navigateToStep: (Int) -> Unit,
+    recipe : Recipe
 ) {
-    val id = "083KzNCvzuf4CIKoeJFB"
-    viewModel.loadRecipeById(id)
-    val recipeList by viewModel.recipe
-
-    val reload = {
-        viewModel.loadRecipeById(id)
-        viewModel.clearError()
-    }
-
-    Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) },
-    ) {padding ->
-        if (viewModel.loading.value){
-            LoadingCircular(modifier = Modifier.padding(padding))
-        } else {
-            if (viewModel.errorMessage.value != null){
-                RepeatButton(reload)
-            } else {
-                listOf(recipeList).forEach{model ->
-                    Column(modifier = Modifier
-                        .fillMaxSize()
-                        .background(colorResource(id = R.color.white))
-                        .padding(padding)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    listOf(recipe).forEach { model ->
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorResource(id = R.color.white)),
+                drawerContent = {
+                    InfoSurface(model)
+                },
+            ) {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
+                Box {
+                    Column {
+                        Column(
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            RecipeImageContainer(model, Modifier.weight(5f))
+                            RatingContainer(model, Modifier.weight(1f))
+                            TextContainer(model, Modifier.weight(6f))
+                            AddCollectionButtons(Modifier.weight(1f))
+                            StartCookingContainer(
+                                model,
+                                navigateToStep,
+                                Modifier
+                                    .weight(1f)
+                                    .height(40.dp)
+                            )
+                        }
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Box{
-                            Column{
-                                RecipeImageContainer(model)
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                ) {
-                                    RatingContainer(model)
-                                    TextContainer(model)
-                                    AddCollectionButtons()
-                                    StartCookingContainer(model)
-                                }
-                            }
-                            BackButtonContainer(model, navigateBack)
+                        SquareArrowButton(navigateBack)
+                        InfoSquareButton({
+                            scope.launch { drawerState.open() }
+                        })
                         }
                     }
                 }

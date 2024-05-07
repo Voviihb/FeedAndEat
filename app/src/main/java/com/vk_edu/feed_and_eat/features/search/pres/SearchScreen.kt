@@ -94,7 +94,7 @@ fun SearchScreen(
                 .background(colorResource(R.color.pale_cyan))
                 .padding(padding)
         ) {
-            CardsGrid(viewModel = viewModel)
+            CardsGrid(viewModel = viewModel, navigateToRoute = navigateToRoute)
             SearchCard(viewModel = viewModel)
 
             val rightBlockEnabled = remember { mutableStateOf(false) }
@@ -205,7 +205,11 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
 }
 
 @Composable
-fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
+fun CardsGrid(
+    viewModel: SearchScreenViewModel,
+    navigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val gridState = rememberLazyGridState()
     val cardsData = viewModel.cardsDataPager.collectAsLazyPagingItems()
     if (viewModel.reloadData.value) {
@@ -235,6 +239,8 @@ fun CardsGrid(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
                         name = cardData.name,
                         rating = cardData.rating,
                         cooked = cardData.cooked,
+                        id = cardData.recipeId,
+                        navigateToRoute = navigateToRoute,
                         recipeCard = cardData,
                         addToFavourites = viewModel::addRecipeToUserCollection
                     )

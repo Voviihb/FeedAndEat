@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallIconSize
@@ -34,6 +35,8 @@ fun DishCard(
     ingredients: Int,
     steps: Int, name: String,
     rating: Double, cooked: Int,
+    id: String,
+    navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
     largeCard: Boolean = false,
     recipeCard: RecipeCard? = null,
@@ -46,7 +49,7 @@ fun DishCard(
             colorResource(R.color.white), colorResource(R.color.white)
         ),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
-        onClick = { /* TODO add function */ }
+        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/$id") }
     ) {
         Column {
             DishImage(link = link, modifier = Modifier.fillMaxWidth())

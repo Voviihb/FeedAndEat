@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">#FCFCFC</color>
-    <color name="white_cyan">#E5FEFB</color>
+    <color name="white_cyan">#E4FAFE</color>
     <color name="pale_cyan">#CFFFFC</color>
     <color name="light_cyan">#98E4DF</color>
     <color name="medium_cyan">#08E8DF</color>
@@ -12,4 +12,6 @@
     <color name="gray">#5C5C5C</color>
     <color name="black">#292929</color>
     <color name="transparent">#00000000</color>
+    <color name="salad">#2AE03C</color>
+    <color name="red">#FF0000</color>
 </resources>

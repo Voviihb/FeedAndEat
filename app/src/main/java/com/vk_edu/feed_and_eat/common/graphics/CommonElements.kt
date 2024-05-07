@@ -51,8 +51,8 @@ fun SquareArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun InfoSquareButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
 ){
     Button(
         onClick = onClick,
