@@ -240,7 +240,9 @@ fun CardsGrid(
                         rating = cardData.rating,
                         cooked = cardData.cooked,
                         id = cardData.recipeId,
-                        navigateToRoute = navigateToRoute
+                        navigateToRoute = navigateToRoute,
+                        recipeCard = cardData,
+                        addToFavourites = viewModel::addRecipeToUserCollection
                     )
             }
         }

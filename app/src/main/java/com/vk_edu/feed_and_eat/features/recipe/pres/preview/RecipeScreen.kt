@@ -32,9 +32,9 @@ import com.vk_edu.feed_and_eat.features.recipe.data.RecipeNavGraph
 
 
 @Composable
-fun RepeatButton(
-    onClick : () -> Unit,
-){
+private fun RepeatButton(
+    onClick: () -> Unit,
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -45,7 +45,9 @@ fun RepeatButton(
             contentPadding = PaddingValues(0.dp),
             colors = ButtonColors(
                 colorResource(id = R.color.pale_cyan),
-                colorResource(R.color.black), colorResource(R.color.white), colorResource(R.color.black)
+                colorResource(R.color.black),
+                colorResource(R.color.white),
+                colorResource(R.color.black)
             ),
             modifier = Modifier
                 .background(
@@ -74,9 +76,9 @@ fun RepeatButton(
 @Composable
 fun RecipeScreen(
     navigateToRoute: (String) -> Unit,
-    navigateBack : () -> Unit,
-    id : String,
-    destination : String,
+    navigateBack: () -> Unit,
+    id: String,
+    destination: String,
     viewModel: RecipesScreenViewModel = hiltViewModel()
 ) {
     viewModel.loadRecipeById(id)
@@ -88,14 +90,14 @@ fun RecipeScreen(
     }
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
-    ) {padding ->
-        if (viewModel.loading.value){
+    ) { padding ->
+        if (viewModel.loading.value) {
             LoadingCircular()
         } else {
-            if (viewModel.errorMessage.value != null){
+            if (viewModel.errorMessage.value != null) {
                 RepeatButton(reload)
             } else {
-                Box(modifier = Modifier.padding(padding)){
+                Box(modifier = Modifier.padding(padding)) {
                     val navController = rememberNavController()
                     RecipeNavGraph(
                         navigateToRoute,
