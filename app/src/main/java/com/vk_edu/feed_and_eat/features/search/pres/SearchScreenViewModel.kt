@@ -177,7 +177,7 @@ class SearchScreenViewModel @Inject constructor(
                             when (response) {
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
-
+                                    /* TODO add success flow */
                                 }
 
                                 is Response.Failure -> {
@@ -202,7 +202,7 @@ class SearchScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-
+                                /* TODO add success flow */
                             }
 
                             is Response.Failure -> {
