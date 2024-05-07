@@ -6,7 +6,7 @@ data class UserModel(
     val userId: String = "",
     val avatarUrl: String? = null,
     val aboutMeData: String? = null,
-    val collectionsIdList: MutableList<Compilation> = mutableListOf(),
+    val collectionsIdList: List<Compilation> = listOf(),
     @field:JvmField
     val isProfilePrivate: Boolean = false,
     val themeSettings: String = "light"

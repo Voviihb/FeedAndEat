@@ -1,5 +1,8 @@
 package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class RecipeCard (
     val recipeId: String = "",
     val name: String = "",

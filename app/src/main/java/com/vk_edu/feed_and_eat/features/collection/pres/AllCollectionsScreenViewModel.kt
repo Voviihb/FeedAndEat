@@ -40,10 +40,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 if (response.data != null) {
-                                    _collectionsData.value = mutableListOf()
-                                    for (collection in response.data) {
-                                        _collectionsData.value += collection
-                                    }
+                                    _collectionsData.value = response.data
                                 }
                             }
 
@@ -89,7 +86,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-
+                                /*TODO add combined flow*/
                             }
 
                             is Response.Failure -> onError(response.e)
@@ -115,7 +112,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
                             when (response) {
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
-
+                                    /*TODO add flow*/
                                 }
 
                                 is Response.Failure -> {
@@ -140,7 +137,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-
+                                /*TODO add flow*/
                             }
 
                             is Response.Failure -> {

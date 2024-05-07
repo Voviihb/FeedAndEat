@@ -34,12 +34,7 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock document.toObject<Recipe>()
     }.flowOn(Dispatchers.IO)
 
-    /**
-     * Filters recipes with pagination
-     * @param filters pass all filters in DTO here
-     * @param startOfNextDocument is needed to calculate start point for FORWARD pagination
-     * @param endOfPrevDocument is needed to calculate start point for BACKWARD pagination
-     * */
+
     override fun loadSearchRecipes(
         filters: SearchFilters,
         type: Type?,

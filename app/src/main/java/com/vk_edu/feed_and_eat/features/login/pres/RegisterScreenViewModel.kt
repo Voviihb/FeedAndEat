@@ -87,7 +87,7 @@ class RegisterScreenViewModel @Inject constructor(
                 if (userId != null) {
                     val data = UserModel(
                         userId = userId,
-                        collectionsIdList = mutableListOf(
+                        collectionsIdList = listOf(
                             Compilation(
                                 id = favouritesCollectionId,
                                 name = FAVOURITES

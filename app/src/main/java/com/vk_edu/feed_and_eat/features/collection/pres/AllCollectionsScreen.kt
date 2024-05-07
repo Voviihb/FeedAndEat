@@ -42,7 +42,6 @@ fun AllCollectionsScreen(
     val collections by viewModel.collectionsData
     val gridState = rememberLazyGridState()
 
-
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
     ) { padding ->
@@ -80,6 +79,7 @@ fun AllCollectionsScreen(
     }
 }
 
+/*TODO get func from common/graphics*/
 @Composable
 fun RepeatButton(viewModel: AllCollectionsScreenViewModel, modifier: Modifier = Modifier) {
     Box(
