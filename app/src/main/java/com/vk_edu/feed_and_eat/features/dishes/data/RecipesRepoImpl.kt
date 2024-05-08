@@ -7,9 +7,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
@@ -34,8 +34,6 @@ class RecipesRepoImpl @Inject constructor(
     /**
      * Filters recipes with pagination
      * @param filters pass all filters in DTO here
-     * @param startOfNextDocument is needed to calculate start point for FORWARD pagination
-     * @param endOfPrevDocument is needed to calculate start point for BACKWARD pagination
      * */
     override fun loadSearchRecipes(
         filters: SearchFilters,

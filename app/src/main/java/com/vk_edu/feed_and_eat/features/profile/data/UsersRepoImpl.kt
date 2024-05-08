@@ -26,7 +26,7 @@ class UsersRepoImpl @Inject constructor(
     override fun getUserData(userId: String): Flow<Response<UserModel?>> = repoTryCatchBlock {
         val document = db.collection(USERS_COLLECTION).document(userId).get().await()
         return@repoTryCatchBlock document.toObject<UserModel>()
-    }
+    }.flowOn(Dispatchers.IO)
 
     /**
      * Loads all user collections
@@ -36,7 +36,7 @@ class UsersRepoImpl @Inject constructor(
             val document = db.collection(USERS_COLLECTION).document(userId).get().await()
             val user = document.toObject<UserModel>()
             return@repoTryCatchBlock user?.collections
-        }
+        }.flowOn(Dispatchers.IO)
 
     /**
      * Is used after registration to create new document for user in DB
@@ -57,7 +57,7 @@ class UsersRepoImpl @Inject constructor(
         userData: HashMap<String, Any?>
     ): Flow<Response<Void>> = repoTryCatchBlock {
         db.collection(USERS_COLLECTION).document(userId).update(userData).await()
-    }
+    }.flowOn(Dispatchers.IO)
 
     /**
      * Is used to create new collection for user
