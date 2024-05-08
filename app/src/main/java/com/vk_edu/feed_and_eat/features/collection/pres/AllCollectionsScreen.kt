@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -22,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
@@ -31,12 +32,14 @@ import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
 
 @Composable
-fun CollectionScreen(
+fun AllCollectionsScreen( /* TODO finish this sample */
     navigateToRoute: (String) -> Unit,
     navigateBack: () -> Unit,
-    viewModel: CollectionScreenViewModel = hiltViewModel()
+    viewModel: AllCollectionsScreenViewModel = hiltViewModel()
 ) {
-    viewModel.collectionRecipes()
+    viewModel.loadAllUserCollections()
+    val collections by viewModel.collectionsData
+    val gridState = rememberLazyGridState()
 
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
@@ -51,7 +54,18 @@ fun CollectionScreen(
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(viewModel = viewModel)
             else
-                CardsGrid(viewModel = viewModel, navigateToRoute)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    state = gridState,
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(collections) { collection ->
+                        /*TODO put here collection cards*/
+                    }
+                }
 
             SquareArrowButton(onClick = navigateBack)
         }
@@ -59,7 +73,7 @@ fun CollectionScreen(
 }
 
 @Composable
-private fun RepeatButton(viewModel: CollectionScreenViewModel, modifier: Modifier = Modifier) {
+private fun RepeatButton(viewModel: AllCollectionsScreenViewModel, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
@@ -73,42 +87,13 @@ private fun RepeatButton(viewModel: CollectionScreenViewModel, modifier: Modifie
             border = BorderStroke(2.dp, colorResource(R.color.dark_cyan)),
             onClick = {
                 viewModel.clearError()
-                viewModel.collectionRecipes()
+                viewModel.loadAllUserCollections()
             }
         ) {
             Text(
                 text = stringResource(R.string.repeat),
                 color = colorResource(R.color.dark_cyan),
                 fontSize = MediumText
-            )
-        }
-    }
-}
-
-@Composable
-fun CardsGrid(
-    viewModel: CollectionScreenViewModel,
-    navigateToRoute: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(12.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(viewModel.cardsData.value) { cardData ->
-            DishCard(
-                link = cardData.image,
-                ingredients = cardData.ingredients,
-                steps = cardData.steps,
-                name = cardData.name,
-                rating = cardData.rating,
-                cooked = cardData.cooked,
-                id = cardData.recipeId,
-                navigateToRoute = navigateToRoute,
-                addToFavourites = null /* TODO pass function */
             )
         }
     }

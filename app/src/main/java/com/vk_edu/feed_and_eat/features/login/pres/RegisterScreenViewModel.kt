@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
-import com.vk_edu.feed_and_eat.features.recipe.data.models.RecipeDataModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +20,7 @@ import javax.inject.Inject
 class RegisterScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepoImpl,
     private val _usersRepo: UsersRepoImpl,
+    private val _recipesRepo: RecipesRepoImpl,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
@@ -72,13 +73,24 @@ class RegisterScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userId = _authRepo.getUserId()
+                var favouritesCollectionId = ""
+                _recipesRepo.createNewCollection().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            favouritesCollectionId = response.data
+                        }
+
+                        is Response.Failure -> onError(response.e)
+                    }
+                }
                 if (userId != null) {
                     val data = UserModel(
                         userId = userId,
-                        collections = listOf(
+                        collectionsIdList = listOf(
                             Compilation(
-                                FAVOURITES,
-                                mutableListOf<RecipeDataModel>()
+                                id = favouritesCollectionId,
+                                name = FAVOURITES
                             )
                         )
                     )
