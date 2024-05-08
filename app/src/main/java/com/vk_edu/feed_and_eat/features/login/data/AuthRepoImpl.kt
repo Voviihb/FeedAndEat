@@ -41,8 +41,7 @@ class AuthRepoImpl @Inject constructor(
                 displayName = login
             }
             auth.currentUser?.updateProfile(profileUpdates)?.await()
-        }
-            .flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.IO)
 
     override fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>> =
         repoTryCatchBlock { auth.signInWithEmailAndPassword(email, password).await() }

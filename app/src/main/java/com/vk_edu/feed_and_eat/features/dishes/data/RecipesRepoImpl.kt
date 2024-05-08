@@ -34,7 +34,10 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock document.toObject<Recipe>()
     }.flowOn(Dispatchers.IO)
 
-
+    /**
+     * Filters recipes with pagination
+     * @param filters pass all filters in DTO here
+     * */
     override fun loadSearchRecipes(
         filters: SearchFilters,
         type: Type?,
