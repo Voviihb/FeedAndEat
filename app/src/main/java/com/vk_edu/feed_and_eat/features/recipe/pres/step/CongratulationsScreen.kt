@@ -17,17 +17,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,13 +32,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeIconSize
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
 @Composable
 fun CongratulationScreen(
-    name: String,
+    recipe: Recipe,
     navigateToRoute: (String) -> Unit,
     viewModel: CongratulationsScreenViewModel = hiltViewModel()
 ) {
@@ -80,7 +79,7 @@ fun CongratulationScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Box(modifier = Modifier.padding(8.dp)) {
                 Text(
-                    text = name,
+                    text = recipe.name,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center,
                     color = colorResource(id = R.color.red),
@@ -99,7 +98,7 @@ fun CongratulationScreen(
             Spacer(modifier = Modifier.height(60.dp))
         }
 
-        RateRecipe(review = review, viewModel = viewModel)
+        RateRecipe(review = review, recipe = recipe, viewModel = viewModel)
 
         Button(
             contentPadding = PaddingValues(0.dp),
@@ -125,58 +124,44 @@ fun CongratulationScreen(
 }
 
 @Composable
-private fun RateRecipe(review: Review, viewModel: CongratulationsScreenViewModel) {
+private fun RateRecipe(review: Review, recipe: Recipe, viewModel: CongratulationsScreenViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(horizontal = 8.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.rate_recipe),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Normal
+            fontSize = ExtraLargeText,
+            fontWeight = FontWeight.SemiBold
         )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(vertical = 8.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .border(
-                    4.dp,
-                    colorResource(id = R.color.dark_cyan),
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .background(Color.Transparent)
 
-        ) {
-            TextField(
-                value = review.message ?: "",
-                onValueChange = { viewModel.messageChanged(it) },
-                modifier = Modifier.fillMaxSize(),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = colorResource(id = R.color.white),
-                    focusedContainerColor = colorResource(id = R.color.white),
-                    errorContainerColor = colorResource(id = R.color.white),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-                    disabledTextColor = Color.Black,
-                ),
-                placeholder = {
-                    Text(text = stringResource(R.string.enter_your_opinion_about_this_recipe))
-                },
-                textStyle = TextStyle(fontSize = 20.sp)
-            )
-        }
         RatingBar(
             review.mark.toFloat(),
             stars = 5,
             modifier = Modifier.height(LargeIconSize),
             onRatingChanged = { viewModel.markChanged(it) }
         )
+
+        Button(
+            contentPadding = PaddingValues(8.dp),
+            colors = ButtonDefaults.buttonColors(
+                colorResource(id = R.color.dark_cyan),
+                contentColor = colorResource(R.color.black)
+            ),
+            border = BorderStroke(
+                2.dp,
+                colorResource(R.color.white_cyan),
+            ),
+            onClick = { viewModel.saveReview(recipe = recipe) },
+            shape = RoundedCornerShape(12.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.rate),
+                fontSize = MediumText,
+                overflow = TextOverflow.Visible
+            )
+        }
     }
 }

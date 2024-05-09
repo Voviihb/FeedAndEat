@@ -125,4 +125,5 @@
     <string name="sort_by">Sort by</string>
     <string name="rate_recipe">Rate recipe</string>
     <string name="enter_your_opinion_about_this_recipe">Enter your opinion about this recipe...</string>
+    <string name="rate">Rate</string>
 </resources>
