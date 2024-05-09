@@ -41,4 +41,6 @@ interface RecipesRepository {
     fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>>
 
     fun updateReviewOnRecipe(id: String, oldReview: Review, newReview: Review): Flow<Response<Void>>
+
+    fun incrementCookedCounter(id: String): Flow<Response<Void>>
 }

@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -39,7 +38,6 @@ class CongratulationsScreenViewModel @Inject constructor(
                     if (currentReview == null) {
                         _recipesRepo.addNewReviewOnRecipe(recipe.id, _reviewState.value)
                             .collect { response ->
-                                Log.d("Taag new", response.toString())
                                 when (response) {
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
@@ -60,7 +58,6 @@ class CongratulationsScreenViewModel @Inject constructor(
                             newReview = _reviewState.value
                         )
                             .collect { response ->
-                                Log.d("Taag upd", response.toString())
                                 when (response) {
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
@@ -95,6 +92,30 @@ class CongratulationsScreenViewModel @Inject constructor(
                 _reviewState.value = currentReview as Review
         }
         return currentReview
+    }
+
+    fun incrementCookedField(recipe: Recipe) {
+        viewModelScope.launch {
+            try {
+                if (recipe.id != null) {
+                    _recipesRepo.incrementCookedCounter(recipe.id)
+                        .collect { response ->
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
+                                    /* TODO add success flow */
+                                }
+
+                                is Response.Failure -> onError(response.e)
+                            }
+                        }
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+
+        }
     }
 
     fun markChanged(value: Float) {

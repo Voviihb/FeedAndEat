@@ -47,9 +47,11 @@ fun CongratulationScreen(
     viewModel: CongratulationsScreenViewModel = hiltViewModel()
 ) {
     val review by viewModel.reviewState
+
     LaunchedEffect(Unit) {
         viewModel.loadOldReview(recipe)
     }
+
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -114,7 +116,10 @@ fun CongratulationScreen(
                 2.dp,
                 colorResource(id = R.color.dark_cyan),
             ),
-            onClick = { navigateToRoute(BottomScreen.HomeScreen.route) },
+            onClick = {
+                viewModel.incrementCookedField(recipe = recipe)
+                navigateToRoute(BottomScreen.HomeScreen.route)
+            },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .width(112.dp)

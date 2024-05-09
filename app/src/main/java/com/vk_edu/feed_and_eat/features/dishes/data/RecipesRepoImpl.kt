@@ -202,6 +202,11 @@ class RecipesRepoImpl @Inject constructor(
             ).await()
         }.flowOn(Dispatchers.IO)
 
+    override fun incrementCookedCounter(id: String): Flow<Response<Void>> = repoTryCatchBlock {
+        val recipeDoc = db.collection(RECIPES_COLLECTION).document(id)
+        recipeDoc.update(COOKED_FIELD, FieldValue.increment(1)).await()
+    }
+
     companion object {
         private const val TAGS_COLLECTION = "tags"
         private const val RECIPES_COLLECTION = "recipes"
@@ -211,6 +216,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
         private const val REVIEWS_LIST_FIELD = "reviews"
         private const val RATING_FIELD = "rating"
+        private const val COOKED_FIELD = "cooked"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
