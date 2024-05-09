@@ -17,9 +17,9 @@ class CongratulationsScreenViewModel @Inject constructor(
     private val _reviewState = mutableStateOf(Review(0, 0.0, null))
     val reviewState: State<Review> = _reviewState
 
-    fun markChanged(value: Double) {
+    fun markChanged(value: Float) {
         _reviewState.value = _reviewState.value.copy(
-            mark = value
+            mark = value.toDouble()
         )
     }
 

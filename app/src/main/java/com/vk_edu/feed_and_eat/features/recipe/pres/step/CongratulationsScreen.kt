@@ -175,8 +175,8 @@ private fun RateRecipe(review: Review, viewModel: CongratulationsScreenViewModel
         RatingBar(
             review.mark.toFloat(),
             stars = 5,
-            modifier = Modifier.height(LargeIconSize)
+            modifier = Modifier.height(LargeIconSize),
+            onRatingChanged = { viewModel.markChanged(it) }
         )
-
     }
 }

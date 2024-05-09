@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +32,8 @@ fun RatingBar(
     modifier: Modifier = Modifier,
     stars: Int = 5,
     ratingColor: Color = colorResource(R.color.yellow),
-    backgroundColor: Color = colorResource(R.color.gray)
+    backgroundColor: Color = colorResource(R.color.gray),
+    onRatingChanged: ((Float) -> Unit)? = null
 ) {
     val realRating = rating * stars / 5
     Row(modifier = modifier.wrapContentSize()) {
@@ -41,7 +43,7 @@ fun RatingBar(
                 step.rem(realRating) < 1 -> realRating - (step - 1f)
                 else -> 0f
             }
-            RatingStar(stepRating, ratingColor, backgroundColor)
+            RatingStar(stepRating, ratingColor, backgroundColor, step, onRatingChanged)
         }
     }
 }
@@ -50,14 +52,22 @@ fun RatingBar(
 private fun RatingStar(
     rating: Float,
     ratingColor: Color,
-    backgroundColor: Color
+    backgroundColor: Color,
+    starNumber: Int = 1,
+    onRatingChanged: ((Float) -> Unit)? = null
 ) {
+    var boxModifier = Modifier
+        .fillMaxHeight()
+        .aspectRatio(1f)
+        .heightIn(0.dp, 25.dp)
+        .clip(starShape)
+    if (onRatingChanged != null) {
+        boxModifier = boxModifier.clickable {
+            onRatingChanged(starNumber.toFloat())
+        }
+    }
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxHeight()
-            .aspectRatio(1f)
-            .heightIn(0.dp, 25.dp)
-            .clip(starShape)
+        modifier = boxModifier
     ) {
         Canvas(modifier = Modifier.size(maxHeight)) {
             drawRect(
