@@ -28,21 +28,23 @@ class CongratulationsScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
+    private var isReviewUpdated = false
+    private var currentReview: Review? = Review("", 0.0)
+
+
     fun saveReview(recipe: Recipe) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
-                if (recipe.id != null && user != null) {
-                    authorChanged(user)
-                    val oldReview: Review? =
-                        recipe.reviews?.filter { it.author == user }?.getOrNull(0)
-                    if (oldReview == null) {
+                if (recipe.id != null) {
+                    if (currentReview == null) {
                         _recipesRepo.addNewReviewOnRecipe(recipe.id, _reviewState.value)
                             .collect { response ->
-                                Log.d("Taag", response.toString())
+                                Log.d("Taag new", response.toString())
                                 when (response) {
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
+                                        currentReview = _reviewState.value
+                                        isReviewUpdated = true
                                         /* TODO add success flow */
                                     }
 
@@ -54,14 +56,16 @@ class CongratulationsScreenViewModel @Inject constructor(
                     } else {
                         _recipesRepo.updateReviewOnRecipe(
                             id = recipe.id,
-                            oldReview = oldReview,
+                            oldReview = currentReview!!,
                             newReview = _reviewState.value
                         )
                             .collect { response ->
-                                Log.d("Taaag", response.toString())
+                                Log.d("Taag upd", response.toString())
                                 when (response) {
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
+                                        currentReview = _reviewState.value
+                                        isReviewUpdated = true
                                         /* TODO add success flow */
                                     }
 
@@ -71,7 +75,6 @@ class CongratulationsScreenViewModel @Inject constructor(
                                 }
                             }
                     }
-
                 }
 
 
@@ -80,6 +83,18 @@ class CongratulationsScreenViewModel @Inject constructor(
             }
             _loading.value = false
         }
+    }
+
+    fun loadOldReview(recipe: Recipe): Review? {
+        val user = _authRepo.getUserId()
+        if (recipe.id != null && user != null) {
+            authorChanged(user)
+            currentReview =
+                recipe.reviews?.filter { it.author == user }?.getOrNull(0)
+            if (currentReview != null)
+                _reviewState.value = currentReview as Review
+        }
+        return currentReview
     }
 
     fun markChanged(value: Float) {
