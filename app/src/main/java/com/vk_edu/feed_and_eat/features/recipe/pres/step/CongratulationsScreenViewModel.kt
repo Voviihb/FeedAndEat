@@ -34,7 +34,8 @@ class CongratulationsScreenViewModel @Inject constructor(
                 val user = _authRepo.getUserId()
                 if (recipe.id != null && user != null) {
                     authorChanged(user)
-                    val oldReview: Review? = recipe.reviews?.filter { it.author == user }?.get(0)
+                    val oldReview: Review? =
+                        recipe.reviews?.filter { it.author == user }?.getOrNull(0)
                     if (oldReview == null) {
                         _recipesRepo.addNewReviewOnRecipe(recipe.id, _reviewState.value)
                             .collect { response ->

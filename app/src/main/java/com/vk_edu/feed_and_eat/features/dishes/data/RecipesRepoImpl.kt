@@ -170,7 +170,16 @@ class RecipesRepoImpl @Inject constructor(
     override fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>> =
         repoTryCatchBlock {
             val recipeDoc = db.collection(RECIPES_COLLECTION).document(id)
-            recipeDoc.update(REVIEWS_LIST_FIELD, FieldValue.arrayUnion(review)).await()
+            val recipe = recipeDoc.get().await().toObject<Recipe>()
+            var newRating = 0.0
+            if (recipe != null) {
+                newRating = (recipe.rating * (recipe.reviews?.size ?: 0)
+                        + review.mark) / ((recipe.reviews?.size ?: 0) + 1)
+            }
+            recipeDoc.update(
+                REVIEWS_LIST_FIELD, FieldValue.arrayUnion(review),
+                RATING_FIELD, newRating
+            ).await()
         }.flowOn(Dispatchers.IO)
 
     override fun updateReviewOnRecipe(
@@ -180,9 +189,16 @@ class RecipesRepoImpl @Inject constructor(
     ): Flow<Response<Void>> =
         repoTryCatchBlock {
             val recipeDoc = db.collection(RECIPES_COLLECTION).document(id)
+            val recipe = recipeDoc.get().await().toObject<Recipe>()
+            var newRating = 0.0
+            if (recipe != null) {
+                newRating = (recipe.rating * (recipe.reviews?.size ?: 0)
+                        - oldReview.mark + newReview.mark) / ((recipe.reviews?.size ?: 0))
+            }
             recipeDoc.update(
                 REVIEWS_LIST_FIELD, FieldValue.arrayRemove(oldReview),
-                REVIEWS_LIST_FIELD, FieldValue.arrayUnion(newReview)
+                REVIEWS_LIST_FIELD, FieldValue.arrayUnion(newReview),
+                RATING_FIELD, newRating
             ).await()
         }.flowOn(Dispatchers.IO)
 
@@ -194,6 +210,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val RECIPE_CARDS_FIELD = "recipeCards"
         private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
         private const val REVIEWS_LIST_FIELD = "reviews"
+        private const val RATING_FIELD = "rating"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
