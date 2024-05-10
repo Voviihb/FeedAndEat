@@ -20,7 +20,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
-import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
@@ -28,7 +27,6 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 @Composable
 fun AllCollectionsScreen( /* TODO finish this sample */
     navigateToRoute: (String) -> Unit,
-    navigateBack: () -> Unit,
     viewModel: AllCollectionsScreenViewModel = hiltViewModel()
 ) {
     viewModel.loadAllUserCollections()
@@ -63,8 +61,6 @@ fun AllCollectionsScreen( /* TODO finish this sample */
                         /*TODO put here collection cards*/
                     }
                 }
-
-            SquareArrowButton(onClick = navigateBack)
         }
     }
 }

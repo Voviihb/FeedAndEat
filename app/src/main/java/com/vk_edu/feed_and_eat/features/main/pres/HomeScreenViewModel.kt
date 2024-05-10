@@ -15,6 +15,9 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
+    private val _loaded = mutableStateOf(false)
+    var loaded: State<Boolean> = _loaded
+
     private val _largeCardData = mutableStateOf(RecipeCard())
     var largeCardData: State<RecipeCard> = _largeCardData
 
@@ -35,6 +38,10 @@ class HomeScreenViewModel @Inject constructor(
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
+
+    fun setLoaded() {
+        _loaded.value = true
+    }
 
     fun getLargeCardData() {
         viewModelScope.launch {

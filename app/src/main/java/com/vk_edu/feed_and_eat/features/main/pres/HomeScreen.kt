@@ -56,11 +56,14 @@ fun HomeScreen(
     navigateToRoute: (String) -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
-    viewModel.getLargeCardData()
-    viewModel.getCardsDataOfRow1()
-    viewModel.getCardsDataOfRow2()
-    viewModel.getCardsDataOfRow3()
-    viewModel.getCardsDataOfRow4()
+    if (!viewModel.loaded.value) {
+        viewModel.getLargeCardData()
+        viewModel.getCardsDataOfRow1()
+        viewModel.getCardsDataOfRow2()
+        viewModel.getCardsDataOfRow3()
+        viewModel.getCardsDataOfRow4()
+        viewModel.setLoaded()
+    }
 
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.HomeScreen.route) }
