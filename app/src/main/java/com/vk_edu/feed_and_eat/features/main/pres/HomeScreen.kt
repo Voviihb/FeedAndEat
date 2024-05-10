@@ -42,7 +42,9 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LightText
+import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
+import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
@@ -50,69 +52,101 @@ import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
-fun HomeScreen(navigateToRoute : (String) -> Unit) {
-    val viewModel: HomeScreenViewModel = hiltViewModel()
+fun HomeScreen(
+    navigateToRoute: (String) -> Unit,
+    viewModel: HomeScreenViewModel = hiltViewModel()
+) {
+    viewModel.getLargeCardData()
+    viewModel.getCardsDataOfRow1()
+    viewModel.getCardsDataOfRow2()
+    viewModel.getCardsDataOfRow3()
+    viewModel.getCardsDataOfRow4()
 
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.HomeScreen.route) }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .background(colorResource(R.color.pale_cyan))
-                .padding(padding)
-        ) {
-            SearchCard()
-
-            viewModel.getLargeCardData()
-            LargeCard(cardData = viewModel.largeCardData.value, navigateToRoute = navigateToRoute)
-
-            var columnWidthDp by remember { mutableStateOf(0.dp) }
-            val localDensity = LocalDensity.current
-            viewModel.getCardsDataOfRow1()
-            CardsRow(
-                title = stringResource(R.string.title2),
-                cards = viewModel.cardsDataOfRow1.value,
-                columnWidthDp = columnWidthDp,
-                navigateToRoute = navigateToRoute,
+        if (viewModel.loading.value)
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
-                    }
-            )
+                    .background(colorResource(R.color.pale_cyan))
+                    .padding(padding)
+            ) {
+                SearchCard(navigateToRoute)
+                LoadingCircular()
+            }
+        else if (viewModel.errorMessage.value != null)
+            Box(
+                modifier = Modifier
+                    .background(colorResource(R.color.pale_cyan))
+                    .padding(padding)
+            ) {
+                SearchCard(navigateToRoute)
+                RepeatButton(onClick = {
+                    viewModel.clearError()
+                    viewModel.getLargeCardData()
+                    viewModel.getCardsDataOfRow1()
+                    viewModel.getCardsDataOfRow2()
+                    viewModel.getCardsDataOfRow3()
+                    viewModel.getCardsDataOfRow4()
+                })
+            }
+        else
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .background(colorResource(R.color.pale_cyan))
+                    .padding(padding)
+            ) {
+                SearchCard(navigateToRoute)
 
-            viewModel.getCardsDataOfRow2()
-            CardsRow(
-                title = stringResource(R.string.title3),
-                cards = viewModel.cardsDataOfRow2.value,
-                columnWidthDp = columnWidthDp,
-                navigateToRoute = navigateToRoute
-            )
+                LargeCard(
+                    cardData = viewModel.largeCardData.value,
+                    navigateToRoute = navigateToRoute
+                )
 
-            viewModel.getCardsDataOfRow3()
-            CardsRow(
-                title = stringResource(R.string.title4),
-                cards = viewModel.cardsDataOfRow3.value,
-                columnWidthDp = columnWidthDp,
-                navigateToRoute = navigateToRoute
-            )
+                var columnWidthDp by remember { mutableStateOf(0.dp) }
+                val localDensity = LocalDensity.current
+                CardsRow(
+                    title = stringResource(R.string.title2),
+                    cards = viewModel.cardsDataOfRow1.value,
+                    columnWidthDp = columnWidthDp,
+                    navigateToRoute = navigateToRoute,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coordinates ->
+                            columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
+                        }
+                )
 
-            viewModel.getCardsDataOfRow4()
-            CardsRow(
-                title = stringResource(R.string.title5),
-                cards = viewModel.cardsDataOfRow4.value,
-                columnWidthDp = columnWidthDp,
-                navigateToRoute = navigateToRoute
-            )
+                CardsRow(
+                    title = stringResource(R.string.title3),
+                    cards = viewModel.cardsDataOfRow2.value,
+                    columnWidthDp = columnWidthDp,
+                    navigateToRoute = navigateToRoute
+                )
 
-            Spacer(modifier = Modifier.size(12.dp))
-        }
+                CardsRow(
+                    title = stringResource(R.string.title4),
+                    cards = viewModel.cardsDataOfRow3.value,
+                    columnWidthDp = columnWidthDp,
+                    navigateToRoute = navigateToRoute
+                )
+
+                CardsRow(
+                    title = stringResource(R.string.title5),
+                    cards = viewModel.cardsDataOfRow4.value,
+                    columnWidthDp = columnWidthDp,
+                    navigateToRoute = navigateToRoute
+                )
+
+                Spacer(modifier = Modifier.size(12.dp))
+
+            }
     }
 }
 
 @Composable
-fun SearchCard(modifier: Modifier = Modifier) {
+fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.padding(12.dp, 12.dp, 12.dp, 20.dp)) {
         Card(
             shape = RoundedCornerShape(24.dp),
@@ -122,7 +156,9 @@ fun SearchCard(modifier: Modifier = Modifier) {
                 .height(52.dp)
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
-            onClick = { /* TODO add function */ }
+            onClick = {
+                navigateToRoute(BottomScreen.SearchScreen.route)
+            }
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
@@ -34,7 +33,7 @@ class RecipesRepoImpl @Inject constructor(
     override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).document(id)
         val document = query.get().await()
-        return@repoTryCatchBlock document.toObject<Recipe>()
+        return@repoTryCatchBlock document.toObject<Recipe>()?.copy(id = id)
     }.flowOn(Dispatchers.IO)
 
     override fun loadDailyRecipe(): Flow<Response<Recipe?>> = repoTryCatchBlock {
@@ -52,7 +51,6 @@ class RecipesRepoImpl @Inject constructor(
     override fun loadTopRatingRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
-        Log.d("id", recipes.documents[0].toString())
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
 
@@ -219,7 +217,6 @@ class RecipesRepoImpl @Inject constructor(
 
         private const val DAY_OF_YEAR = "dayOfYear"
         private const val BREAKFAST_TAG = "breakfast"
-        private const val NON_EXISTENT_MAXIMUM = 10e9
         private const val MAX_CALORIES = 100.0
         private const val LIMIT_OF_ROW = 10L
 

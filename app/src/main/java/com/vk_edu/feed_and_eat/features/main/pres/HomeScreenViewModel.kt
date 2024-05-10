@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -74,7 +73,6 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _recipesRepo.loadTopRatingRecipes().collect { response ->
-                    Log.d("evdrevdrev", response.toString())
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
@@ -139,7 +137,6 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _recipesRepo.loadLastAddedRecipes().collect { response ->
-                    Log.d("evdrevdrev2", response.toString())
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
