@@ -11,6 +11,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
@@ -31,7 +32,7 @@ class RecipesRepoImpl @Inject constructor(
     override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).document(id)
         val document = query.get().await()
-        return@repoTryCatchBlock document.toObject<Recipe>()
+        return@repoTryCatchBlock document.toObject<Recipe>()?.copy(id = document.id)
     }.flowOn(Dispatchers.IO)
 
     /**
@@ -166,6 +167,46 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock result.id
     }.flowOn(Dispatchers.IO)
 
+    override fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>> =
+        repoTryCatchBlock {
+            val recipeDoc = db.collection(RECIPES_COLLECTION).document(id)
+            val recipe = recipeDoc.get().await().toObject<Recipe>()
+            var newRating = 0.0
+            if (recipe != null) {
+                newRating = (recipe.rating * (recipe.reviews?.size ?: 0)
+                        + review.mark) / ((recipe.reviews?.size ?: 0) + 1)
+            }
+            recipeDoc.update(
+                REVIEWS_LIST_FIELD, FieldValue.arrayUnion(review),
+                RATING_FIELD, newRating
+            ).await()
+        }.flowOn(Dispatchers.IO)
+
+    override fun updateReviewOnRecipe(
+        id: String,
+        oldReview: Review,
+        newReview: Review
+    ): Flow<Response<Void>> =
+        repoTryCatchBlock {
+            val recipeDoc = db.collection(RECIPES_COLLECTION).document(id)
+            val recipe = recipeDoc.get().await().toObject<Recipe>()
+            var newRating = 0.0
+            if (recipe != null) {
+                newRating = (recipe.rating * (recipe.reviews?.size ?: 0)
+                        - oldReview.mark + newReview.mark) / ((recipe.reviews?.size ?: 0))
+            }
+            recipeDoc.update(
+                REVIEWS_LIST_FIELD, FieldValue.arrayRemove(oldReview),
+                REVIEWS_LIST_FIELD, FieldValue.arrayUnion(newReview),
+                RATING_FIELD, newRating
+            ).await()
+        }.flowOn(Dispatchers.IO)
+
+    override fun incrementCookedCounter(id: String): Flow<Response<Void>> = repoTryCatchBlock {
+        val recipeDoc = db.collection(RECIPES_COLLECTION).document(id)
+        recipeDoc.update(COOKED_FIELD, FieldValue.increment(1)).await()
+    }
+
     companion object {
         private const val TAGS_COLLECTION = "tags"
         private const val RECIPES_COLLECTION = "recipes"
@@ -173,6 +214,9 @@ class RecipesRepoImpl @Inject constructor(
         private const val USERS_COLLECTION = "users"
         private const val RECIPE_CARDS_FIELD = "recipeCards"
         private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
+        private const val REVIEWS_LIST_FIELD = "reviews"
+        private const val RATING_FIELD = "rating"
+        private const val COOKED_FIELD = "cooked"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"

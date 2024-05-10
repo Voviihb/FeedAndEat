@@ -52,7 +52,7 @@ fun RecipeNavGraph(
         }
         composable(Routes.Congrats.route){
             CongratulationScreen(
-                recipe.name,
+                recipe,
                 navigateToRoute
             )
         }
