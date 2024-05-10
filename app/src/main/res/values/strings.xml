@@ -99,10 +99,11 @@
     <string name="ingredients">Ingredients:</string>
     <string name="steps">Steps:</string>
     <string name="searchLabel">Search</string>
-    <string name="title1">Recipe of the day</string>
-    <string name="title2">Top of the week</string>
-    <string name="title3">Recipes for you</string>
-    <string name="title4">Popular dietary</string>
+    <string name="title1">Daily recipe</string>
+    <string name="title2">Top of the rating</string>
+    <string name="title3">Popular low-calorie</string>
+    <string name="title4">Last added</string>
+    <string name="title5">Popular for breakfast</string>
     <!-- timer -->
     <string name="cancel_all">Cancel all</string>
     <string name="running_timers">Running %1$s timers</string>

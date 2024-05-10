@@ -98,6 +98,14 @@ fun HomeScreen(navigateToRoute : (String) -> Unit) {
                 navigateToRoute = navigateToRoute
             )
 
+            viewModel.getCardsDataOfRow4()
+            CardsRow(
+                title = stringResource(R.string.title5),
+                cards = viewModel.cardsDataOfRow4.value,
+                columnWidthDp = columnWidthDp,
+                navigateToRoute = navigateToRoute
+            )
+
             Spacer(modifier = Modifier.size(12.dp))
         }
     }

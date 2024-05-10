@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
+import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
@@ -45,35 +46,36 @@ class RecipesRepoImpl @Inject constructor(
         val currentYear = LocalDate.now().year
         val recipeId = recipesOfDay[currentYear % recipesOfDay.size]
         val document = db.collection(RECIPES_COLLECTION).document(recipeId).get().await()
-        return@repoTryCatchBlock document.toObject<Recipe>()
+        return@repoTryCatchBlock document.toObject<Recipe>()?.copy(id = recipeId)
     }.flowOn(Dispatchers.IO)
 
-    override fun loadTopRatingRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+    override fun loadTopRatingRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
-        val recipes = query.get().await()
-        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+        val recipes = query.limit(LIMIT_OF_ROW).get().await()
+        Log.d("id", recipes.documents[0].toString())
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadLowCalorieRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+    override fun loadLowCalorieRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION)
-            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, 200.0)
+            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, MAX_CALORIES)
             .orderBy(COOKED_FIELD, Query.Direction.DESCENDING)
-        val recipes = query.get().await()
-        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+        val recipes = query.limit(LIMIT_OF_ROW).get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadLastAddedRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+    override fun loadLastAddedRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
-        val recipes = query.get().await()
-        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+        val recipes = query.limit(LIMIT_OF_ROW).get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadBreakfastRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+    override fun loadBreakfastRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION)
             .whereArrayContains(TAGS_FIELD, BREAKFAST_TAG)
             .orderBy(COOKED_FIELD, Query.Direction.DESCENDING)
-        val recipes = query.get().await()
-        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+        val recipes = query.limit(LIMIT_OF_ROW).get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
 
     /**
@@ -217,6 +219,9 @@ class RecipesRepoImpl @Inject constructor(
 
         private const val DAY_OF_YEAR = "dayOfYear"
         private const val BREAKFAST_TAG = "breakfast"
+        private const val NON_EXISTENT_MAXIMUM = 10e9
+        private const val MAX_CALORIES = 100.0
+        private const val LIMIT_OF_ROW = 10L
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
@@ -228,7 +233,6 @@ class RecipesRepoImpl @Inject constructor(
         private const val CREATED_FIELD = "created"
         private const val RATING_FIELD = "rating"
         private const val COOKED_FIELD = "cooked"
-
         private const val SORT_NEWNESS = 0
         private const val SORT_RATING = 1
         private const val SORT_POPULARITY = 2

@@ -1,20 +1,21 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.main.data.repository.HomeRepository
-import com.vk_edu.feed_and_eat.features.main.domain.repository.HomeRepoInter
+import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor() : ViewModel() {
-    private val repo: HomeRepoInter = HomeRepository()
-
+class HomeScreenViewModel @Inject constructor(
+    private val _recipesRepo: RecipesRepoImpl
+) : ViewModel() {
     private val _largeCardData = mutableStateOf(RecipeCard())
     var largeCardData: State<RecipeCard> = _largeCardData
 
@@ -27,6 +28,9 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     private val _cardsDataOfRow3 = mutableStateOf(listOf<RecipeCard>())
     var cardsDataOfRow3: State<List<RecipeCard>> = _cardsDataOfRow3
 
+    private val _cardsDataOfRow4 = mutableStateOf(listOf<RecipeCard>())
+    var cardsDataOfRow4: State<List<RecipeCard>> = _cardsDataOfRow4
+
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
@@ -36,8 +40,29 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     fun getLargeCardData() {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                _largeCardData.value = repo.getLargeCardData()
+                _recipesRepo.loadDailyRecipe().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            if (response.data != null) {
+                                val fullRecipe = response.data
+                                _largeCardData.value = RecipeCard(
+                                    recipeId = fullRecipe.id ?: "",
+                                    image = fullRecipe.image ?: "",
+                                    ingredients = fullRecipe.ingredients.size,
+                                    steps = fullRecipe.instructions.size,
+                                    name = fullRecipe.name,
+                                    rating = fullRecipe.rating,
+                                    cooked = fullRecipe.cooked
+                                )
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 onError(e)
             }
@@ -48,8 +73,29 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     fun getCardsDataOfRow1() {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                _cardsDataOfRow1.value = repo.getCardsDataOfRow1()
+                _recipesRepo.loadTopRatingRecipes().collect { response ->
+                    Log.d("evdrevdrev", response.toString())
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            _cardsDataOfRow1.value = response.data.map { fullRecipe ->
+                                RecipeCard(
+                                    recipeId = fullRecipe.id ?: "",
+                                    image = fullRecipe.image ?: "",
+                                    ingredients = fullRecipe.ingredients.size,
+                                    steps = fullRecipe.instructions.size,
+                                    name = fullRecipe.name,
+                                    rating = fullRecipe.rating,
+                                    cooked = fullRecipe.cooked
+                                )
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 onError(e)
             }
@@ -60,8 +106,28 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     fun getCardsDataOfRow2() {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                _cardsDataOfRow2.value = repo.getCardsDataOfRow2()
+                _recipesRepo.loadLowCalorieRecipes().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            _cardsDataOfRow2.value = response.data.map { fullRecipe ->
+                                RecipeCard(
+                                    recipeId = fullRecipe.id ?: "",
+                                    image = fullRecipe.image ?: "",
+                                    ingredients = fullRecipe.ingredients.size,
+                                    steps = fullRecipe.instructions.size,
+                                    name = fullRecipe.name,
+                                    rating = fullRecipe.rating,
+                                    cooked = fullRecipe.cooked
+                                )
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 onError(e)
             }
@@ -72,8 +138,61 @@ class HomeScreenViewModel @Inject constructor() : ViewModel() {
     fun getCardsDataOfRow3() {
         viewModelScope.launch {
             try {
-                _loading.value = true
-                _cardsDataOfRow3.value = repo.getCardsDataOfRow3()
+                _recipesRepo.loadLastAddedRecipes().collect { response ->
+                    Log.d("evdrevdrev2", response.toString())
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            _cardsDataOfRow3.value = response.data.map { fullRecipe ->
+                                RecipeCard(
+                                    recipeId = fullRecipe.id ?: "",
+                                    image = fullRecipe.image ?: "",
+                                    ingredients = fullRecipe.ingredients.size,
+                                    steps = fullRecipe.instructions.size,
+                                    name = fullRecipe.name,
+                                    rating = fullRecipe.rating,
+                                    cooked = fullRecipe.cooked
+                                )
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
+    fun getCardsDataOfRow4() {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.loadBreakfastRecipes().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            _cardsDataOfRow4.value = response.data.map { fullRecipe ->
+                                RecipeCard(
+                                    recipeId = fullRecipe.id ?: "",
+                                    image = fullRecipe.image ?: "",
+                                    ingredients = fullRecipe.ingredients.size,
+                                    steps = fullRecipe.instructions.size,
+                                    name = fullRecipe.name,
+                                    rating = fullRecipe.rating,
+                                    cooked = fullRecipe.cooked
+                                )
+                            }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 onError(e)
             }

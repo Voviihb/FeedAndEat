@@ -15,10 +15,10 @@ interface RecipesRepository {
     fun loadRecipeById(id: String): Flow<Response<Recipe?>>
 
     fun loadDailyRecipe(): Flow<Response<Recipe?>>
-    fun loadTopRatingRecipes(id: String): Flow<Response<List<Recipe>>>
-    fun loadLowCalorieRecipes(id: String): Flow<Response<List<Recipe>>>
-    fun loadLastAddedRecipes(id: String): Flow<Response<List<Recipe>>>
-    fun loadBreakfastRecipes(id: String): Flow<Response<List<Recipe>>>
+    fun loadTopRatingRecipes(): Flow<Response<List<Recipe>>>
+    fun loadLowCalorieRecipes(): Flow<Response<List<Recipe>>>
+    fun loadLastAddedRecipes(): Flow<Response<List<Recipe>>>
+    fun loadBreakfastRecipes(): Flow<Response<List<Recipe>>>
 
     fun loadSearchRecipes(
         filters: SearchFilters,
