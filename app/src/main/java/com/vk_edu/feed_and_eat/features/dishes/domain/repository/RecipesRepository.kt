@@ -14,26 +14,28 @@ import kotlinx.coroutines.flow.Flow
 interface RecipesRepository {
     fun loadRecipeById(id: String): Flow<Response<Recipe?>>
 
+    fun loadDailyRecipe(): Flow<Response<Recipe?>>
+    fun loadTopRatingRecipes(id: String): Flow<Response<List<Recipe>>>
+    fun loadLowCalorieRecipes(id: String): Flow<Response<List<Recipe>>>
+    fun loadLastAddedRecipes(id: String): Flow<Response<List<Recipe>>>
+    fun loadBreakfastRecipes(id: String): Flow<Response<List<Recipe>>>
+
     fun loadSearchRecipes(
         filters: SearchFilters,
         type: Type?,
         documentSnapshot: DocumentSnapshot?
     ): Flow<Response<PaginationResult>>
-
     fun loadTags(): Flow<Response<List<Tag>>>
 
     fun loadCollectionRecipes(id: String): Flow<Response<CollectionsCards?>>
-
     fun addRecipeToUserCollection(
         userId: String,
         collectionId: String,
         recipe: RecipeCard
     ): Flow<Response<Void>>
-
     fun removeRecipeFromUserCollection(
         collectionId: String,
         recipe: RecipeCard
     ): Flow<Response<Void>>
-
     fun createNewCollection(): Flow<Response<String>>
 }

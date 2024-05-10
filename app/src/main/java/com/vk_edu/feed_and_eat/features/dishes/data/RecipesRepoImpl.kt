@@ -8,6 +8,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.DailyRecipes
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,6 +34,46 @@ class RecipesRepoImpl @Inject constructor(
         val query = db.collection(RECIPES_COLLECTION).document(id)
         val document = query.get().await()
         return@repoTryCatchBlock document.toObject<Recipe>()
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadDailyRecipe(): Flow<Response<Recipe?>> = repoTryCatchBlock {
+        val dayOfYear = LocalDate.now().dayOfYear
+        val query = db.collection(DAILY_RECIPE_COLLECTION).whereEqualTo(DAY_OF_YEAR, dayOfYear)
+        val dailyRecipes = query.get().await()
+        val recipesOfDay = dailyRecipes.map { it.toObject<DailyRecipes>() }[0].recipesOfDay
+
+        val currentYear = LocalDate.now().year
+        val recipeId = recipesOfDay[currentYear % recipesOfDay.size]
+        val document = db.collection(RECIPES_COLLECTION).document(recipeId).get().await()
+        return@repoTryCatchBlock document.toObject<Recipe>()
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadTopRatingRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+        val query = db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
+        val recipes = query.get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadLowCalorieRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+        val query = db.collection(RECIPES_COLLECTION)
+            .whereLessThanOrEqualTo(NUTRIENTS_CALORIES_FIELD, 200.0)
+            .orderBy(COOKED_FIELD, Query.Direction.DESCENDING)
+        val recipes = query.get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadLastAddedRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+        val query = db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
+        val recipes = query.get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadBreakfastRecipes(id: String): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
+        val query = db.collection(RECIPES_COLLECTION)
+            .whereArrayContains(TAGS_FIELD, BREAKFAST_TAG)
+            .orderBy(COOKED_FIELD, Query.Direction.DESCENDING)
+        val recipes = query.get().await()
+        return@repoTryCatchBlock recipes.map { it.toObject<Recipe>() }
     }.flowOn(Dispatchers.IO)
 
     /**
@@ -73,19 +115,19 @@ class RecipesRepoImpl @Inject constructor(
 
         query = when (filters.sort) {
             SORT_NEWNESS -> {
-                query.orderBy(CREATED, Query.Direction.DESCENDING)
+                query.orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
             }
 
             SORT_RATING -> {
-                query.orderBy(RATING, Query.Direction.DESCENDING)
+                query.orderBy(RATING_FIELD, Query.Direction.DESCENDING)
             }
 
             SORT_POPULARITY -> {
-                query.orderBy(COOKED, Query.Direction.DESCENDING)
+                query.orderBy(COOKED_FIELD, Query.Direction.DESCENDING)
             }
 
             else -> {
-                query.orderBy(CREATED, Query.Direction.DESCENDING)
+                query.orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
             }
         }
 
@@ -171,8 +213,10 @@ class RecipesRepoImpl @Inject constructor(
         private const val RECIPES_COLLECTION = "recipes"
         private const val COLLECTIONS_COLLECTION = "collections"
         private const val USERS_COLLECTION = "users"
-        private const val RECIPE_CARDS_FIELD = "recipeCards"
-        private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
+        private const val DAILY_RECIPE_COLLECTION = "daily_recipe"
+
+        private const val DAY_OF_YEAR = "dayOfYear"
+        private const val BREAKFAST_TAG = "breakfast"
 
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
@@ -181,13 +225,15 @@ class RecipesRepoImpl @Inject constructor(
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
         private const val NUTRIENTS_PROTEIN_FIELD = "nutrients.Protein"
         private const val NUTRIENTS_SUGAR_FIELD = "nutrients.Sugar"
+        private const val CREATED_FIELD = "created"
+        private const val RATING_FIELD = "rating"
+        private const val COOKED_FIELD = "cooked"
 
         private const val SORT_NEWNESS = 0
         private const val SORT_RATING = 1
         private const val SORT_POPULARITY = 2
 
-        private const val CREATED = "created"
-        private const val RATING = "rating"
-        private const val COOKED = "cooked"
+        private const val RECIPE_CARDS_FIELD = "recipeCards"
+        private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
     }
 }

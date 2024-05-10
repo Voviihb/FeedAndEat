@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.TimerTypes
+import com.vk_edu.feed_and_eat.features.recipe.domain.models.TimerTypes
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
 import java.lang.Long.max
 import java.util.Locale

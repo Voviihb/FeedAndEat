@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.vk_edu.feed_and_eat"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
