@@ -261,9 +261,10 @@ class RecipesRepoImpl @Inject constructor(
         private const val MAX_CALORIES = 100.0
         private const val LIMIT_OF_ROW = 10L
 
+        private const val REVIEWS_LIST_FIELD = "reviews"
+
         private const val NAME_FIELD = "name"
         private const val TAGS_FIELD = "tags"
-        private const val REVIEWS_LIST_FIELD = "reviews"
         private const val NUTRIENTS_CALORIES_FIELD = "nutrients.Calories"
         private const val NUTRIENTS_CARBOHYDRATES_FIELD = "nutrients.Carbohydrates"
         private const val NUTRIENTS_FAT_FIELD = "nutrients.Fat"
