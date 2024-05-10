@@ -16,22 +16,22 @@ class HomeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
     private val _loaded = mutableStateOf(false)
-    var loaded: State<Boolean> = _loaded
+    val loaded: State<Boolean> = _loaded
 
     private val _largeCardData = mutableStateOf(RecipeCard())
-    var largeCardData: State<RecipeCard> = _largeCardData
+    val largeCardData: State<RecipeCard> = _largeCardData
 
     private val _cardsDataOfRow1 = mutableStateOf(listOf<RecipeCard>())
-    var cardsDataOfRow1: State<List<RecipeCard>> = _cardsDataOfRow1
+    val cardsDataOfRow1: State<List<RecipeCard>> = _cardsDataOfRow1
 
     private val _cardsDataOfRow2 = mutableStateOf(listOf<RecipeCard>())
-    var cardsDataOfRow2: State<List<RecipeCard>> = _cardsDataOfRow2
+    val cardsDataOfRow2: State<List<RecipeCard>> = _cardsDataOfRow2
 
     private val _cardsDataOfRow3 = mutableStateOf(listOf<RecipeCard>())
-    var cardsDataOfRow3: State<List<RecipeCard>> = _cardsDataOfRow3
+    val cardsDataOfRow3: State<List<RecipeCard>> = _cardsDataOfRow3
 
     private val _cardsDataOfRow4 = mutableStateOf(listOf<RecipeCard>())
-    var cardsDataOfRow4: State<List<RecipeCard>> = _cardsDataOfRow4
+    val cardsDataOfRow4: State<List<RecipeCard>> = _cardsDataOfRow4
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
