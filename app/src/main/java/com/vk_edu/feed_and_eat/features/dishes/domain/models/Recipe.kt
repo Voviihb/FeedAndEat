@@ -58,6 +58,5 @@ data class Timer(
 @IgnoreExtraProperties
 data class Review(
     val author: String = "",
-    val mark: Double = 0.0,
-    val message: String? = null
+    val mark: Double = 0.0
 )

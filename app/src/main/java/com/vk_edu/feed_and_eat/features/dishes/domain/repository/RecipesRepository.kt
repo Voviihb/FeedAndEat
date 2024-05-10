@@ -5,6 +5,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
@@ -38,4 +39,10 @@ interface RecipesRepository {
         recipe: RecipeCard
     ): Flow<Response<Void>>
     fun createNewCollection(): Flow<Response<String>>
+
+    fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>>
+
+    fun updateReviewOnRecipe(id: String, oldReview: Review, newReview: Review): Flow<Response<Void>>
+
+    fun incrementCookedCounter(id: String): Flow<Response<Void>>
 }

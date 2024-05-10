@@ -25,8 +25,8 @@
     <string name="backstep">к предыдущему</string>
     <string name="nextstep">к следующему</string>
     <string name="finish">завершить</string>
-    <string name="congratulations">Поздравляем! вы приготовили:</string>
-    <string name="to_main">на главную</string>
+    <string name="congratulations">Congratulations! You`ve cooked:</string>
+    <string name="to_main">To main page</string>
     <string name="timer_template">%02d:%02d:%02d</string>
     <string name="range_timer_template">%02d:%02d:%02d - %02d:%02d:%02d</string>
     <string name="minutes">мин</string>
@@ -124,4 +124,6 @@
     <string name="rating">rating</string>
     <string name="popularity">popularity</string>
     <string name="sort_by">Sort by</string>
+    <string name="rate_recipe">Rate recipe</string>
+    <string name="rate">Rate</string>
 </resources>
