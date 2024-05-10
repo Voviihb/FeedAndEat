@@ -3,7 +3,9 @@ package com.vk_edu.feed_and_eat.common.graphics
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -14,7 +16,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -24,7 +28,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
+
+@Composable
+fun RepeatButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.fillMaxSize()
+    ) {
+        Button(
+            contentPadding = PaddingValues(36.dp, 16.dp),
+            colors = ButtonColors(
+                colorResource(R.color.pale_cyan), colorResource(R.color.pale_cyan),
+                colorResource(R.color.pale_cyan), colorResource(R.color.pale_cyan)
+            ),
+            border = BorderStroke(2.dp, colorResource(R.color.dark_cyan)),
+            onClick = onClick
+        ) {
+            Text(
+                text = stringResource(R.string.repeat),
+                color = colorResource(R.color.dark_cyan),
+                fontSize = MediumText
+            )
+        }
+    }
+}
 
 @Composable
 fun SquareArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {

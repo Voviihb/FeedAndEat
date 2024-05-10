@@ -60,13 +60,3 @@ data class Review(
     val author: String = "",
     val mark: Double = 0.0
 )
-
-@IgnoreExtraProperties
-data class CollectionsCards (
-    val recipeCards: List<RecipeCard> = listOf()
-)
-sealed class TimerTypes(val type: String){
-    data object Constant : TimerTypes(type = "constant")
-    data object Range : TimerTypes(type = "range")
-}
-
