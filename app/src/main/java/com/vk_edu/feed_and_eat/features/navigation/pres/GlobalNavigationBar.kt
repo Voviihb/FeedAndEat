@@ -1,12 +1,12 @@
 package com.vk_edu.feed_and_eat.features.navigation.pres
 
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -86,6 +86,7 @@ sealed class Screen(val route: String) {
     data object RegisterScreen : Screen("RegisterScreen")
     data object NewRecipeScreen : Screen("NewRecipeScreen")
     data object RecipeScreen : Screen("RecipeScreen")
+    data object Id : Screen("/{id}")
 }
 
 sealed class BottomScreen(

@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -76,50 +77,50 @@ fun InfoSurface(
             .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier
-        ) {
-            Text(
-                stringResource(
-                id = R.string.ingridients),
-                fontSize = 18.sp,
-                color = colorResource(R.color.gray),
-                modifier = Modifier.padding(4.dp)
-            )
-            BoxWithCards(bigText = ingredients.map { it.name }.toList())
-            Text(
-                stringResource(
-                id = R.string.tags_data),
-                fontSize = 18.sp,
-                color = colorResource(R.color.gray),
-                modifier = Modifier.padding(4.dp)
-            )
-            BoxWithCards(bigText = model.tags ?: listOf())
-            Text(
-                stringResource(
-                id = R.string.energy_value),
-                modifier = Modifier.padding(4.dp),
-                fontSize = 20.sp,
-                color = colorResource(R.color.gray)
-            )
-            Column {
-                for (i in names.indices){
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .fillMaxWidth()
-                            .padding(start = 4.dp, end = 12.dp)
-                    ){
-                        Text(
-                            text = names[i],
-                            fontSize = 18.sp,
-                            color = colorResource(R.color.gray)
-                        )
-                        Text(text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm))
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+            ) {
+                Text(
+                    stringResource(
+                        id = R.string.ingridients),
+                    fontSize = 18.sp,
+                    color = colorResource(R.color.gray),
+                    modifier = Modifier.padding(4.dp)
+                )
+                BoxWithCards(bigText = ingredients.map { it.name }.toList())
+                Text(
+                    stringResource(
+                        id = R.string.tags_data),
+                    fontSize = 18.sp,
+                    color = colorResource(R.color.gray),
+                    modifier = Modifier.padding(4.dp)
+                )
+                BoxWithCards(bigText = model.tags ?: listOf())
+                Text(
+                    stringResource(
+                        id = R.string.energy_value),
+                    modifier = Modifier.padding(4.dp),
+                    fontSize = 20.sp,
+                    color = colorResource(R.color.gray)
+                )
+                Column {
+                    for (i in names.indices){
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                                .fillMaxWidth()
+                                .padding(start = 4.dp, end = 12.dp)
+                        ){
+                            Text(
+                                text = names[i],
+                                fontSize = 18.sp,
+                                color = colorResource(R.color.gray)
+                            )
+                            Text(text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm))
+                        }
                     }
-                }
                 }
             }
         }
@@ -131,34 +132,36 @@ fun RecipeImageContainer(
     model : Recipe,
     modifier : Modifier = Modifier
 ){
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Top
-    ) {
+    val configuration = LocalConfiguration.current
+    val labelHeight = 36
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = (screenWidth.value / 4f * 3f).dp
+
+    Box(
+        contentAlignment = Alignment.BottomStart,
+        modifier = modifier
+            .height(screenHeight)
+            .width(screenWidth)
+    ){
         if (model.image != null){
             DishImage(
-                model.image,
-                modifier = Modifier.fillMaxWidth()
+                link = model.image,
+                modifier = Modifier
+                    .height(screenHeight)
+                    .width(screenWidth)
             )
         }
-        LazyColumn(
-            verticalArrangement = Arrangement.Bottom,
+        Text(text = model.name,
+            fontSize = 25.sp,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-        ){
-            item{
-                Text(text = model.name,
-                    fontSize = 25.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp)
-                        .background(colorResource(id = R.color.white)),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
+                .fillMaxWidth()
+                .height(labelHeight.dp)
+                .background(colorResource(id = R.color.half_transparent_blue))
+        )
     }
 }
-
 @Composable
 fun StartCookingContainer(
     model: Recipe,
@@ -217,7 +220,7 @@ fun StartCookingContainer(
 }
 
 @Composable
-fun AddCollectionButtons(
+fun CollectionButtonsContainer(
     modifier: Modifier = Modifier
 ){
     Column(
@@ -244,9 +247,10 @@ fun AddCollectionButtons(
                     colorResource(R.color.white),
                     colorResource(R.color.black)
                 ),
+
                 modifier = Modifier
                     .weight(1f)
-                    .height(32.dp)
+                    .align(Alignment.CenterVertically)
             ) {
                 Text(
                     stringResource(R.string.add_to_favourite),
@@ -264,7 +268,7 @@ fun AddCollectionButtons(
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .height(32.dp)
+                    .align(Alignment.CenterVertically)
             ) {
                 Text(
                     stringResource(R.string.add_to_playlist),
@@ -286,33 +290,31 @@ fun TextContainer(
     val description = model.instructions.map { it.paragraph }
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
         Text(text = stringResource(R.string.short_recipe),
             color = colorResource(R.color.gray),
             textAlign = TextAlign.Left,
             fontSize = 25.sp
         )
         Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn(
-            userScrollEnabled = true,
+        Column(
             modifier = modifier
                 .background(
                     colorResource(id = R.color.white_cyan),
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
-                .height(280.dp)
+                .fillMaxHeight()
                 .border(
                     1.dp,
                     colorResource(id = R.color.dark_cyan),
                     shape = RoundedCornerShape(20.dp)
                 ),
         ){
-            items(description.size){ index ->
+            repeat(description.size){ index ->
                 Text(
                     text = (index + 1).toString() + ". " + description[index],
                     modifier = Modifier
@@ -331,11 +333,13 @@ fun RatingContainer(
 ){
     Column(
         modifier = modifier
-            .padding(4.dp)
+            .padding(top = 4.dp)
     ){
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(modifier = Modifier
-            .fillMaxWidth()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(36.dp)
         ) {
             Spacer(modifier = Modifier.width(16.dp))
             RatingBarPres(model.rating)
@@ -348,8 +352,9 @@ fun RatingContainer(
                 painter = painterResource(R.drawable.povar),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(36.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = model.cooked.toString(),
                 fontSize = 25.sp
@@ -378,35 +383,55 @@ fun RecipePreview(
                 },
             ) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
-                Box {
-                    Column {
-                        Column(
-                            verticalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            RecipeImageContainer(model, Modifier.weight(5f))
-                            RatingContainer(model, Modifier.weight(1f))
-                            TextContainer(model, Modifier.weight(6f))
-                            AddCollectionButtons(Modifier.weight(1f))
+                    Scaffold(
+                        bottomBar = {
                             StartCookingContainer(
                                 model,
                                 navigateToStep,
                                 Modifier
-                                    .weight(1f)
                                     .height(40.dp)
                             )
-                        }
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Top,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        SquareArrowButton(navigateBack)
-                        InfoSquareButton({
-                            scope.launch { drawerState.open() }
-                        })
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    ) {padding ->
+                        Box(
+                            modifier = Modifier.padding(padding)
+                        ) {
+                            Column {
+                                LazyColumn(
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(bottom = 4.dp)
+                                ) {
+                                    item{
+                                        RecipeImageContainer(model)
+                                    }
+                                    item {
+                                        RatingContainer(model)
+                                    }
+                                    item {
+                                        TextContainer(model)
+                                    }
+                                    item{
+                                        CollectionButtonsContainer(
+                                            Modifier
+                                            .height(40.dp)
+                                            .padding(bottom = 4.dp)
+                                        )
+                                    }
+                                }
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                SquareArrowButton(navigateBack)
+                                InfoSquareButton({
+                                    scope.launch { drawerState.open() }
+                                })
+                            }
                         }
                     }
                 }

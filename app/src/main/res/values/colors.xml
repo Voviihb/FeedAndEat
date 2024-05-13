@@ -14,4 +14,5 @@
     <color name="transparent">#00000000</color>
     <color name="salad">#2AE03C</color>
     <color name="red">#FF0000</color>
+    <color name="half_transparent_blue">#CFFFFB</color>
 </resources>

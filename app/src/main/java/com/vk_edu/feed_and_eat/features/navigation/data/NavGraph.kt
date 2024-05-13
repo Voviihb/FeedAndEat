@@ -43,6 +43,7 @@ fun NavGraph(
             if (route.substring(0, 6) != recipe){
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
+                    inclusive = true
                 }
             }
             launchSingleTop = true
@@ -100,15 +101,16 @@ fun NavGraph(
             NewRecipeScreen(navigateToRoute)
         }
         composable(
-            route = Screen.RecipeScreen.route + "/{" + navId + "}",
+            route = Screen.RecipeScreen.route + Screen.Id.route,
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {entry ->
             val id = entry.arguments?.getString(navId)
+            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
                 id = id ?: "",
-                destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
+                destination = destination
             )
         }
     }
