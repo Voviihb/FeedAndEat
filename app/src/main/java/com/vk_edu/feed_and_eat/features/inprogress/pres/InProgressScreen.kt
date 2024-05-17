@@ -111,12 +111,13 @@ private fun TimerCard(
             colorResource(R.color.white), colorResource(R.color.white),
             colorResource(R.color.white), colorResource(R.color.white)
         ),
+        border = BorderStroke(1.dp, colorResource(id = R.color.dark_cyan)),
         onClick = { navigateToRoute(Screen.RecipeScreen.route + "/${timerState.recipeId}") }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             if (timerState.recipeImage != null) {
                 DishImage(
