@@ -92,7 +92,7 @@
     <string name="LoginScreen">LoginScreen</string>
     <string name="RegisterScreen">RegisterScreen</string>
     <string name="RecipeScreen">RecipeScreen</string>
-    <string name="inProgressScreen">inProgressScreen</string>
+    <string name="inProgressScreen">Current tasks</string>
 <!-- card -->
     <string name="imageDescription">Image of this dish</string>
     <string name="icon">Icon</string>
@@ -127,4 +127,6 @@
     <string name="sort_by">Sort by</string>
     <string name="rate_recipe">Rate recipe</string>
     <string name="rate">Rate</string>
+    <!-- inProgress screen -->
+    <string name="timer_format">%1$02d:%2$02d:%3$02d</string>
 </resources>
