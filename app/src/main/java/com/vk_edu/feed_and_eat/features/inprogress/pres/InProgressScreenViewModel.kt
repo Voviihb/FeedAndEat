@@ -38,6 +38,45 @@ class InProgressScreenViewModel @Inject constructor(
     }
 
 
+    fun stopTimer(name: String) {
+        val timerService = Intent(application, TimerService::class.java)
+        timerService.putExtra(
+            TimerService.ACTION,
+            TimerService.ACTION_STOP
+        )
+        timerService.putExtra(
+            TimerService.TIMER_ID,
+            name
+        )
+        application.startService(timerService)
+    }
+
+    fun pauseTimer(name: String) {
+        val timerService = Intent(application, TimerService::class.java)
+        timerService.putExtra(
+            TimerService.ACTION,
+            TimerService.ACTION_PAUSE
+        )
+        timerService.putExtra(
+            TimerService.TIMER_ID,
+            name
+        )
+        application.startService(timerService)
+    }
+
+    fun resumeTimer(name: String) {
+        val timerService = Intent(application, TimerService::class.java)
+        timerService.putExtra(
+            TimerService.ACTION,
+            TimerService.ACTION_RESUME
+        )
+        timerService.putExtra(
+            TimerService.TIMER_ID,
+            name
+        )
+        application.startService(timerService)
+    }
+
 
     inner class TimerServiceConnection : ServiceConnection {
         private val _activeTimerUpdates = MutableStateFlow<Map<String, TimerState>>(emptyMap())

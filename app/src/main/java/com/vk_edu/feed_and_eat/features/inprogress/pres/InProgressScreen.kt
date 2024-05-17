@@ -37,6 +37,7 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.domain.TimerState
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
@@ -76,22 +77,27 @@ fun InProgressScreen(
                     items(activeTimerState.keys.toList()) { timer ->
                         val timerState = activeTimerState[timer]
                         if (timerState != null) {
-                            TimerCard(name = timer, timerState = timerState)
+                            TimerCard(
+                                name = timer,
+                                timerState = timerState,
+                                navigateToRoute = navigateToRoute,
+                                viewModel = viewModel
+                            )
                         }
                     }
                 }
-
-//                Button(onClick = {navigateToRoute(Screen.RecipeScreen.route + "/$id")}) {
-//                    Text(text = "Load Recipe")
-//                }
             }
-
         }
     }
 }
 
 @Composable
-private fun TimerCard(name: String, timerState: TimerState) {
+private fun TimerCard(
+    name: String,
+    timerState: TimerState,
+    navigateToRoute: (String) -> Unit,
+    viewModel: InProgressScreenViewModel
+) {
     val time = timerState.remainingSec.toLong()
     val hours = TimeUnit.SECONDS.toHours(time)
     val minutes = TimeUnit.SECONDS.toMinutes(time) % 60
@@ -105,6 +111,7 @@ private fun TimerCard(name: String, timerState: TimerState) {
             colorResource(R.color.white), colorResource(R.color.white),
             colorResource(R.color.white), colorResource(R.color.white)
         ),
+        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/${timerState.recipeId}") }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -116,7 +123,7 @@ private fun TimerCard(name: String, timerState: TimerState) {
                     timerState.recipeImage,
                     modifier = Modifier
                         .size(60.dp)
-                        .padding(4.dp)
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
                 )
             }
             Column(
@@ -145,8 +152,19 @@ private fun TimerCard(name: String, timerState: TimerState) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
-                PauseButton(onClick = { /*TODO*/ }, modifier = Modifier.size(40.dp))
-                DropButton(onClick = { /*TODO*/ }, modifier = Modifier.size(40.dp))
+                if (timerState.isPaused) {
+                    ResumeButton(
+                        onClick = { viewModel.resumeTimer(name) },
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else {
+                    PauseButton(
+                        onClick = { viewModel.pauseTimer(name) },
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+
+                DropButton(onClick = { viewModel.stopTimer(name) }, modifier = Modifier.size(40.dp))
             }
         }
     }
@@ -200,6 +218,32 @@ private fun DropButton(
         Icon(
             painter = painterResource(id = R.drawable.drop),
             contentDescription = stringResource(id = R.string.to_drop)
+        )
+    }
+}
+
+@Composable
+private fun ResumeButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        contentPadding = PaddingValues(4.dp),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            colorResource(id = R.color.white),
+            colorResource(id = R.color.black)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            1.dp,
+            colorResource(id = R.color.black)
+        ),
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.play),
+            contentDescription = stringResource(id = R.string.to_play)
         )
     }
 }
