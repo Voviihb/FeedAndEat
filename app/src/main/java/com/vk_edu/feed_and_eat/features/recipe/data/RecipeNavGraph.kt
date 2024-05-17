@@ -67,7 +67,8 @@ fun RecipeNavGraph(
                 data = instructions[id?.toInt() ?: 0],
                 id = id?.toInt() ?: 0,
                 maxId = instructions.size - 1,
-                name = recipe.name
+                name = recipe.name,
+                recipeId = recipe.id
             )
         }
     }
