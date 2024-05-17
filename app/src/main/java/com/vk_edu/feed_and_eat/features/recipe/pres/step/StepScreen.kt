@@ -245,11 +245,13 @@ fun StepScreen(
     maxId: Int,
     name: String,
     recipeId: String?,
+    recipeImage: String?,
     viewModel: StepScreenViewModel = hiltViewModel()
 ) {
     viewModel.id.intValue = id
     viewModel.name.value = name
     viewModel.recipeId.value = recipeId
+    viewModel.recipeImage.value = recipeImage
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

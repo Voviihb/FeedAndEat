@@ -15,7 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.collection.pres.AllCollectionsScreen
-import com.vk_edu.feed_and_eat.features.inprogress.InProgressScreen
+import com.vk_edu.feed_and_eat.features.inprogress.pres.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
 import com.vk_edu.feed_and_eat.features.login.pres.RegisterScreen
 import com.vk_edu.feed_and_eat.features.main.pres.HomeScreen
