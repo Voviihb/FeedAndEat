@@ -22,7 +22,7 @@ import com.vk_edu.feed_and_eat.features.main.pres.HomeScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.NavBarViewModel
 import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
-import com.vk_edu.feed_and_eat.features.newrecipe.pres.NewRecipeScreen
+import com.vk_edu.feed_and_eat.features.new_recipe.pres.NewRecipeScreen
 import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipeScreen
 import com.vk_edu.feed_and_eat.features.search.pres.SearchScreen
@@ -80,7 +80,7 @@ fun NavGraph(
         }
         composable(BottomScreen.InProgressScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.InProgressScreen.route)
-            InProgressScreen(navigateToRoute)
+            NewRecipeScreen(navigateToRoute = navigateToRoute, navigateBack = navigateBack)
         }
         composable(BottomScreen.ProfileScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.ProfileScreen.route)
@@ -97,9 +97,9 @@ fun NavGraph(
                 navigateToRoute
             )
         }
-        composable(Screen.NewRecipeScreen.route) {
+        /*composable(Screen.NewRecipeScreen.route) {
             NewRecipeScreen(navigateToRoute)
-        }
+        }*/
         composable(
             route = Screen.RecipeScreen.route + "/{" + navId + "}",
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
