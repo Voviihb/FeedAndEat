@@ -43,6 +43,7 @@ fun NavGraph(
             if (route.substring(0, 6) != recipe){
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
+                    inclusive = true
                 }
             }
             launchSingleTop = true
