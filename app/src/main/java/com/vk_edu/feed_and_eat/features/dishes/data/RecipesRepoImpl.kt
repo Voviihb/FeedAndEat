@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
@@ -35,9 +34,7 @@ class RecipesRepoImpl @Inject constructor(
     override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).document(id)
         val document = query.get().await()
-        val obj = document.toObject<Recipe>()?.copy(id = id)
-        Log.d("Taag", obj.toString())
-        return@repoTryCatchBlock obj
+        return@repoTryCatchBlock document.toObject<Recipe>()?.copy(id = id)
     }.flowOn(Dispatchers.IO)
 
     override fun loadDailyRecipe(): Flow<Response<Recipe?>> = repoTryCatchBlock {
@@ -53,7 +50,8 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadTopRatingRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
+        val query =
+            db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
@@ -67,7 +65,8 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadLastAddedRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
+        val query =
+            db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)

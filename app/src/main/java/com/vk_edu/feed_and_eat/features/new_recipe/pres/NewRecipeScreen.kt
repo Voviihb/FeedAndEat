@@ -55,7 +55,11 @@ fun NewRecipeScreen(
                 )
                 val tags = listOf("Makarony", "Myaso")
                 Button(onClick = {
-                    viewModel.addNewRecipe(name = "Test 123", instructions = instructions, tags = tags)
+                    viewModel.addNewRecipe(
+                        name = "Test 123",
+                        instructions = instructions,
+                        tags = tags
+                    )
                 }) {
                     Text("Add new recipe")
                 }

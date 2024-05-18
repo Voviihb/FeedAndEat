@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.new_recipe.pres
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,6 @@ import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class NewRecipeScreenViewModel @Inject constructor(
@@ -54,7 +52,6 @@ class NewRecipeScreenViewModel @Inject constructor(
                 if (user != null) {
                     _newRecipeRepo.addNewRecipe(user, name, _imagePath.value, instructions, tags)
                         .collect { response ->
-                            Log.d("Taag", response.toString())
                             when (response) {
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
