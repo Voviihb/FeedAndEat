@@ -47,6 +47,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.domain.TimerState
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 @Composable
@@ -97,6 +98,12 @@ private fun TimerCard(
     color: Int,
     viewModel: InProgressScreenViewModel
 ) {
+    val pos = name.lastIndexOf(" - ")
+    val leftPart = name.slice(0 until pos)
+    val rightPart = name.slice((pos + 3) until name.length).replaceFirstChar {
+        it.titlecase(Locale.US)
+    }
+    val modifiedName = "$rightPart $leftPart"
     val time = timerState.remainingSec.toLong()
     val hours = TimeUnit.SECONDS.toHours(time)
     val minutes = TimeUnit.SECONDS.toMinutes(time) % 60
@@ -117,7 +124,7 @@ private fun TimerCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 var columnWidthDp by remember { mutableStateOf(0.dp) }
@@ -129,7 +136,7 @@ private fun TimerCard(
                             .height(columnWidthDp * 3 / 4)
                             .clip(RoundedCornerShape(0.dp)),
 
-                    ) {
+                        ) {
                         DishImage(
                             timerState.recipeImage,
                             modifier = Modifier
@@ -147,7 +154,7 @@ private fun TimerCard(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.weight(1.0f)
                 ) {
-                    DarkText(text = name, fontSize = LargeText)
+                    DarkText(text = modifiedName, fontSize = LargeText)
                     /*TODO add ... in the centre of name*/
                 }
 
