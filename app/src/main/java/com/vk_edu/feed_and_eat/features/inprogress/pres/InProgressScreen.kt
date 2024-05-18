@@ -56,7 +56,6 @@ fun InProgressScreen(
     viewModel: InProgressScreenViewModel = hiltViewModel()
 ) {
     val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
-
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.InProgressScreen.route) }
     ) { padding ->
@@ -151,11 +150,10 @@ private fun TimerCard(
                 }
                 Column(
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = Alignment.Start,
                     modifier = Modifier.weight(1.0f)
                 ) {
                     DarkText(text = modifiedName, fontSize = LargeText)
-                    /*TODO add ... in the centre of name*/
                 }
 
             }
