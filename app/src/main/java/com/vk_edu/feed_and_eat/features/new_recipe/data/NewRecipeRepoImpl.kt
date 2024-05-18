@@ -40,8 +40,10 @@ class NewRecipeRepoImpl @Inject constructor(
             tags = tags,
             user = user
         )
-        db.collection(RECIPES_COLLECTION).document().set(recipe).await()
-        return@repoTryCatchBlock imageUrl.toString()
+        val document = db.collection(RECIPES_COLLECTION).document()
+        val docId = document.id
+        db.collection(RECIPES_COLLECTION).document(docId).set(recipe).await()
+        return@repoTryCatchBlock docId
 
     }.flowOn(Dispatchers.IO)
 
