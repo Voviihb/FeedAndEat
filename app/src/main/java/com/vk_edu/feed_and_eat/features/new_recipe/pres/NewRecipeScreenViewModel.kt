@@ -34,7 +34,7 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun collectionRecipes() {
         viewModelScope.launch {
             try {
-                _recipesRepo.addNewRecipe(_name, _imagePath, _instructions).collect { response ->
+                _recipesRepo.addNewRecipe(_name, _imagePath, _instructions.value).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {

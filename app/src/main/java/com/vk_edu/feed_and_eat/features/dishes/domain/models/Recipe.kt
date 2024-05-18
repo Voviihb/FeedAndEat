@@ -36,6 +36,7 @@ data class Recipe(
     val tags: List<String>? = null,
     val nutrients: Nutrients = Nutrients(),
     val author: Int = 0,
+    val user: String? = null,
     val rating: Double = 0.0,
     val cooked: Int = 0,
     val reviews: List<Review>? = null
