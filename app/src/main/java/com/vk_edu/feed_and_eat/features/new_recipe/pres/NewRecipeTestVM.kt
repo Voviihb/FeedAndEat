@@ -25,9 +25,11 @@ class NewRecipeTestVM @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
+    private val _imagePath = mutableStateOf<Uri?>(null)
+    val imagePath: State<Uri?> = _imagePath
+
     fun addNewRecipe(
         name: String,
-        imagePath: Uri?,
         instructions: List<Instruction>,
         tags: List<String>?
     ) {
@@ -35,19 +37,20 @@ class NewRecipeTestVM @Inject constructor(
             try {
                 val user = _authRepo.getUserId()
                 if (user != null) {
-                    _newRecipeRepo.addNewRecipe(user, name, imagePath, instructions, tags).collect { response ->
-                        Log.d("Taag", response.toString())
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
+                    _newRecipeRepo.addNewRecipe(user, name, _imagePath.value, instructions, tags)
+                        .collect { response ->
+                            Log.d("Taag", response.toString())
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
 
-                            }
+                                }
 
-                            is Response.Failure -> {
-                                onError(response.e)
+                                is Response.Failure -> {
+                                    onError(response.e)
+                                }
                             }
                         }
-                    }
                 }
 
             } catch (e: Exception) {
@@ -55,6 +58,10 @@ class NewRecipeTestVM @Inject constructor(
             }
             _loading.value = false
         }
+    }
+
+    fun imageChanged(value: Uri?) {
+        _imagePath.value = value
     }
 
     private fun onError(message: Exception?) {

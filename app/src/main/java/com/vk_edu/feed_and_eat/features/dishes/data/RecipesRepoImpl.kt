@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
+import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
@@ -34,7 +35,9 @@ class RecipesRepoImpl @Inject constructor(
     override fun loadRecipeById(id: String): Flow<Response<Recipe?>> = repoTryCatchBlock {
         val query = db.collection(RECIPES_COLLECTION).document(id)
         val document = query.get().await()
-        return@repoTryCatchBlock document.toObject<Recipe>()?.copy(id = id)
+        val obj = document.toObject<Recipe>()?.copy(id = id)
+        Log.d("Taag", obj.toString())
+        return@repoTryCatchBlock obj
     }.flowOn(Dispatchers.IO)
 
     override fun loadDailyRecipe(): Flow<Response<Recipe?>> = repoTryCatchBlock {

@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.util.Date
 
 @IgnoreExtraProperties
 data class Ingredient(
@@ -39,7 +40,8 @@ data class Recipe(
     val user: String? = null,
     val rating: Double = 0.0,
     val cooked: Int = 0,
-    val reviews: List<Review>? = null
+    val reviews: List<Review>? = null,
+    val created: Date? = null
 )
 
 @IgnoreExtraProperties

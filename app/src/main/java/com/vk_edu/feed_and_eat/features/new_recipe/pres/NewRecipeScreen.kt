@@ -5,6 +5,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -13,9 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -26,6 +25,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
@@ -36,6 +37,7 @@ fun NewRecipeScreen(
     navigateBack: () -> Unit,
     viewModel: NewRecipeScreenViewModel = hiltViewModel()
 ) {
+    val imageUri by viewModel.imagePath
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
     ) { padding ->
@@ -44,7 +46,21 @@ fun NewRecipeScreen(
                 .padding(padding)
                 .background(colorResource(R.color.pale_cyan))
         ) {
-            ImagePickerScreen()
+            Column(modifier = Modifier.fillMaxSize()) {
+                ImagePickerScreen(imageUri = imageUri, viewModel = viewModel)
+
+                val instructions = listOf(
+                    Instruction("123 bla 123", null),
+                    Instruction("no no no", listOf(Timer("constant", number = 11)))
+                )
+                val tags = listOf("Makarony", "Myaso")
+                Button(onClick = {
+                    viewModel.addNewRecipe(name = "Test 123", instructions = instructions, tags = tags)
+                }) {
+                    Text("Add new recipe")
+                }
+            }
+
         }
     }
 
@@ -52,12 +68,12 @@ fun NewRecipeScreen(
 }
 
 @Composable
-fun ImagePickerScreen() {
+fun ImagePickerScreen(imageUri: Uri?, viewModel: NewRecipeScreenViewModel) {
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri = uri
-    }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            viewModel.imageChanged(uri)
+        }
 
     Button(onClick = { launcher.launch("image/*") }) {
         Text(text = "Выбрать изображение")

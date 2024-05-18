@@ -1,28 +1,25 @@
 package com.vk_edu.feed_and_eat.features.new_recipe.pres
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.provider.MediaStore
-import androidx.activity.result.contract.ActivityResultContracts
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
-import dagger.hilt.android.internal.Contexts
+import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class NewRecipeScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl
+    private val _authRepo: AuthRepoImpl,
+    private val _newRecipeRepo: NewRecipeRepoImpl
 ) : ViewModel() {
 
     private val _newInstruction = mutableStateOf(Instruction())
@@ -46,9 +43,30 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    fun collectionRecipes() {
+    fun addNewRecipe(
+        name: String,
+        instructions: List<Instruction>,
+        tags: List<String>?
+    ) {
         viewModelScope.launch {
             try {
+                val user = _authRepo.getUserId()
+                if (user != null) {
+                    _newRecipeRepo.addNewRecipe(user, name, _imagePath.value, instructions, tags)
+                        .collect { response ->
+                            Log.d("Taag", response.toString())
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
+
+                                }
+
+                                is Response.Failure -> {
+                                    onError(response.e)
+                                }
+                            }
+                        }
+                }
 
             } catch (e: Exception) {
                 onError(e)
@@ -57,10 +75,13 @@ class NewRecipeScreenViewModel @Inject constructor(
         }
     }
 
+    fun imageChanged(value: Uri?) {
+        _imagePath.value = value
+    }
+
     fun changeName(newName: String) {
         _name.value = newName
     }
-
 
 
     fun selectImagePath() {
@@ -75,12 +96,14 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     fun addTimer(timerType: TimerType, num1: String, num2: String) {
         val actualTimers = _newInstruction.value.timers?.toMutableList() ?: mutableListOf()
-        actualTimers.add(Timer(
-            type = timerType.str,
-            lowerLimit = if (timerType == TimerType.RANGE) num1.toInt() else null,
-            upperLimit = if (timerType == TimerType.RANGE) num2.toInt() else null,
-            number = if (timerType == TimerType.CONSTANT) num1.toInt() else null
-        ))
+        actualTimers.add(
+            Timer(
+                type = timerType.str,
+                lowerLimit = if (timerType == TimerType.RANGE) num1.toInt() else null,
+                upperLimit = if (timerType == TimerType.RANGE) num2.toInt() else null,
+                number = if (timerType == TimerType.CONSTANT) num1.toInt() else null
+            )
+        )
         _newInstruction.value = _newInstruction.value.copy(
             timers = actualTimers
         )

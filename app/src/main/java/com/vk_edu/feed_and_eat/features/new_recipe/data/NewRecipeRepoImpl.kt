@@ -12,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
+import java.sql.Timestamp
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,10 +29,15 @@ class NewRecipeRepoImpl @Inject constructor(
         instructions: List<Instruction>,
         tags: List<String>?
     ): Flow<Response<String?>> = repoTryCatchBlock {
+        val document = db.collection(RECIPES_COLLECTION).document()
+        val docId = document.id
         var imageUrl: String? = null
         if (imagePath != null) {
-            val uploadTask = storage.getReference(RECIPES_IMAGES).child(name).putFile(imagePath).await()
-            imageUrl = uploadTask.task.result.toString()
+            val imgRef = storage.getReference(RECIPES_IMAGES).child(docId)
+            val uploadTask = imgRef.putFile(imagePath).await()
+            if (uploadTask.task.isSuccessful) {
+                imageUrl = imgRef.downloadUrl.await().toString()
+            }
         }
 
         val recipe = Recipe(
@@ -38,10 +45,9 @@ class NewRecipeRepoImpl @Inject constructor(
             image = imageUrl,
             instructions = instructions,
             tags = tags,
-            user = user
+            user = user,
+            created = Date(Timestamp(System.currentTimeMillis()).time)
         )
-        val document = db.collection(RECIPES_COLLECTION).document()
-        val docId = document.id
         db.collection(RECIPES_COLLECTION).document(docId).set(recipe).await()
         return@repoTryCatchBlock docId
 
