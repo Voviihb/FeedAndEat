@@ -7,6 +7,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +35,17 @@ object FireStoreProvider {
         return Firebase.firestore
     }
 }
+
+@Module
+@InstallIn(SingletonComponent::class)
+object CloudStorageProvider {
+    @Provides
+    @Singleton
+    fun provideCloudStorage(): FirebaseStorage {
+        return Firebase.storage
+    }
+}
+
 
 @Module
 @InstallIn(SingletonComponent::class)
