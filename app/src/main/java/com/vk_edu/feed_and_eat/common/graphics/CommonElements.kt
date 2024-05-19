@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -26,7 +28,9 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
@@ -58,7 +62,7 @@ fun RepeatButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 fun SquareArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        shape = RoundedCornerShape(0.dp, 0.dp, 8.dp, 0.dp),
+        shape = RoundedCornerShape(0.dp, 0.dp, 12.dp, 0.dp),
         colors = ButtonColors(
             colorResource(R.color.white), colorResource(R.color.white),
             colorResource(R.color.white), colorResource(R.color.white)
@@ -67,7 +71,7 @@ fun SquareArrowButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
             .size(60.dp)
-            .shadow(12.dp, RoundedCornerShape(0.dp, 0.dp, 8.dp, 0.dp)),
+            .shadow(12.dp, RoundedCornerShape(0.dp, 0.dp, 12.dp, 0.dp)),
         onClick = onClick
     ) {
         LargeIcon(
@@ -91,12 +95,12 @@ fun InfoSquareButton(
         modifier = modifier
             .height(60.dp)
             .width(60.dp)
-            .background(colorResource(R.color.white), shape = RoundedCornerShape(4.dp))
-            .clip(shape = RoundedCornerShape(4.dp))
+            .background(colorResource(R.color.white), shape = RoundedCornerShape(12.dp))
+            .clip(shape = RoundedCornerShape(12.dp))
             .border(
                 2.dp,
                 color = colorResource(id = R.color.dark_cyan),
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(12.dp)
             ),
     ){
         Icon(
@@ -108,4 +112,39 @@ fun InfoSquareButton(
                 .width(50.dp)
         )
     }
+}
+
+@Composable
+fun AddButtonShapePlus(
+    onClick: () -> Unit,
+    size : Int,
+    modifier: Modifier = Modifier
+){
+    Box(
+        modifier = modifier
+            .padding(4.dp)
+            .border(2.dp, colorResource(id = R.color.dark_cyan), CircleShape)
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.light_cyan))
+    ){
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                colorResource(id = R.color.medium_cyan),
+                colorResource(id = R.color.black)
+            ),
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier
+                .border(2.dp, colorResource(id = R.color.dark_cyan), CircleShape)
+                .clip(CircleShape)
+                .size(size.dp)
+                .background(colorResource(id = R.color.light_cyan))
+        ) {
+            SmallIcon(
+                painter = painterResource(id = R.drawable.plus),
+                color = colorResource(id = R.color.white),
+            )
+        }
+    }
+
 }

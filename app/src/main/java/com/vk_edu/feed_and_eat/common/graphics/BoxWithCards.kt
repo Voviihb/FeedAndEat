@@ -41,7 +41,7 @@ fun BoxWithCards(bigText : List<String?>){
         columns = StaggeredGridCells.Adaptive(70.dp),
         contentPadding = PaddingValues(5.dp),
         modifier = Modifier
-            .padding(10.dp)
+            .padding(12.dp)
             .height(200.dp)
             .fillMaxWidth()
             .background(lightBlue, RoundedCornerShape(12.dp))

@@ -22,6 +22,9 @@ fun RecipeScreen(
     viewModel: RecipesScreenViewModel = hiltViewModel()
 ) {
     viewModel.loadRecipeById(id)
+    if (viewModel.isUserAuthenticated()){
+        viewModel.loadCollections()
+    }
 
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
@@ -32,7 +35,9 @@ fun RecipeScreen(
             if (viewModel.errorMessage.value != null) {
                 RepeatButton(onClick = {
                     viewModel.clearError()
+                    viewModel.clearCollectionError()
                     viewModel.loadRecipeById(id)
+                    viewModel.loadCollections()
                 })
             } else {
                 Box(modifier = Modifier.padding(padding)) {
@@ -41,7 +46,7 @@ fun RecipeScreen(
                         navigateToRoute,
                         navigateBack = navigateBack,
                         navController,
-                        viewModel.recipe.value
+                        viewModel
                     )
                 }
             }

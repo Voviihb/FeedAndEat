@@ -4,8 +4,8 @@
     <string name="short_recipe">Краткий рецепт</string>
     <string name="add_to_favourite">Добавить в любимое</string>
     <string name="add_to_playlist">Добавить в подборку</string>
-    <string name="ingr">Ингр</string>
-    <string name="step">Шаги</string>
+    <string name="ingr">Ингредиентов</string>
+    <string name="step">Шагов</string>
     <string name="repeat">Повторить</string>
     <string name="start_cooking">Начать готовить</string>
     <string name="ingridients">Ингредиенты</string>
@@ -31,6 +31,7 @@
     <string name="range_timer_template">%02d:%02d:%02d - %02d:%02d:%02d</string>
     <string name="minutes">мин</string>
     <string name="hours">ч</string>
+    <string name="plus">+</string>
 <!--    login-->
     <string name="back">вернуться назад</string>
     <string name="enter_password">Введите пароль</string>
