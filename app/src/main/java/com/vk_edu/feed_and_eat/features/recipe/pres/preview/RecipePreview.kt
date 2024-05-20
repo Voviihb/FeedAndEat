@@ -102,8 +102,8 @@ fun InfoSurface(
                     previous = current
                 }
                 job.join()
+            }
         }
-    }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
         Row(
@@ -131,6 +131,7 @@ fun InfoSurface(
             Box(
                 modifier = Modifier
                     .width((maxWidth.value - actualPadding).dp)
+                    .fillMaxHeight()
                     .background(
                         colorResource(R.color.white),
                         RoundedCornerShape(12.dp, 0.dp, 0.dp, 12.dp)

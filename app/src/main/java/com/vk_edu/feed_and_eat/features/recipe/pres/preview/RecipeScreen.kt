@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.features.recipe.data.RecipeNavGraph
+import com.vk_edu.feed_and_eat.features.recipe.domain.RecipeNavGraph
 
 
 @Composable

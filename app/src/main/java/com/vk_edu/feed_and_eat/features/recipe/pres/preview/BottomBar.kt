@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -131,7 +130,7 @@ fun DropDownContainer(
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 8.dp, vertical = 4.dp)
-                        .clickable { Log.d("CLICKABLE", "") }
+                        .clickable { }
                 ){
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

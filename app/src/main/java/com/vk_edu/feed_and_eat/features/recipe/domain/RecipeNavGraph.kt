@@ -1,4 +1,4 @@
-package com.vk_edu.feed_and_eat.features.recipe.data
+package com.vk_edu.feed_and_eat.features.recipe.domain
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

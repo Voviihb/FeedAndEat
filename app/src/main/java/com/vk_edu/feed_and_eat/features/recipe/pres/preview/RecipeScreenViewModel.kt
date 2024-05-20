@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -91,7 +90,6 @@ class RecipesScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userId = _authRepo.getUserId()
-                Log.d("COLLECTIONS USERS", userId.toString())
                 if (userId != null){
                     _usersRepo.getUserCollections(userId).collect { response ->
                         when (response) {
@@ -99,7 +97,6 @@ class RecipesScreenViewModel @Inject constructor(
                             is Response.Success -> {
                                 if (response.data != null) {
                                     _collectionList.value = response.data
-                                    Log.d("COLLECTION LIST LOADED", _collectionList.toString())
                                 }
                             }
 
