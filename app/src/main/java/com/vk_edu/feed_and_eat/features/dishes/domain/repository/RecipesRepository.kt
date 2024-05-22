@@ -32,7 +32,9 @@ interface RecipesRepository {
 
     fun loadTags(): Flow<Response<List<Tag>>>
 
-    fun loadCollectionRecipes(id: String): Flow<Response<CollectionRecipes?>>
+    fun loadCollectionRecipesId(id: String): Flow<Response<CollectionRecipes?>>
+
+    fun loadCollectionRecipesCards(id: String): Flow<Response<List<Recipe>?>>
 
     fun addRecipeToUserCollection(
         userId: String,

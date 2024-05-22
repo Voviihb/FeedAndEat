@@ -21,7 +21,7 @@ class CollectionScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepoImpl,
     private val _usersRepo: UsersRepoImpl
 ) : ViewModel() {
-    private val id = "xJwRsIERXsZx3GtCxXch"
+    private val id = "vCrv6EvaBsSKUNTKstRr"
 
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData
@@ -47,12 +47,25 @@ class CollectionScreenViewModel @Inject constructor(
     fun collectionRecipes(/*TODO pass id of collection here*/) {
         viewModelScope.launch {
             try {
-                _recipesRepo.loadCollectionRecipes(id).collect { response ->
+                _recipesRepo.loadCollectionRecipesCards(id).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-//                            if (response.data != null)
-//                                _cardsData.value = response.data.recipeCards TODO
+                            if (response.data != null) {
+                                val recipeCards = response.data.map {
+                                    RecipeCard(
+                                        recipeId = it.id ?: "",
+                                        image = it.image ?: "",
+                                        ingredients = it.ingredients.size,
+                                        steps = it.instructions.size,
+                                        name = it.name,
+                                        rating = it.rating,
+                                        cooked = it.cooked
+                                    )
+                                }
+                                _cardsData.value = recipeCards
+                            }
+
                         }
 
                         is Response.Failure -> {
@@ -92,20 +105,21 @@ class CollectionScreenViewModel @Inject constructor(
                     _favouritesId.value = favouritesId
 
                     if (favouritesId != null) {
-                        _recipesRepo.loadCollectionRecipes(id = favouritesId).collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    if (response.data != null) {
-                                        _favouritesData.value = response.data.recipeIds
+                        _recipesRepo.loadCollectionRecipesId(id = favouritesId)
+                            .collect { response ->
+                                when (response) {
+                                    is Response.Loading -> _loading.value = true
+                                    is Response.Success -> {
+                                        if (response.data != null) {
+                                            _favouritesData.value = response.data.recipeIds
+                                        }
+                                    }
+
+                                    is Response.Failure -> {
+                                        onError(response.e)
                                     }
                                 }
-
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
                             }
-                        }
                     }
 
 

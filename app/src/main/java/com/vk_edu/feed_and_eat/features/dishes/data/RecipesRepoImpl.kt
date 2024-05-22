@@ -49,7 +49,8 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadTopRatingRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
+        val query =
+            db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
@@ -63,7 +64,8 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadLastAddedRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
+        val query =
+            db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
@@ -167,11 +169,31 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock tags.map { it.toObject<Tag>() }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadCollectionRecipes(id: String): Flow<Response<CollectionRecipes?>> =
+    override fun loadCollectionRecipesId(id: String): Flow<Response<CollectionRecipes?>> =
         repoTryCatchBlock {
             val query = db.collection(COLLECTIONS_COLLECTION).document(id)
             val collections = query.get().await()
             return@repoTryCatchBlock collections.toObject<CollectionRecipes>()
+        }.flowOn(Dispatchers.IO)
+
+    override fun loadCollectionRecipesCards(id: String): Flow<Response<List<Recipe>?>> =
+        repoTryCatchBlock {
+            val query = db.collection(COLLECTIONS_COLLECTION).document(id)
+            val collections = query.get().await()
+            val recipesIds = collections.toObject<CollectionRecipes>()?.recipeIds
+            val collectionRecipesCards = mutableListOf<Recipe>()
+            if (recipesIds != null) {
+                for (recipeId in recipesIds) {
+                    val document =
+                        db.collection(RECIPES_COLLECTION).document(recipeId).get().await()
+                    val recipeCard = document.toObject<Recipe>()?.copy(id = recipeId)
+                    if (recipeCard != null) {
+                        collectionRecipesCards.add(recipeCard)
+                    }
+                }
+            }
+
+            return@repoTryCatchBlock collectionRecipesCards
         }.flowOn(Dispatchers.IO)
 
     /**

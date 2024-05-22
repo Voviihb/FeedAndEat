@@ -246,7 +246,7 @@ class HomeScreenViewModel @Inject constructor(
                     _favouritesId.value = favouritesId
 
                     if (favouritesId != null) {
-                        _recipesRepo.loadCollectionRecipes(id = favouritesId).collect { response ->
+                        _recipesRepo.loadCollectionRecipesId(id = favouritesId).collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
