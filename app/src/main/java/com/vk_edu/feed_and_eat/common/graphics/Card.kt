@@ -39,8 +39,11 @@ fun DishCard(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
     largeCard: Boolean = false,
+    inFavourites: Boolean = false,
     recipeCard: RecipeCard? = null,
-    addToFavourites: ((String, RecipeCard) -> Unit)? = null
+    addToFavourites: ((String, RecipeCard) -> Unit)? = null,
+    removeFromFavourites: ((String, RecipeCard) -> Unit)? = null,
+    updateFavourites: (() -> Unit)? = null
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -129,17 +132,36 @@ fun DishCard(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {
-                        if (addToFavourites != null) {
-                            if (recipeCard != null) {
-                                addToFavourites("xJwRsIERXsZx3GtCxXch", recipeCard)
-                                /*TODO set userFavouritesCollectionId here*/
+                        if (inFavourites) {
+                            if (removeFromFavourites != null) {
+                                if (recipeCard != null) {
+                                    removeFromFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
+                                    /*TODO set userFavouritesCollectionId here*/
+                                    if (updateFavourites != null) {
+                                        updateFavourites()
+                                    }
+                                }
+
+                            }
+                        } else {
+                            if (addToFavourites != null) {
+                                if (recipeCard != null) {
+                                    addToFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
+                                    /*TODO set userFavouritesCollectionId here*/
+                                    if (updateFavourites != null) {
+                                        updateFavourites()
+                                    }
+                                }
                             }
                         }
+
                     }
                 ) {
                     SmallIcon(
                         painter = painterResource(R.drawable.like_icon),
-                        color = colorResource(R.color.white)
+                        color = if (inFavourites) colorResource(id = R.color.red) else colorResource(
+                            R.color.white
+                        ),
                     )
                 }
             }

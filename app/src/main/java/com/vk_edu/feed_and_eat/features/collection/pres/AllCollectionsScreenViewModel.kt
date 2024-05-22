@@ -107,12 +107,17 @@ class AllCollectionsScreenViewModel @Inject constructor(
             try {
                 val user = _authRepo.getUserId()
                 if (user != null) {
-                    _recipesRepo.addRecipeToUserCollection(user, collectionId, recipe)
+                    _recipesRepo.addRecipeToUserCollection(
+                        user,
+                        collectionId,
+                        recipe.recipeId,
+                        recipe.image
+                    )
                         .collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
-                                    /*TODO add flow*/
+                                    /* TODO add success flow */
                                 }
 
                                 is Response.Failure -> {
@@ -132,7 +137,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
     fun removeRecipeFromUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe)
+                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe.recipeId)
                     .collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true

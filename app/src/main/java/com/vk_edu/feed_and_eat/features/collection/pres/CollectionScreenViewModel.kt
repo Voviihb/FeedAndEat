@@ -34,8 +34,8 @@ class CollectionScreenViewModel @Inject constructor(
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            if (response.data != null)
-                                _cardsData.value = response.data.recipeCards
+//                            if (response.data != null)
+//                                _cardsData.value = response.data.recipeCards TODO
                         }
 
                         is Response.Failure -> {

@@ -178,27 +178,28 @@ class RecipesRepoImpl @Inject constructor(
     /**
      * Adds new recipes to already existing collection
      * @param collectionId pass here id of collection
-     * @param recipe pass here new recipe
+     * @param recipeId pass here new recipe id
      * */
     override fun addRecipeToUserCollection(
         userId: String,
         collectionId: String,
-        recipe: RecipeCard
+        recipeId: String,
+        image: String?
     ): Flow<Response<Void>> = repoTryCatchBlock {
         val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
-        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayUnion(recipe)).await()
+        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayUnion(recipeId)).await()
         val userDoc = db.collection(USERS_COLLECTION).document(userId)
         val user = userDoc.get().await().toObject<UserModel>()
-        user?.collectionsIdList?.filter { it.id == collectionId }?.map { it.picture = recipe.image }
+        user?.collectionsIdList?.filter { it.id == collectionId }?.map { it.picture = image }
         userDoc.update(COLLECTIONS_ID_LIST_FIELD, user?.collectionsIdList).await()
     }.flowOn(Dispatchers.IO)
 
     override fun removeRecipeFromUserCollection(
         collectionId: String,
-        recipe: RecipeCard
+        recipeId: String,
     ): Flow<Response<Void>> = repoTryCatchBlock {
         val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
-        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayRemove(recipe)).await()
+        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayRemove(recipeId)).await()
     }.flowOn(Dispatchers.IO)
 
     override fun createNewCollection(): Flow<Response<String>> = repoTryCatchBlock {

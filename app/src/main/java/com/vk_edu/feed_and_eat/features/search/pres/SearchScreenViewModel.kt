@@ -8,11 +8,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl,
-    private val _authRepo: AuthRepoImpl
+    private val _authRepo: AuthRepoImpl,
+    private val _usersRepo: UsersRepoImpl
 ) : ViewModel() {
     val cardsDataPager: Flow<PagingData<RecipeCard>> = Pager(PagingConfig(pageSize = LIMIT)) {
         SearchPagingSource(::searchRecipes, LIMIT)
@@ -45,6 +48,11 @@ class SearchScreenViewModel @Inject constructor(
     val reloadData: State<Boolean> = _reloadData
 
     private var refreshFlag = false
+
+    private val _collectionsData = mutableStateOf(listOf<Compilation>())
+
+    private val _favouritesData = mutableStateOf(listOf<String>())
+    val favouritesData: State<List<String>> = _favouritesData
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -74,6 +82,7 @@ class SearchScreenViewModel @Inject constructor(
             }
             _loading.value = false
         }
+        loadUserFavourites()
     }
 
     fun setRequest() {
@@ -167,17 +176,37 @@ class SearchScreenViewModel @Inject constructor(
         refreshFlag = true
     }
 
-    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
+    fun loadUserFavourites() {
         viewModelScope.launch {
             try {
                 val user = _authRepo.getUserId()
                 if (user != null) {
-                    _recipesRepo.addRecipeToUserCollection(user, collectionId, recipe)
-                        .collect { response ->
+                    _usersRepo.getUserCollections(userId = user).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                if (response.data != null) {
+                                    _collectionsData.value = response.data
+                                }
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
+
+                    val favouritesId =
+                        _collectionsData.value.filter { it.name == "Favourites" }[0].id
+
+                    if (favouritesId != null) {
+                        _recipesRepo.loadCollectionRecipes(id = favouritesId).collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
-                                    /* TODO add success flow */
+                                    if (response.data != null) {
+                                        _favouritesData.value = response.data.recipeCards
+                                    }
                                 }
 
                                 is Response.Failure -> {
@@ -185,6 +214,40 @@ class SearchScreenViewModel @Inject constructor(
                                 }
                             }
                         }
+                    }
+
+
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
+    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
+        viewModelScope.launch {
+            try {
+                val user = _authRepo.getUserId()
+                if (user != null) {
+                    _recipesRepo.addRecipeToUserCollection(
+                        user,
+                        collectionId,
+                        recipe.recipeId,
+                        recipe.image
+                    ).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                /* TODO add success flow */
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
                 }
 
             } catch (e: Exception) {
@@ -197,7 +260,7 @@ class SearchScreenViewModel @Inject constructor(
     fun removeRecipeFromUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe)
+                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe.recipeId)
                     .collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
