@@ -225,7 +225,8 @@ fun LargeCard(
             recipeCard = cardData,
             addToFavourites = viewModel::addRecipeToUserCollection,
             removeFromFavourites = viewModel::removeRecipeFromUserCollection,
-            updateFavourites = viewModel::loadUserFavourites
+            updateFavourites = viewModel::loadUserFavourites,
+            favouritesId = viewModel.favouritesId.value
         )
     }
 }
@@ -262,7 +263,8 @@ fun CardsRow(
                     recipeCard = cardData,
                     addToFavourites = viewModel::addRecipeToUserCollection,
                     removeFromFavourites = viewModel::removeRecipeFromUserCollection,
-                    updateFavourites = viewModel::loadUserFavourites
+                    updateFavourites = viewModel::loadUserFavourites,
+                    favouritesId = viewModel.favouritesId.value
                 )
 
             }

@@ -33,6 +33,7 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 fun DishCard(
     recipeCard: RecipeCard,
     inFavourites: Boolean = false,
+    favouritesId: String?,
     addToFavourites: ((String, RecipeCard) -> Unit),
     removeFromFavourites: ((String, RecipeCard) -> Unit),
     updateFavourites: (() -> Unit),
@@ -127,16 +128,15 @@ fun DishCard(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {
-                        if (inFavourites) {
-                            removeFromFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
-                            /*TODO set userFavouritesCollectionId here*/
-                            updateFavourites()
-                        } else {
-                            addToFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
-                            /*TODO set userFavouritesCollectionId here*/
-                            updateFavourites()
+                        if (favouritesId != null) {
+                            if (inFavourites) {
+                                removeFromFavourites(favouritesId, recipeCard)
+                                updateFavourites()
+                            } else {
+                                addToFavourites(favouritesId, recipeCard)
+                                updateFavourites()
+                            }
                         }
-
                     }
                 ) {
                     SmallIcon(

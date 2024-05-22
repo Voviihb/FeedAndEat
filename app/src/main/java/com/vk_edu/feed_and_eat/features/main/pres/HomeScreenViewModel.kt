@@ -43,11 +43,18 @@ class HomeScreenViewModel @Inject constructor(
     private val _favouritesData = mutableStateOf(listOf<String>())
     val favouritesData: State<List<String>> = _favouritesData
 
+    private val _favouritesId = mutableStateOf<String?>(null)
+    val favouritesId: State<String?> = _favouritesId
+
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
+
+    init {
+        loadUserFavourites()
+    }
 
     fun setLoaded() {
         _loaded.value = true
@@ -236,6 +243,7 @@ class HomeScreenViewModel @Inject constructor(
 
                     val favouritesId =
                         _collectionsData.value.filter { it.name == "Favourites" }[0].id
+                    _favouritesId.value = favouritesId
 
                     if (favouritesId != null) {
                         _recipesRepo.loadCollectionRecipes(id = favouritesId).collect { response ->
@@ -243,7 +251,7 @@ class HomeScreenViewModel @Inject constructor(
                                 is Response.Loading -> _loading.value = true
                                 is Response.Success -> {
                                     if (response.data != null) {
-                                        _favouritesData.value = response.data.recipeCards
+                                        _favouritesData.value = response.data.recipeIds
                                     }
                                 }
 
