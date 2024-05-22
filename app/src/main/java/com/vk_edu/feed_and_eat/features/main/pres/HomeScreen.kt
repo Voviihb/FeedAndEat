@@ -56,6 +56,8 @@ fun HomeScreen(
     navigateToRoute: (String) -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
+    val userFavourites by viewModel.favouritesData
+
     if (!viewModel.loaded.value) {
         viewModel.getLargeCardData()
         viewModel.getCardsDataOfRow1()
@@ -103,13 +105,16 @@ fun HomeScreen(
                 SearchCard(navigateToRoute)
 
                 LargeCard(
+                    viewModel = viewModel,
                     cardData = viewModel.largeCardData.value,
-                    navigateToRoute = navigateToRoute
+                    navigateToRoute = navigateToRoute,
+                    userFavourites = userFavourites
                 )
 
                 var columnWidthDp by remember { mutableStateOf(0.dp) }
                 val localDensity = LocalDensity.current
                 CardsRow(
+                    viewModel = viewModel,
                     title = stringResource(R.string.title2),
                     cards = viewModel.cardsDataOfRow1.value,
                     columnWidthDp = columnWidthDp,
@@ -118,28 +123,35 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .onGloballyPositioned { coordinates ->
                             columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
-                        }
+                        },
+                    userFavourites = userFavourites
                 )
 
                 CardsRow(
+                    viewModel = viewModel,
                     title = stringResource(R.string.title3),
                     cards = viewModel.cardsDataOfRow2.value,
                     columnWidthDp = columnWidthDp,
-                    navigateToRoute = navigateToRoute
+                    navigateToRoute = navigateToRoute,
+                    userFavourites = userFavourites
                 )
 
                 CardsRow(
+                    viewModel = viewModel,
                     title = stringResource(R.string.title4),
                     cards = viewModel.cardsDataOfRow3.value,
                     columnWidthDp = columnWidthDp,
-                    navigateToRoute = navigateToRoute
+                    navigateToRoute = navigateToRoute,
+                    userFavourites = userFavourites
                 )
 
                 CardsRow(
+                    viewModel = viewModel,
                     title = stringResource(R.string.title5),
                     cards = viewModel.cardsDataOfRow4.value,
                     columnWidthDp = columnWidthDp,
-                    navigateToRoute = navigateToRoute
+                    navigateToRoute = navigateToRoute,
+                    userFavourites = userFavourites
                 )
 
                 Spacer(modifier = Modifier.size(12.dp))
@@ -153,8 +165,10 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
     Box(modifier = modifier.padding(12.dp, 12.dp, 12.dp, 20.dp)) {
         Card(
             shape = RoundedCornerShape(24.dp),
-            colors = CardColors(colorResource(R.color.white), colorResource(R.color.white),
-                colorResource(R.color.white), colorResource(R.color.white)),
+            colors = CardColors(
+                colorResource(R.color.white), colorResource(R.color.white),
+                colorResource(R.color.white), colorResource(R.color.white)
+            ),
             modifier = Modifier
                 .height(52.dp)
                 .fillMaxWidth()
@@ -191,7 +205,9 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
 
 @Composable
 fun LargeCard(
+    viewModel: HomeScreenViewModel,
     cardData: RecipeCard,
+    userFavourites: List<String>,
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -202,24 +218,24 @@ fun LargeCard(
     ) {
         BoldText(text = stringResource(R.string.title1), fontSize = ExtraLargeText)
         DishCard(
-            link = cardData.image,
-            ingredients = cardData.ingredients,
-            steps = cardData.steps,
-            name = cardData.name,
-            rating = cardData.rating,
-            cooked = cardData.cooked,
-            id = cardData.recipeId,
             navigateToRoute = navigateToRoute,
             modifier = Modifier.fillMaxWidth(0.7f),
             largeCard = true,
+            inFavourites = cardData.recipeId in userFavourites,
+            recipeCard = cardData,
+            addToFavourites = viewModel::addRecipeToUserCollection,
+            removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+            updateFavourites = viewModel::loadUserFavourites
         )
     }
 }
 
 @Composable
 fun CardsRow(
+    viewModel: HomeScreenViewModel,
     title: String,
     cards: List<RecipeCard>,
+    userFavourites: List<String>,
     columnWidthDp: Dp,
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -240,16 +256,15 @@ fun CardsRow(
 
             items(cards) { cardData ->
                 DishCard(
-                    link = cardData.image,
-                    ingredients = cardData.ingredients,
-                    steps = cardData.steps,
-                    name = cardData.name,
-                    rating = cardData.rating,
-                    cooked = cardData.cooked,
-                    id = cardData.recipeId,
                     navigateToRoute = navigateToRoute,
-                    modifier = Modifier.width((columnWidthDp - 44.dp) / 2)
+                    modifier = Modifier.width((columnWidthDp - 44.dp) / 2),
+                    inFavourites = cardData.recipeId in userFavourites,
+                    recipeCard = cardData,
+                    addToFavourites = viewModel::addRecipeToUserCollection,
+                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+                    updateFavourites = viewModel::loadUserFavourites
                 )
+
             }
         }
     }

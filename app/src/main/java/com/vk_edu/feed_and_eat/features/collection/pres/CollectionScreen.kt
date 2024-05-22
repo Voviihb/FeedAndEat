@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -61,6 +62,8 @@ fun CardsGrid(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val userFavourites by viewModel.favouritesData
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -70,15 +73,12 @@ fun CardsGrid(
     ) {
         items(viewModel.cardsData.value) { cardData ->
             DishCard(
-                link = cardData.image,
-                ingredients = cardData.ingredients,
-                steps = cardData.steps,
-                name = cardData.name,
-                rating = cardData.rating,
-                cooked = cardData.cooked,
-                id = cardData.recipeId,
                 navigateToRoute = navigateToRoute,
-                addToFavourites = null /* TODO pass function */
+                inFavourites = cardData.recipeId in userFavourites,
+                recipeCard = cardData,
+                addToFavourites = viewModel::addRecipeToUserCollection,
+                removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+                updateFavourites = viewModel::loadUserFavourites
             )
         }
     }

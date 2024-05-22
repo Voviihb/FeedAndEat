@@ -31,19 +31,14 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 @Composable
 fun DishCard(
-    link: String,
-    ingredients: Int,
-    steps: Int, name: String,
-    rating: Double, cooked: Int,
-    id: String,
-    navigateToRoute: (String) -> Unit,
+    recipeCard: RecipeCard,
+    inFavourites: Boolean = false,
+    addToFavourites: ((String, RecipeCard) -> Unit),
+    removeFromFavourites: ((String, RecipeCard) -> Unit),
+    updateFavourites: (() -> Unit),
     modifier: Modifier = Modifier,
     largeCard: Boolean = false,
-    inFavourites: Boolean = false,
-    recipeCard: RecipeCard? = null,
-    addToFavourites: ((String, RecipeCard) -> Unit)? = null,
-    removeFromFavourites: ((String, RecipeCard) -> Unit)? = null,
-    updateFavourites: (() -> Unit)? = null
+    navigateToRoute: (String) -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -52,10 +47,10 @@ fun DishCard(
             colorResource(R.color.white), colorResource(R.color.white)
         ),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
-        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/$id") }
+        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/${recipeCard.recipeId}") }
     ) {
         Column {
-            DishImage(link = link, modifier = Modifier.fillMaxWidth())
+            DishImage(link = recipeCard.image, modifier = Modifier.fillMaxWidth())
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier
@@ -63,7 +58,7 @@ fun DishCard(
                     .padding(8.dp, 4.dp)
             ) {
                 BoldText(
-                    text = name,
+                    text = recipeCard.name,
                     fontSize = MediumText,
                     lineHeight = SmallText,
                     fixLinesNumber = !largeCard,
@@ -75,11 +70,11 @@ fun DishCard(
                 ) {
                     LightText(
                         text = (if (largeCard) stringResource(R.string.ingredients)
-                        else stringResource(R.string.small_ingredients)) + " $ingredients",
+                        else stringResource(R.string.small_ingredients)) + " ${recipeCard.ingredients}",
                         fontSize = ExtraSmallText
                     )
                     LightText(
-                        text = stringResource(R.string.steps) + " $steps",
+                        text = stringResource(R.string.steps) + " ${recipeCard.steps}",
                         fontSize = ExtraSmallText
                     )
                 }
@@ -98,12 +93,12 @@ fun DishCard(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         RatingBar(
-                            rating.toFloat(),
+                            recipeCard.rating.toFloat(),
                             stars = 1,
                             modifier = Modifier.height(SmallIconSize)
                         )
                         DarkText(
-                            text = rating.toString(),
+                            text = recipeCard.rating.toString(),
                             fontSize = SmallText,
                             modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
                         )
@@ -117,7 +112,7 @@ fun DishCard(
                             color = colorResource(R.color.gray)
                         )
                         DarkText(
-                            text = cooked.toString(),
+                            text = recipeCard.cooked.toString(),
                             fontSize = SmallText,
                             modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
                         )
@@ -133,26 +128,13 @@ fun DishCard(
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {
                         if (inFavourites) {
-                            if (removeFromFavourites != null) {
-                                if (recipeCard != null) {
-                                    removeFromFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
-                                    /*TODO set userFavouritesCollectionId here*/
-                                    if (updateFavourites != null) {
-                                        updateFavourites()
-                                    }
-                                }
-
-                            }
+                            removeFromFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
+                            /*TODO set userFavouritesCollectionId here*/
+                            updateFavourites()
                         } else {
-                            if (addToFavourites != null) {
-                                if (recipeCard != null) {
-                                    addToFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
-                                    /*TODO set userFavouritesCollectionId here*/
-                                    if (updateFavourites != null) {
-                                        updateFavourites()
-                                    }
-                                }
-                            }
+                            addToFavourites("vCrv6EvaBsSKUNTKstRr", recipeCard)
+                            /*TODO set userFavouritesCollectionId here*/
+                            updateFavourites()
                         }
 
                     }
