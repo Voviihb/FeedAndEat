@@ -24,6 +24,12 @@ class AllCollectionsScreenViewModel @Inject constructor(
     private val _collectionsData = mutableStateOf(listOf<Compilation>())
     val collectionsData: State<List<Compilation>> = _collectionsData
 
+    private val _favouritesData = mutableStateOf(listOf<String>())
+    val favouritesData: State<List<String>> = _favouritesData
+
+    private val _favouritesId = mutableStateOf<String?>(null)
+    val favouritesId: State<String?> = _favouritesId
+
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
@@ -102,6 +108,58 @@ class AllCollectionsScreenViewModel @Inject constructor(
         }
     }
 
+    fun loadUserFavourites() {
+        viewModelScope.launch {
+            try {
+                val user = _authRepo.getUserId()
+                if (user != null) {
+                    _usersRepo.getUserCollections(userId = user).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                if (response.data != null) {
+                                    _collectionsData.value = response.data
+                                }
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
+
+                    val favouritesId =
+                        _collectionsData.value.filter { it.name == "Favourites" }[0].id
+                    _favouritesId.value = favouritesId
+
+                    if (favouritesId != null) {
+                        _recipesRepo.loadCollectionRecipesId(id = favouritesId)
+                            .collect { response ->
+                                when (response) {
+                                    is Response.Loading -> _loading.value = true
+                                    is Response.Success -> {
+                                        if (response.data != null) {
+                                            _favouritesData.value = response.data.recipeIds
+                                        }
+                                    }
+
+                                    is Response.Failure -> {
+                                        onError(response.e)
+                                    }
+                                }
+                            }
+                    }
+
+
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
+
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
@@ -112,19 +170,18 @@ class AllCollectionsScreenViewModel @Inject constructor(
                         collectionId,
                         recipe.recipeId,
                         recipe.image
-                    )
-                        .collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    /* TODO add success flow */
-                                }
+                    ).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                /* TODO add success flow */
+                            }
 
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
+                            is Response.Failure -> {
+                                onError(response.e)
                             }
                         }
+                    }
                 }
 
             } catch (e: Exception) {
@@ -142,7 +199,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-                                /*TODO add flow*/
+                                /* TODO add success flow */
                             }
 
                             is Response.Failure -> {
