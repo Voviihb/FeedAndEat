@@ -20,8 +20,8 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _newRecipeRepo: NewRecipeRepoImpl
 ) : ViewModel() {
 
-    private val _newInstruction = mutableStateOf(Instruction())
-    val newInstruction: State<Instruction> = _newInstruction
+    private val _newInstruction = mutableStateOf<Instruction?>(null)
+    val newInstruction: State<Instruction?> = _newInstruction
 
     private val _name = mutableStateOf("")
     val name: State<String> = _name
@@ -80,19 +80,21 @@ class NewRecipeScreenViewModel @Inject constructor(
         _name.value = newName
     }
 
-
-    fun selectImagePath() {
-
+    fun changeImagePath(newImagePath:Uri?) {
+        _imagePath.value = newImagePath
+    }
+    fun createInstruction() {
+        _newInstruction.value = Instruction()
     }
 
     fun changeParagraph(newParagraph: String) {
-        _newInstruction.value = _newInstruction.value.copy(
+        _newInstruction.value = _newInstruction.value?.copy(
             paragraph = newParagraph
         )
     }
 
     fun addTimer(timerType: TimerType, num1: String, num2: String) {
-        val actualTimers = _newInstruction.value.timers?.toMutableList() ?: mutableListOf()
+        val actualTimers = _newInstruction.value?.timers?.toMutableList() ?: mutableListOf()
         actualTimers.add(
             Timer(
                 type = timerType.str,
@@ -101,22 +103,22 @@ class NewRecipeScreenViewModel @Inject constructor(
                 number = if (timerType == TimerType.CONSTANT) num1.toInt() else null
             )
         )
-        _newInstruction.value = _newInstruction.value.copy(
+        _newInstruction.value = _newInstruction.value?.copy(
             timers = actualTimers
         )
     }
 
     fun deleteTimer(index: Int) {
-        val actualTimers = _newInstruction.value.timers?.toMutableList()
+        val actualTimers = _newInstruction.value?.timers?.toMutableList()
         actualTimers?.removeAt(index)
-        _newInstruction.value = _newInstruction.value.copy(
+        _newInstruction.value = _newInstruction.value?.copy(
             timers = actualTimers
         )
     }
 
     fun addInstruction() {
         val actualInstructions = _instructions.value.toMutableList()
-        actualInstructions.add(_newInstruction.value)
+        actualInstructions.add(_newInstruction.value ?: Instruction())
         _instructions.value = actualInstructions
         _newInstruction.value = Instruction()
     }

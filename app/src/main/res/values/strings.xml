@@ -126,4 +126,6 @@
     <string name="sort_by">Sort by</string>
     <string name="rate_recipe">Rate recipe</string>
     <string name="rate">Rate</string>
+<!-- new recipe -->
+    <string name="recipe_name">Enter recipe name</string>
 </resources>
