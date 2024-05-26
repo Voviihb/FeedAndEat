@@ -129,5 +129,6 @@
     <string name="rate_recipe">Rate recipe</string>
     <string name="rate">Rate</string>
     <!-- inProgress screen -->
+    <string name="default_label">Timers for running recipes will be displayed here</string>
     <string name="timer_format">%1$02d:%2$02d:%3$02d</string>
 </resources>
