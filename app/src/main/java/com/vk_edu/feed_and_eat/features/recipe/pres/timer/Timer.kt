@@ -144,10 +144,10 @@ fun CountdownConstantTimer(
         }
     }
 
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
+        contentAlignment = Alignment.TopCenter,
         modifier = Modifier
+            .fillMaxWidth()
             .height(400.dp)
     ) {
         Box{
@@ -165,27 +165,32 @@ fun CountdownConstantTimer(
             }
         }
 
-        if ((viewModel.isRunning[name]?.value == false) &&
-            (viewModel.runTimerFlag[name]?.value == true))
-        {
-            StartButton ({
-                viewModel.startTimer(name, totalMillis.toInt() / 1000)
-            })
-        } else {
-            ButtonContainer(
-                playAction = {
-                    viewModel.resumeTimer(name)
-                },
-                pauseAction = {
-                    viewModel.pauseTimer(name)
-                },
-                dropAction = {
-                    viewModel.stopTimer(name)
-                    viewModel.changeInit(name)
-                },
-                name = name,
-                viewModel = viewModel
-            )
+        Box(
+            contentAlignment = Alignment.BottomCenter,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if ((viewModel.isRunning[name]?.value == false) &&
+                (viewModel.runTimerFlag[name]?.value == true)
+            ) {
+                StartButton({
+                    viewModel.startTimer(name, totalMillis.toInt() / 1000)
+                })
+            } else {
+                ButtonContainer(
+                    playAction = {
+                        viewModel.resumeTimer(name)
+                    },
+                    pauseAction = {
+                        viewModel.pauseTimer(name)
+                    },
+                    dropAction = {
+                        viewModel.stopTimer(name)
+                        viewModel.changeInit(name)
+                    },
+                    name = name,
+                    viewModel = viewModel
+                )
+            }
         }
     }
 }
@@ -292,8 +297,7 @@ private fun StartButton(
         border = BorderStroke(
             2.dp,
             colorResource(id = R.color.black)
-        ),
-        modifier = modifier.padding(horizontal = 8.dp)
+        )
     ) {
         Icon(
             painter = painterResource(id = R.drawable.play),
@@ -318,8 +322,7 @@ private fun PauseButton(
         border = BorderStroke(
             2.dp,
             colorResource(id = R.color.black)
-        ),
-        modifier = modifier.padding(horizontal = 8.dp)
+        )
     ) {
         Icon(
             painter = painterResource(id = R.drawable.pause),
@@ -344,8 +347,7 @@ private fun DropButton(
         border = BorderStroke(
             2.dp,
             colorResource(id = R.color.black)
-        ),
-        modifier = modifier.padding(horizontal = 8.dp)
+        )
     ) {
         Icon(
             painter = painterResource(id = R.drawable.drop),
@@ -396,13 +398,13 @@ fun ButtonContainer(
     dropAction: () -> Unit,
     name : String,
     viewModel: StepScreenViewModel,
-){
+) {
     Row(
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DropButton (dropAction)
-        if (viewModel.isRunning[name]?.value == true){
+        if (viewModel.isRunning[name]?.value == true) {
             PauseButton(pauseAction)
         } else {
             StartButton(playAction)
