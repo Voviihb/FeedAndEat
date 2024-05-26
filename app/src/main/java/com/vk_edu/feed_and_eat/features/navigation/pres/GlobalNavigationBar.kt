@@ -87,6 +87,7 @@ sealed class Screen(val route: String) {
     data object NewRecipeScreen : Screen("NewRecipeScreen")
     data object RecipeScreen : Screen("RecipeScreen")
     data object Id : Screen("/{id}")
+    data object Number : Screen("/{number}")
 }
 
 sealed class BottomScreen(

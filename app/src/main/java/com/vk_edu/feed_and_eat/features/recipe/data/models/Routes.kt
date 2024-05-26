@@ -4,4 +4,6 @@ sealed class Routes(val route : String) {
     data object Recipe: Routes("Recipe")
     data object Step: Routes("Step")
     data object Congrats: Routes("Congrats")
+    data object Id : Routes("/{id}")
+    data object StartWithStep : Routes("StartWithStep")
 }

@@ -446,7 +446,7 @@ fun Timer(
     viewModel : StepScreenViewModel,
     modifier: Modifier = Modifier,
 ){
-    val name = "${viewModel.name.value} - step ${viewModel.id.intValue}:"
+    val name = "${viewModel.name.value} - step ${viewModel.id.intValue + 1}:"
     if (viewModel.currentTimerMap.getOrDefault(name, "") == ""){
         viewModel.initTimer(name)
     }

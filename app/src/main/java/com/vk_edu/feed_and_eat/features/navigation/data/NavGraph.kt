@@ -35,6 +35,7 @@ fun NavGraph(
     viewModel: NavBarViewModel = hiltViewModel()
 ) {
     val navId = stringResource(id = R.string.nav_id)
+    val navNumber = stringResource(id = R.string.nav_number)
     val recipe = stringResource(id = R.string.recipe)
 
     val navigateToRoute: (String) -> Unit = {route ->
@@ -101,6 +102,24 @@ fun NavGraph(
             NewRecipeScreen(navigateToRoute)
         }
         composable(
+            route = Screen.RecipeScreen.route + Screen.Id.route + Screen.Number.route,
+                arguments = listOf(
+                    navArgument(navId){ type = NavType.StringType},
+                    navArgument(navNumber){ type = NavType.IntType }
+                )
+        ){entry ->
+            val id = entry.arguments?.getString(navId)
+            val number = entry.arguments?.getInt(navNumber)
+            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
+            RecipeScreen(
+                navigateToRoute = navigateToRoute,
+                navigateBack = navigateBack,
+                id = id ?: "",
+                number = number ?: 0,
+                destination = destination
+            )
+        }
+        composable(
             route = Screen.RecipeScreen.route + Screen.Id.route,
             arguments = listOf(navArgument(navId){ type = NavType.StringType })
         ) {entry ->
@@ -113,5 +132,6 @@ fun NavGraph(
                 destination = destination
             )
         }
+
     }
 }

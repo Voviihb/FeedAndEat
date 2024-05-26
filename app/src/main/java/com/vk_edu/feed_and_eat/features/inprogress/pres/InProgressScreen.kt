@@ -107,6 +107,9 @@ private fun TimerCard(
     val hours = TimeUnit.SECONDS.toHours(time)
     val minutes = TimeUnit.SECONDS.toMinutes(time) % 60
     val seconds = TimeUnit.SECONDS.toSeconds(time) % 60 % 60
+
+    val space = rightPart.lastIndexOf(" ")
+    val number = rightPart.slice(space + 1 until rightPart.length - 1)
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RectangleShape,
@@ -114,7 +117,9 @@ private fun TimerCard(
             colorResource(color), colorResource(color),
             colorResource(color), colorResource(color)
         ),
-        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/${timerState.recipeId}") }
+        onClick = {
+            navigateToRoute("${Screen.RecipeScreen.route}/${timerState.recipeId}/${number}")
+        }
     ) {
         Column(
             modifier = Modifier

@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -248,6 +249,8 @@ fun StepScreen(
     recipeImage: String?,
     viewModel: StepScreenViewModel = hiltViewModel()
 ) {
+    Log.d("STEP SCREEN", "$id")
+    Log.d("DATA", data.toString())
     viewModel.id.intValue = id
     viewModel.name.value = name
     viewModel.recipeId.value = recipeId

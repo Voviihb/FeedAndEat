@@ -43,10 +43,53 @@ fun RecipeScreen(
                 Box(modifier = Modifier.padding(padding)) {
                     val navController = rememberNavController()
                     RecipeNavGraph(
-                        navigateToRoute,
+                        navigateToRoute = navigateToRoute,
                         navigateBack = navigateBack,
-                        navController,
-                        viewModel
+                        navController = navController,
+                        viewModel = viewModel,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecipeScreen(
+    navigateToRoute: (String) -> Unit,
+    navigateBack: () -> Unit,
+    id: String,
+    destination: String,
+    number : Int,
+    viewModel: RecipesScreenViewModel = hiltViewModel()
+) {
+    viewModel.loadRecipeById(id)
+    if (viewModel.isUserAuthenticated()){
+        viewModel.loadCollections()
+    }
+
+    Scaffold(
+        bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
+    ) { padding ->
+        if (viewModel.loading.value) {
+            LoadingCircular()
+        } else {
+            if (viewModel.errorMessage.value != null) {
+                RepeatButton(onClick = {
+                    viewModel.clearError()
+                    viewModel.clearCollectionError()
+                    viewModel.loadRecipeById(id)
+                    viewModel.loadCollections()
+                })
+            } else {
+                Box(modifier = Modifier.padding(padding)) {
+                    val navController = rememberNavController()
+                    RecipeNavGraph(
+                        navigateToRoute = navigateToRoute,
+                        navigateBack = navigateBack,
+                        navController = navController,
+                        step = number,
+                        viewModel = viewModel
                     )
                 }
             }
