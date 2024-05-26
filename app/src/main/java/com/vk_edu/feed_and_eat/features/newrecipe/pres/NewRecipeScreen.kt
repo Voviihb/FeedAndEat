@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
 

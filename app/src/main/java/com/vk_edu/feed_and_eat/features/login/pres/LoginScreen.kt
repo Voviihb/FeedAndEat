@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
+import com.vk_edu.feed_and_eat.features.navigation.models.Screen
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)

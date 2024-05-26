@@ -8,7 +8,7 @@ import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.login.pres.removeUserId
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
+import com.vk_edu.feed_and_eat.features.navigation.models.Screen
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel

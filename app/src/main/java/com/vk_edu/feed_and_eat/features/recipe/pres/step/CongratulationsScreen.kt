@@ -35,7 +35,7 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeIconSize
 import com.vk_edu.feed_and_eat.ui.theme.MediumText

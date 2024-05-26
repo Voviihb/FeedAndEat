@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
+import com.vk_edu.feed_and_eat.features.navigation.models.Screen
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallIconSize

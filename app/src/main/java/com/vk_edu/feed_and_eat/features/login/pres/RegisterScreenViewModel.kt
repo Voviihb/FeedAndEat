@@ -9,7 +9,7 @@ import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataM
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel

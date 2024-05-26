@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.login.pres.getCurrentUserId
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

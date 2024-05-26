@@ -41,9 +41,9 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
+import com.vk_edu.feed_and_eat.features.navigation.models.Screen
 import com.vk_edu.feed_and_eat.features.recipe.domain.TimerState
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText

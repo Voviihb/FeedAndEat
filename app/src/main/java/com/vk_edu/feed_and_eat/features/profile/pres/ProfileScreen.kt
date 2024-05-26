@@ -39,7 +39,7 @@ import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText

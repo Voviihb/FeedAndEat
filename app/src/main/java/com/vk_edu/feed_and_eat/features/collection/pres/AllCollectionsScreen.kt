@@ -27,9 +27,9 @@ import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.navigation.models.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
+import com.vk_edu.feed_and_eat.features.navigation.models.Screen
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 
@@ -41,7 +41,7 @@ fun AllCollectionsScreen(
     viewModel.loadAllUserCollections()
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionOverviewScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
     ) { padding ->
         Box(
             modifier = Modifier
