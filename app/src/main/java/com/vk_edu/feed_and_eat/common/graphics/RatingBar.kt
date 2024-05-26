@@ -124,13 +124,3 @@ private val starPath = { size: Float ->
         close()
     }
 }
-
-@Composable
-fun RatingBarPres(rating : Double) {
-    Column {
-        RatingBar(
-            rating = rating.toFloat(),
-            modifier = Modifier.height(25.dp)
-        )
-    }
-}

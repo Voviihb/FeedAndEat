@@ -21,7 +21,6 @@ import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
 
@@ -29,12 +28,14 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 fun CollectionScreen(
     navigateToRoute: (String) -> Unit,
     navigateBack: () -> Unit,
+    id : String,
+    destination: String,
     viewModel: CollectionScreenViewModel = hiltViewModel()
 ) {
-    viewModel.collectionRecipes()
+    viewModel.collectionRecipes(id)
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, destination) }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -46,7 +47,7 @@ fun CollectionScreen(
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(onClick = {
                     viewModel.clearError()
-                    viewModel.collectionRecipes()
+                    viewModel.collectionRecipes(id)
                 })
             else
                 CardsGrid(viewModel = viewModel, navigateToRoute)

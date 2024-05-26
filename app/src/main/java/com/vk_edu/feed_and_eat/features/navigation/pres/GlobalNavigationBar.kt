@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -31,20 +32,18 @@ fun GlobalNavigationBar(
     val barScreens = listOf(
         BottomScreen.HomeScreen,
         BottomScreen.SearchScreen,
-        BottomScreen.CollectionScreen,
+        BottomScreen.CollectionOverviewScreen,
         BottomScreen.InProgressScreen,
         BottomScreen.ProfileScreen
     )
-    val bottomBarData = MutableList(5){BottomData(R.color.light_cyan, 40)}
+    val bottomBarData = MutableList(5) { BottomData(R.color.light_cyan, 40) }
     val currentIndex = barScreens.map { it.route }.indexOf(currentDestination)
-    if (currentIndex in bottomBarData.indices){
+    if (currentIndex in bottomBarData.indices) {
         bottomBarData[currentIndex] = BottomData(R.color.medium_cyan, 45)
     }
 
-    BottomNavigation(
-        modifier = Modifier
-    ){
-        repeat(5) {index ->
+    BottomNavigation {
+        repeat(5) { index ->
             BottomNavigationItem(
                 icon = {
                     Column (
@@ -62,44 +61,20 @@ fun GlobalNavigationBar(
                             fontSize = 15.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            color = colorResource(bottomBarData[index].color),
-                            modifier = Modifier
+                            color = colorResource(bottomBarData[index].color)
                         )
                     }
                 },
                 selectedContentColor = colorResource(id = R.color.medium_cyan),
                 unselectedContentColor = colorResource(id = R.color.light_cyan),
                 selected = true,
-                onClick = {
-                    navigateToRoute(barScreens[index].route)
-                },
                 modifier = Modifier
                     .background(Color.White)
                     .padding(vertical = 8.dp),
-                )
-            }
+                onClick = {
+                    navigateToRoute(barScreens[index].route)
+                }
+            )
         }
     }
-
-sealed class Screen(val route: String) {
-    data object LoginScreen : Screen("LoginScreen")
-    data object RegisterScreen : Screen("RegisterScreen")
-    data object NewRecipeScreen : Screen("NewRecipeScreen")
-    data object RecipeScreen : Screen("RecipeScreen")
-    data object Id : Screen("/{id}")
 }
-
-sealed class BottomScreen(
-    val route: String,
-    val drawable : Int,
-    val name : Int,
-    ) {
-    data object HomeScreen : BottomScreen("HomeScreen",  R.drawable.home,  R.string.main)
-    data object  SearchScreen : BottomScreen("SearchScreen", R.drawable.search, R.string.search)
-    data object CollectionScreen : BottomScreen("CollectionScreen", R.drawable.collection, R.string.collection)
-    data object InProgressScreen : BottomScreen("inProgressScreen", R.drawable.progress, R.string.inProgress)
-    data object ProfileScreen : BottomScreen("ProfileScreen", R.drawable.profile, R.string.profile)
-
-}
-
-data class BottomData(var color : Int, var size : Int)

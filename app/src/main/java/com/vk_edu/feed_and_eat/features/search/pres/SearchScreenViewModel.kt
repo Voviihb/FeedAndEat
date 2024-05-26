@@ -8,7 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
@@ -184,7 +184,7 @@ class SearchScreenViewModel @Inject constructor(
     private fun loadUserFavourites() {
         viewModelScope.launch {
             try {
-                var collectionsData = listOf<Compilation>()
+                var collectionsData = listOf<CollectionDataModel>()
                 val user = _authRepo.getUserId()
                 if (user != null) {
                     _usersRepo.getUserCollections(userId = user).collect { response ->
