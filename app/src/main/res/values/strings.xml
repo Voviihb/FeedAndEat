@@ -78,7 +78,7 @@
 <!--    navigation-->
     <string name="main">Главная</string>
     <string name="search">Поиск</string>
-    <string name="collection">Коллекция</string>
+    <string name="collection">Коллекции</string>
     <string name="inProgress">В процессе</string>
     <string name="profile">Профиль</string>
     <string name="nav_id">id</string>

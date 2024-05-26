@@ -211,7 +211,7 @@ private fun PauseButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(4.dp),
+        contentPadding = PaddingValues(8.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = color),
@@ -238,7 +238,7 @@ private fun DropButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(4.dp),
+        contentPadding = PaddingValues(8.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = color),
@@ -265,7 +265,7 @@ private fun ResumeButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(4.dp),
+        contentPadding = PaddingValues(8.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = color),

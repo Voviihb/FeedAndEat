@@ -73,8 +73,8 @@ fun NavGraph(
             viewModel.changeBottomDestination(BottomScreen.SearchScreen.route)
             SearchScreen(navigateToRoute)
         }
-        composable(BottomScreen.CollectionScreen.route) {
-            viewModel.changeBottomDestination(BottomScreen.CollectionScreen.route)
+        composable(Screen.CollectionScreen.route) {
+            viewModel.changeBottomDestination(Screen.CollectionScreen.route)
             AllCollectionsScreen(
                 navigateToRoute
             )

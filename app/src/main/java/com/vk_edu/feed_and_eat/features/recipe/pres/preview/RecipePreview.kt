@@ -57,12 +57,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.graphics.BoxWithCards
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
-import com.vk_edu.feed_and_eat.common.graphics.InfoSquareButton
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
-import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
