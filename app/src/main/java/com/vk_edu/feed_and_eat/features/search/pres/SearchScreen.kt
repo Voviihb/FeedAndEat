@@ -210,6 +210,7 @@ fun CardsGrid(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val userFavourites by viewModel.favouriteRecipeIds
     val gridState = rememberLazyGridState()
     val cardsData = viewModel.cardsDataPager.collectAsLazyPagingItems()
     if (viewModel.reloadData.value) {
@@ -233,23 +234,23 @@ fun CardsGrid(
                 val cardData = cardsData[index]
                 if (cardData != null)
                     DishCard(
-                        link = cardData.image,
-                        ingredients = cardData.ingredients,
-                        steps = cardData.steps,
-                        name = cardData.name,
-                        rating = cardData.rating,
-                        cooked = cardData.cooked,
-                        id = cardData.recipeId,
-                        navigateToRoute = navigateToRoute,
                         recipeCard = cardData,
-                        addToFavourites = viewModel::addRecipeToUserCollection
+                        inFavourites = cardData.recipeId in userFavourites,
+                        favouritesCollectionId = viewModel.favouritesCollectionId.value,
+                        addToFavourites = viewModel::addRecipeToUserCollection,
+                        removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+                        navigateToRoute = navigateToRoute
                     )
             }
         }
 }
 
 @Composable
-fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, rightBlockEnabled: MutableState<Boolean>, modifier: Modifier = Modifier) {
+fun SortingAndFiltersBlock(
+    viewModel: SearchScreenViewModel,
+    rightBlockEnabled: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = modifier.fillMaxHeight()) {
         Column(
             verticalArrangement = Arrangement.spacedBy(60.dp),
@@ -292,11 +293,31 @@ fun SortingAndFiltersBlock(viewModel: SearchScreenViewModel, rightBlockEnabled: 
 
                 TagsFilter(viewModel = viewModel)
 
-                NutrientFilter(title = stringResource(R.string.calories), nutrient = Nutrient.CALORIES.value, viewModel = viewModel)
-                NutrientFilter(title = stringResource(R.string.sugar), nutrient = Nutrient.SUGAR.value, viewModel = viewModel)
-                NutrientFilter(title = stringResource(R.string.carbohydrates), nutrient = Nutrient.CARBOHYDRATES.value, viewModel = viewModel)
-                NutrientFilter(title = stringResource(R.string.fat), nutrient = Nutrient.FAT.value, viewModel = viewModel)
-                NutrientFilter(title = stringResource(R.string.protein), nutrient = Nutrient.PROTEIN.value, viewModel = viewModel)
+                NutrientFilter(
+                    title = stringResource(R.string.calories),
+                    nutrient = Nutrient.CALORIES.value,
+                    viewModel = viewModel
+                )
+                NutrientFilter(
+                    title = stringResource(R.string.sugar),
+                    nutrient = Nutrient.SUGAR.value,
+                    viewModel = viewModel
+                )
+                NutrientFilter(
+                    title = stringResource(R.string.carbohydrates),
+                    nutrient = Nutrient.CARBOHYDRATES.value,
+                    viewModel = viewModel
+                )
+                NutrientFilter(
+                    title = stringResource(R.string.fat),
+                    nutrient = Nutrient.FAT.value,
+                    viewModel = viewModel
+                )
+                NutrientFilter(
+                    title = stringResource(R.string.protein),
+                    nutrient = Nutrient.PROTEIN.value,
+                    viewModel = viewModel
+                )
 
                 OutlinedButton(
                     shape = RoundedCornerShape(8.dp),
@@ -367,7 +388,12 @@ fun NutrientFilter(
             OutlinedTextField(
                 value = viewModel.filtersForm.value.nutrients[nutrient].min,
                 textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
-                placeholder = { LightText(text = stringResource(R.string.from), fontSize = MediumText) },
+                placeholder = {
+                    LightText(
+                        text = stringResource(R.string.from),
+                        fontSize = MediumText
+                    )
+                },
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -392,7 +418,12 @@ fun NutrientFilter(
             OutlinedTextField(
                 value = viewModel.filtersForm.value.nutrients[nutrient].max,
                 textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
-                placeholder = { LightText(text = stringResource(R.string.to), fontSize = MediumText) },
+                placeholder = {
+                    LightText(
+                        text = stringResource(R.string.to),
+                        fontSize = MediumText
+                    )
+                },
                 shape = RoundedCornerShape(8.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -481,7 +512,8 @@ fun TagsFilter(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                                 fontSize = SmallText,
                                 modifier = Modifier
                                     .onGloballyPositioned { coordinates ->
-                                        val rowHeightDpCurrent = with(localDensity) { coordinates.size.height.toDp() } + 8.dp
+                                        val rowHeightDpCurrent =
+                                            with(localDensity) { coordinates.size.height.toDp() } + 8.dp
                                         if (rowHeightDp == 100.dp)
                                             rowHeightDp = rowHeightDpCurrent
                                     }
@@ -534,7 +566,10 @@ fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SortingAndFiltersButton(rightBlockEnabled: MutableState<Boolean>, modifier: Modifier = Modifier) {
+fun SortingAndFiltersButton(
+    rightBlockEnabled: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
     Box(
         contentAlignment = Alignment.TopEnd,
         modifier = modifier.padding(0.dp, 72.dp, 0.dp, 0.dp)
