@@ -1,19 +1,18 @@
 package com.vk_edu.feed_and_eat.features.navigation.pres
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -28,7 +27,7 @@ import com.vk_edu.feed_and_eat.R
 fun GlobalNavigationBar(
     navigateToRoute : (String) -> Unit,
     currentDestination : String
-){
+) {
     val barScreens = listOf(
         BottomScreen.HomeScreen,
         BottomScreen.SearchScreen,

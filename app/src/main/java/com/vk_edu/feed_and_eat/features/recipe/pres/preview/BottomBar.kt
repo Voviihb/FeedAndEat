@@ -32,11 +32,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.code.recipeToRecipeCard
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.SmallIcon
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
 @Composable
 fun BottomBar(
@@ -95,21 +96,36 @@ fun BottomBar(
                     text = stringResource(id = R.string.start_cooking),
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Visible,
-                    fontSize = 20.sp,
+                    fontSize = MediumText,
                     color =  colorResource(R.color.white),
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                 )
             }
             Button(
-                onClick = {  },
+                onClick = {
+                    if (viewModel.recipe.value.id in viewModel.favouriteRecipeIds.value){
+                            viewModel.removeRecipeFromUserCollection(
+                                collectionId = viewModel.favouritesCollectionId.value ?: "",
+                                recipe = recipeToRecipeCard(viewModel.recipe.value)
+                            )
+                        } else {
+                        viewModel.addRecipeToUserCollection(
+                            collectionId = viewModel.favouritesCollectionId.value ?: "",
+                            recipe = recipeToRecipeCard(viewModel.recipe.value)
+                        )
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     colorResource(id = R.color.medium_cyan),
                     colorResource(id = R.color.white)
                 )
             ) {
                 MediumIcon(
-                    painter = painterResource(id = R.drawable.shaded_like_icon),
+                    painter =
+                    if (viewModel.inFavourite())
+                        painterResource(id = R.drawable.shaded_like_icon)
+                    else painterResource(id = R.drawable.like_icon),
                     color = colorResource(id = R.color.white),
                 )
             }
@@ -172,7 +188,7 @@ fun DropDownContainer(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             collection.name,
-                            fontSize = 20.sp
+                            fontSize = MediumText
                         )
                         AddButtonShapePlus(
                             onClick = {},
@@ -182,8 +198,8 @@ fun DropDownContainer(
                     }
                 }
             }
+        }
     }
-}
 
 @Composable
 fun AddButtonShapePlus(
