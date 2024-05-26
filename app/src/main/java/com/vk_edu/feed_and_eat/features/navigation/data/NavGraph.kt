@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.features.collection.pres.AllCollectionsScreen
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreen
 import com.vk_edu.feed_and_eat.features.inprogress.pres.InProgressScreen
 import com.vk_edu.feed_and_eat.features.login.pres.LoginScreen
@@ -76,8 +75,10 @@ fun NavGraph(
         }
         composable(BottomScreen.CollectionOverviewScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.CollectionOverviewScreen.route)
-            AllCollectionsScreen(
-                navigateToRoute
+            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
+            CollectionScreen(
+                navigateToRoute = navigateToRoute,
+                navigateBack = navigateBack,
             )
         }
         composable(BottomScreen.InProgressScreen.route) {
@@ -133,18 +134,18 @@ fun NavGraph(
                 destination = destination
             )
         }
-        composable(
-            route = Screen.CollectionScreen.route + Screen.Id.route,
-            arguments = listOf(navArgument(navId){ type = NavType.StringType })
-        ) {entry ->
-            val id = entry.arguments?.getString(navId)
-            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
-            CollectionScreen(
-                navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
-                id = id ?: "",
-                destination = destination
-            )
-        }
+//        composable(
+//            route = Screen.CollectionScreen.route + Screen.Id.route,
+//            arguments = listOf(navArgument(navId){ type = NavType.StringType })
+//        ) {entry ->
+//            val id = entry.arguments?.getString(navId)
+//            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
+//            CollectionScreen(
+//                navigateToRoute = navigateToRoute,
+//                navigateBack = navigateBack,
+//                id = id ?: "",
+//                destination = destination
+//            )
+//        }
     }
 }
