@@ -193,7 +193,7 @@ fun SearchCard(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) 
                     }
                 ) {
                     MediumIcon(
-                        painter = painterResource(R.drawable.search_icon),
+                        painter = painterResource(R.drawable.search),
                         color = colorResource(R.color.white),
                         modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                     )

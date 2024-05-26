@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
-import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
@@ -88,7 +88,7 @@ class RegisterScreenViewModel @Inject constructor(
                     val data = UserModel(
                         userId = userId,
                         collectionsIdList = listOf(
-                            Compilation(
+                            CollectionDataModel(
                                 id = favouritesCollectionId,
                                 name = FAVOURITES
                             )

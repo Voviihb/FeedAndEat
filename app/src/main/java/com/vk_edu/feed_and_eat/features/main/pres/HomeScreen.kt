@@ -182,7 +182,7 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
                         .background(colorResource(R.color.medium_cyan), RoundedCornerShape(22.dp))
                 ) {
                     MediumIcon(
-                        painter = painterResource(R.drawable.search_icon),
+                        painter = painterResource(R.drawable.search),
                         color = colorResource(R.color.white),
                         modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                     )

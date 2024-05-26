@@ -37,7 +37,6 @@ fun InProgressScreen(
                     Text(text = "Load Recipe")
                 }
             }
-
         }
     }
 }

@@ -4,7 +4,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
-import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
@@ -30,7 +30,7 @@ class UsersRepoImpl @Inject constructor(
     /**
      * Loads all user collections
      * */
-    override fun getUserCollections(userId: String): Flow<Response<List<Compilation>?>> =
+    override fun getUserCollections(userId: String): Flow<Response<List<CollectionDataModel>?>> =
         repoTryCatchBlock {
             val document = db.collection(USERS_COLLECTION).document(userId).get().await()
             val user = document.toObject<UserModel>()
@@ -63,7 +63,7 @@ class UsersRepoImpl @Inject constructor(
      * */
     override fun addNewUserCollection(
         userId: String,
-        collection: Compilation
+        collection: CollectionDataModel
     ): Flow<Response<Void>> =
         repoTryCatchBlock {
             db.collection(USERS_COLLECTION).document(userId)

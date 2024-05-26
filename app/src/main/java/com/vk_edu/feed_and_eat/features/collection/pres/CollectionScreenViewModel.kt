@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
@@ -79,7 +79,7 @@ class CollectionScreenViewModel @Inject constructor(
     fun loadUserFavourites() {
         viewModelScope.launch {
             try {
-                var collectionsData = listOf<Compilation>()
+                var collectionsData = listOf<CollectionDataModel>()
                 val user = _authRepo.getUserId()
                 if (user != null) {
                     _usersRepo.getUserCollections(userId = user).collect { response ->

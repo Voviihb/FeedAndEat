@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,9 +34,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.graphics.AddButtonShapePlus
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
+import com.vk_edu.feed_and_eat.common.graphics.SmallIcon
 
 @Composable
 fun BottomBar(
@@ -107,7 +109,7 @@ fun BottomBar(
                 )
             ) {
                 MediumIcon(
-                    painter = painterResource(id = R.drawable.like_collection),
+                    painter = painterResource(id = R.drawable.shaded_like_icon),
                     color = colorResource(id = R.color.white),
                 )
             }
@@ -119,7 +121,7 @@ fun BottomBar(
 fun DropDownContainer(
     viewModel: RecipesScreenViewModel,
     modifier: Modifier = Modifier
-){
+) {
     DropdownMenu(
         expanded = viewModel.collectionButtonExpanded.value,
         onDismissRequest = { viewModel.expand() },
@@ -180,5 +182,39 @@ fun DropDownContainer(
                     }
                 }
             }
+    }
+}
+
+@Composable
+fun AddButtonShapePlus(
+    onClick: () -> Unit,
+    size : Int,
+    modifier: Modifier = Modifier
+){
+    Box(
+        modifier = modifier
+            .padding(4.dp)
+            .border(2.dp, colorResource(id = R.color.dark_cyan), CircleShape)
+            .clip(CircleShape)
+            .background(colorResource(id = R.color.light_cyan))
+    ){
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                colorResource(id = R.color.medium_cyan),
+                colorResource(id = R.color.black)
+            ),
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier
+                .border(2.dp, colorResource(id = R.color.dark_cyan), CircleShape)
+                .clip(CircleShape)
+                .size(size.dp)
+                .background(colorResource(id = R.color.light_cyan))
+        ) {
+            SmallIcon(
+                painter = painterResource(id = R.drawable.plus),
+                color = colorResource(id = R.color.white),
+            )
         }
     }
+}
