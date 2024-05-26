@@ -7,11 +7,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionsCards
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionRecipes
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.DailyRecipes
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Tag
@@ -50,7 +49,8 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadTopRatingRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
+        val query =
+            db.collection(RECIPES_COLLECTION).orderBy(RATING_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
@@ -64,7 +64,8 @@ class RecipesRepoImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadLastAddedRecipes(): Flow<Response<List<Recipe>>> = repoTryCatchBlock {
-        val query = db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
+        val query =
+            db.collection(RECIPES_COLLECTION).orderBy(CREATED_FIELD, Query.Direction.DESCENDING)
         val recipes = query.limit(LIMIT_OF_ROW).get().await()
         return@repoTryCatchBlock recipes.map { it.toObject<Recipe>().copy(id = it.id) }
     }.flowOn(Dispatchers.IO)
@@ -168,43 +169,64 @@ class RecipesRepoImpl @Inject constructor(
         return@repoTryCatchBlock tags.map { it.toObject<Tag>() }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadCollectionRecipes(id: String): Flow<Response<CollectionsCards?>> =
+    override fun loadCollectionRecipesId(id: String): Flow<Response<CollectionRecipes?>> =
         repoTryCatchBlock {
             val query = db.collection(COLLECTIONS_COLLECTION).document(id)
             val collections = query.get().await()
-            return@repoTryCatchBlock collections.toObject<CollectionsCards>()
+            return@repoTryCatchBlock collections.toObject<CollectionRecipes>()
+        }.flowOn(Dispatchers.IO)
+
+    override fun loadCollectionRecipesCards(id: String): Flow<Response<List<Recipe>?>> =
+        repoTryCatchBlock {
+            val query = db.collection(COLLECTIONS_COLLECTION).document(id)
+            val collections = query.get().await()
+            val recipesIds = collections.toObject<CollectionRecipes>()?.recipeIds
+            val collectionRecipesCards = mutableListOf<Recipe>()
+            if (recipesIds != null) {
+                for (recipeId in recipesIds) {
+                    val document =
+                        db.collection(RECIPES_COLLECTION).document(recipeId).get().await()
+                    val recipeCard = document.toObject<Recipe>()?.copy(id = recipeId)
+                    if (recipeCard != null) {
+                        collectionRecipesCards.add(recipeCard)
+                    }
+                }
+            }
+
+            return@repoTryCatchBlock collectionRecipesCards
         }.flowOn(Dispatchers.IO)
 
     /**
      * Adds new recipes to already existing collection
      * @param collectionId pass here id of collection
-     * @param recipe pass here new recipe
+     * @param recipeId pass here new recipe id
      * */
     override fun addRecipeToUserCollection(
         userId: String,
         collectionId: String,
-        recipe: RecipeCard
+        recipeId: String,
+        image: String?
     ): Flow<Response<Void>> = repoTryCatchBlock {
         val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
-        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayUnion(recipe)).await()
+        docRef.update(RECIPE_IDS_FIELD, FieldValue.arrayUnion(recipeId)).await()
         val userDoc = db.collection(USERS_COLLECTION).document(userId)
         val user = userDoc.get().await().toObject<UserModel>()
-        user?.collectionsIdList?.filter { it.id == collectionId }?.map { it.picture = recipe.image }
+        user?.collectionsIdList?.filter { it.id == collectionId }?.map { it.picture = image }
         userDoc.update(COLLECTIONS_ID_LIST_FIELD, user?.collectionsIdList).await()
     }.flowOn(Dispatchers.IO)
 
     override fun removeRecipeFromUserCollection(
         collectionId: String,
-        recipe: RecipeCard
+        recipeId: String,
     ): Flow<Response<Void>> = repoTryCatchBlock {
         val docRef = db.collection(COLLECTIONS_COLLECTION).document(collectionId)
-        docRef.update(RECIPE_CARDS_FIELD, FieldValue.arrayRemove(recipe)).await()
+        docRef.update(RECIPE_IDS_FIELD, FieldValue.arrayRemove(recipeId)).await()
     }.flowOn(Dispatchers.IO)
 
     override fun createNewCollection(): Flow<Response<String>> = repoTryCatchBlock {
         val result = db.collection(COLLECTIONS_COLLECTION).document()
         result.set(
-            hashMapOf<String, List<RecipeCard>>(RECIPE_CARDS_FIELD to listOf())
+            hashMapOf<String, List<String>>(RECIPE_IDS_FIELD to listOf())
         ).await()
         return@repoTryCatchBlock result.id
     }.flowOn(Dispatchers.IO)
@@ -277,7 +299,7 @@ class RecipesRepoImpl @Inject constructor(
         private const val SORT_RATING = 1
         private const val SORT_POPULARITY = 2
 
-        private const val RECIPE_CARDS_FIELD = "recipeCards"
+        private const val RECIPE_IDS_FIELD = "recipeIds"
         private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
     }
 }

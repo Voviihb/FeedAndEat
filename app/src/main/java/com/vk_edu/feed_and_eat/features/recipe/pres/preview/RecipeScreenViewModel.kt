@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
@@ -35,8 +35,8 @@ class RecipesScreenViewModel @Inject constructor(
     private val _collectionErrorMessage = mutableStateOf<Exception?>(null)
     val collectionErrorMessage: State<Exception?> = _errorMessage
 
-    private val _collectionList = mutableStateOf(listOf(Compilation()))
-    val collectionsList : State<List<Compilation>>? = _collectionList
+    private val _collectionList = mutableStateOf(listOf(CollectionDataModel()))
+    val collectionsList : State<List<CollectionDataModel>>? = _collectionList
 
     private val _collectionButtonExpanded = mutableStateOf(false)
     val collectionButtonExpanded : State<Boolean> = _collectionButtonExpanded

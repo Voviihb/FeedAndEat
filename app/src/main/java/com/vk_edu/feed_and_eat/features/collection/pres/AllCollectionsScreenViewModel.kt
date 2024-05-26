@@ -4,9 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.collection.domain.models.Compilation
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
@@ -21,8 +20,8 @@ class AllCollectionsScreenViewModel @Inject constructor(
     private val _usersRepo: UsersRepoImpl,
     private val _authRepo: AuthRepoImpl
 ) : ViewModel() {
-    private val _collectionsData = mutableStateOf(listOf<Compilation>())
-    val collectionsData: State<List<Compilation>> = _collectionsData
+    private val _collectionsData = mutableStateOf(listOf<CollectionDataModel>())
+    val collectionsData: State<List<CollectionDataModel>> = _collectionsData
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -77,7 +76,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
 
                     _usersRepo.addNewUserCollection(
                         userId = userId,
-                        collection = Compilation(
+                        collection = CollectionDataModel(
                             id = newCollectionId,
                             name = name,
                             picture = null
@@ -95,56 +94,6 @@ class AllCollectionsScreenViewModel @Inject constructor(
 
                 }
 
-            } catch (e: Exception) {
-                onError(e)
-            }
-            _loading.value = false
-        }
-    }
-
-    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
-        viewModelScope.launch {
-            try {
-                val user = _authRepo.getUserId()
-                if (user != null) {
-                    _recipesRepo.addRecipeToUserCollection(user, collectionId, recipe)
-                        .collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    /*TODO add flow*/
-                                }
-
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
-                            }
-                        }
-                }
-
-            } catch (e: Exception) {
-                onError(e)
-            }
-            _loading.value = false
-        }
-    }
-
-    fun removeRecipeFromUserCollection(collectionId: String, recipe: RecipeCard) {
-        viewModelScope.launch {
-            try {
-                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe)
-                    .collect { response ->
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
-                                /*TODO add flow*/
-                            }
-
-                            is Response.Failure -> {
-                                onError(response.e)
-                            }
-                        }
-                    }
             } catch (e: Exception) {
                 onError(e)
             }
