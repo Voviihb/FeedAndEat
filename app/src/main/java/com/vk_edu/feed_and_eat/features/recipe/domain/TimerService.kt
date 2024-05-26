@@ -24,9 +24,11 @@ import java.util.TimerTask
 import java.util.concurrent.TimeUnit
 
 data class TimerState(
-    val remainingSec : Int,
-    val totalSec : Int,
+    val remainingSec: Int,
+    val totalSec: Int,
     val isPaused: Boolean,
+    val recipeId: String,
+    val recipeImage: String?
 )
 
 class TimerService : Service() {
@@ -57,8 +59,10 @@ class TimerService : Service() {
             val action = intent.getStringExtra(ACTION)
             val timerId = intent.getStringExtra(TIMER_ID)
             val time = intent.getIntExtra(TIMER_TIME, 0)
+            val recipeId = intent.getStringExtra(RECIPE_ID)
+            val recipeImage = intent.getStringExtra(RECIPE_IMAGE)
             when (action) {
-                ACTION_START -> startTimer(timerId, time, time)
+                ACTION_START -> startTimer(timerId, time, time, recipeId, recipeImage)
                 ACTION_STOP -> stopTimer(timerId)
                 ACTION_PAUSE -> pauseTimer(timerId)
                 ACTION_RESUME -> resumeTimer(timerId)
@@ -86,16 +90,25 @@ class TimerService : Service() {
         timerId: String?,
         remainingSec: Int,
         totalSec: Int,
+        recipeId: String?,
+        recipeImage: String?
     ) {
-        val timerClass = TimerState(remainingSec, totalSec, false)
-        if (timerId != null) {
+        if (timerId != null && recipeId != null) {
+            val timerClass = TimerState(remainingSec, totalSec, false, recipeId, recipeImage)
             val job = CoroutineScope(Dispatchers.IO).launch {
                 var secondsLeft = remainingSec
                 timerValues[timerId] = timerClass
                 while (secondsLeft > 0) {
                     delay(1000)
                     secondsLeft--
-                    timerValues[timerId] = timerValues[timerId]?.copy(remainingSec = secondsLeft) ?: TimerState(secondsLeft, totalSec, true)
+                    timerValues[timerId] =
+                        timerValues[timerId]?.copy(remainingSec = secondsLeft) ?: TimerState(
+                            secondsLeft,
+                            totalSec,
+                            true,
+                            recipeId,
+                            recipeImage
+                        )
                 }
                 sendOnFinishNotification(timerId)
                 stopTimer(timerId)
@@ -135,7 +148,13 @@ class TimerService : Service() {
             timerValues[timerId] = timerValues[timerId]!!.copy(isPaused = false)
             val timerLeft = timerValues[timerId]
             if (timerLeft != null && timerLeft.remainingSec >= 0) {
-                startTimer(timerId, timerLeft.remainingSec, timerLeft.totalSec)
+                startTimer(
+                    timerId,
+                    timerLeft.remainingSec,
+                    timerLeft.totalSec,
+                    timerLeft.recipeId,
+                    timerLeft.recipeImage
+                )
             }
         }
     }
@@ -271,6 +290,8 @@ class TimerService : Service() {
         const val ACTION = "action"
         const val TIMER_ID = "timerId"
         const val TIMER_TIME = "time"
+        const val RECIPE_ID = "recipe_id"
+        const val RECIPE_IMAGE = "recipe_image"
         const val ACTION_START = "start"
         const val ACTION_STOP = "stop"
         const val ACTION_PAUSE = "pause"

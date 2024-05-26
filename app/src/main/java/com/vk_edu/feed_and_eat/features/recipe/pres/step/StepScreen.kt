@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.recipe.pres.step
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,7 +45,7 @@ import com.vk_edu.feed_and_eat.features.recipe.pres.timer.Timer
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
-fun TimeInfoCard(time : Int?, modifier: Modifier = Modifier) {
+fun TimeInfoCard(time: Int?, modifier: Modifier = Modifier) {
     Box(modifier = modifier.padding(12.dp, 12.dp, 12.dp, 20.dp)) {
         Card(
             shape = RoundedCornerShape(24.dp),
@@ -71,10 +72,13 @@ fun TimeInfoCard(time : Int?, modifier: Modifier = Modifier) {
                     modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                if (time != null){
+                if (time != null) {
                     val minutes = stringResource(id = R.string.minutes)
                     val hours = stringResource(id = R.string.hours)
-                    LightText(text = if (time < 60) "$time $minutes" else "${time / 60} $hours ${time % 60} $minutes", fontSize = LargeText)
+                    LightText(
+                        text = if (time < 60) "$time $minutes" else "${time / 60} $hours ${time % 60} $minutes",
+                        fontSize = LargeText
+                    )
                 } else {
                     LightText(text = stringResource(id = R.string.unlimited), fontSize = LargeText)
                 }
@@ -84,16 +88,16 @@ fun TimeInfoCard(time : Int?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TimeInfoCard(time1 : Int, time2 : Int, modifier: Modifier = Modifier) {
+fun TimeInfoCard(time1: Int, time2: Int, modifier: Modifier = Modifier) {
     val minutes = stringResource(id = R.string.minutes)
     val hours = stringResource(id = R.string.hours)
     val (minimums, maximums) = listOf(time1, time2).sorted()
-    val minText = if (minimums % 60 == 0){
+    val minText = if (minimums % 60 == 0) {
         "${minimums / 60} $hours"
     } else {
         if (minimums < 60) "$minimums $minutes" else "${minimums / 60} $hours ${minimums % 60} $minutes"
     }
-    val maxText = if (maximums % 60 == 0){
+    val maxText = if (maximums % 60 == 0) {
         "${maximums / 60} $hours"
     } else {
         if (maximums < 60) "$maximums $minutes" else "${maximums / 60} $hours ${maximums % 60} $minutes"
@@ -132,9 +136,9 @@ fun TimeInfoCard(time1 : Int, time2 : Int, modifier: Modifier = Modifier) {
 
 @Composable
 fun TextContainer(
-    text : String,
+    text: String,
     modifier: Modifier = Modifier,
-){
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
@@ -144,7 +148,8 @@ fun TextContainer(
             .background(colorResource(R.color.transparent)),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.short_recipe),
+        Text(
+            text = stringResource(R.string.short_recipe),
             color = colorResource(R.color.gray),
             textAlign = TextAlign.Left,
             fontSize = 25.sp,
@@ -167,7 +172,7 @@ fun TextContainer(
                     colorResource(R.color.dark_cyan),
                     shape = RoundedCornerShape(20.dp)
                 ),
-        ){
+        ) {
             item {
                 Text(
                     text = text,
@@ -186,10 +191,10 @@ fun ButtonContainer(
     navigateToStep: (Int) -> Unit,
     navigateToRecipe: (String) -> Unit,
     clear: () -> Unit,
-    id : Int,
-    maxId : Int,
+    id: Int,
+    maxId: Int,
     modifier: Modifier = Modifier,
-){
+) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = modifier
@@ -197,13 +202,14 @@ fun ButtonContainer(
             .height(60.dp)
             .padding(4.dp)
     ) {
-        val texts = listOf(R.string.backstep, R.string.finish, R.string.nextstep).map { stringResource(it)}
+        val texts =
+            listOf(R.string.backstep, R.string.finish, R.string.nextstep).map { stringResource(it) }
         val functions = listOf(
-            {if (id > 0) navigateToStep(id - 1) else navigateToRecipe(Routes.Recipe.route); clear()},
+            { if (id > 0) navigateToStep(id - 1) else navigateToRecipe(Routes.Recipe.route); clear() },
             { navigateToRecipe(Routes.Recipe.route); clear() },
-            {if (id < maxId) navigateToStep(id + 1) else navigateToRecipe(Routes.Congrats.route); clear()}
-            )
-        repeat(3){index ->
+            { if (id < maxId) navigateToStep(id + 1) else navigateToRecipe(Routes.Congrats.route); clear() }
+        )
+        repeat(3) { index ->
             Button(
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -212,7 +218,9 @@ fun ButtonContainer(
                 ),
                 border = BorderStroke(
                     2.dp,
-                    color = if (index % 2 == 0) colorResource(id = R.color.dark_cyan) else colorResource(R.color.white_cyan),
+                    color = if (index % 2 == 0) colorResource(id = R.color.dark_cyan) else colorResource(
+                        R.color.white_cyan
+                    ),
                 ),
                 onClick = functions[index],
                 shape = RoundedCornerShape(12.dp),
@@ -234,13 +242,19 @@ fun StepScreen(
     navigateToStep: (Int) -> Unit,
     navigateToRecipe: (String) -> Unit,
     data: Instruction,
-    id : Int,
-    maxId : Int,
-    name : String,
+    id: Int,
+    maxId: Int,
+    name: String,
+    recipeId: String?,
+    recipeImage: String?,
     viewModel: StepScreenViewModel = hiltViewModel()
-){
+) {
+    Log.d("STEP SCREEN", "$id")
+    Log.d("DATA", data.toString())
     viewModel.id.intValue = id
     viewModel.name.value = name
+    viewModel.recipeId.value = recipeId
+    viewModel.recipeImage.value = recipeImage
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -248,29 +262,36 @@ fun StepScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.pale_cyan))
-        ) {
-            if (!data.timers.isNullOrEmpty()){
-                val constant = data.timers.sumOf { it.number ?: 0 }
-                val minimums = data.timers.sumOf { it.lowerLimit ?: 0 }
-                if (minimums == 0){
-                    TimeInfoCard(time = constant, Modifier.weight(1.2f))
-                } else {
-                    val maximums = data.timers.sumOf { it.upperLimit ?: 0 }
-                    TimeInfoCard(minimums + constant, maximums + constant, Modifier.weight(1.2f))
-                }
+    ) {
+        if (!data.timers.isNullOrEmpty()) {
+            val constant = data.timers.sumOf { it.number ?: 0 }
+            val minimums = data.timers.sumOf { it.lowerLimit ?: 0 }
+            if (minimums == 0) {
+                TimeInfoCard(time = constant, Modifier.weight(1.2f))
             } else {
-                TimeInfoCard(null, Modifier.weight(1.2f))
+                val maximums = data.timers.sumOf { it.upperLimit ?: 0 }
+                TimeInfoCard(minimums + constant, maximums + constant, Modifier.weight(1.2f))
             }
-            TextContainer(data.paragraph, Modifier.weight(3f))
-            if (!data.timers.isNullOrEmpty()) {
-                Timer(
-                    data.timers,
-                    viewModel,
-                    Modifier.weight(5f)
-                )
-            } else {
-                Box(modifier = Modifier.weight(5f))
-            }
-            ButtonContainer(navigateToStep, navigateToRecipe, { viewModel.clear("${viewModel.name.value} - step ${viewModel.id.intValue}:") }, id, maxId, Modifier.weight(1f))
+        } else {
+            TimeInfoCard(null, Modifier.weight(1.2f))
         }
+        TextContainer(data.paragraph, Modifier.weight(3f))
+        if (!data.timers.isNullOrEmpty()) {
+            Timer(
+                data.timers,
+                viewModel,
+                Modifier.weight(5f)
+            )
+        } else {
+            Box(modifier = Modifier.weight(5f))
+        }
+        ButtonContainer(
+            navigateToStep,
+            navigateToRecipe,
+            { viewModel.clear("${viewModel.name.value} - step ${viewModel.id.intValue}:") },
+            id,
+            maxId,
+            Modifier.weight(1f)
+        )
     }
+}

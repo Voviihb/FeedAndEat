@@ -282,7 +282,7 @@ private fun StartButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
@@ -308,7 +308,7 @@ private fun PauseButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
@@ -334,7 +334,7 @@ private fun DropButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
@@ -446,7 +446,7 @@ fun Timer(
     viewModel : StepScreenViewModel,
     modifier: Modifier = Modifier,
 ){
-    val name = "${viewModel.name.value} - step ${viewModel.id.intValue}:"
+    val name = "${viewModel.name.value} - step ${viewModel.id.intValue + 1}:"
     if (viewModel.currentTimerMap.getOrDefault(name, "") == ""){
         viewModel.initTimer(name)
     }
