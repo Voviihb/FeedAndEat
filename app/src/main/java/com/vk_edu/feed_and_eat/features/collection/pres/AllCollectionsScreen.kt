@@ -32,7 +32,6 @@ import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
 fun AllCollectionsScreen(
-    navigateToRoute: (String) -> Unit,
     navigateToCollection: (String) -> Unit,
     viewModel: AllCollectionsScreenViewModel = hiltViewModel()
 ) {

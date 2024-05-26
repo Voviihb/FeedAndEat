@@ -21,8 +21,6 @@ import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreenViewMode
 @Composable
 fun CollectionNavGraph(
     navigateToRoute: (String) -> Unit,
-    navigateBack : () -> Unit,
-    destination: String,
     navController: NavHostController,
 ) {
     val navId = stringResource(id = R.string.nav_id)
@@ -44,7 +42,6 @@ fun CollectionNavGraph(
     ) {
         composable(CollectionRoutes.AllCollections.route){
             AllCollectionsScreen(
-                navigateToRoute,
                 navigateToCollection
             )
         }

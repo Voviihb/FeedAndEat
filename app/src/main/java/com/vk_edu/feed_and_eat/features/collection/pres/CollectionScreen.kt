@@ -22,8 +22,6 @@ fun CollectionScreen(
         Box(modifier = Modifier.padding(padding)){
             CollectionNavGraph(
                 navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
-                destination = BottomScreen.CollectionOverviewScreen.route,
                 navController = navController
             )
         }

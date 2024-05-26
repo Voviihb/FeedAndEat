@@ -75,7 +75,6 @@ fun NavGraph(
         }
         composable(BottomScreen.CollectionOverviewScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.CollectionOverviewScreen.route)
-            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
             CollectionScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
