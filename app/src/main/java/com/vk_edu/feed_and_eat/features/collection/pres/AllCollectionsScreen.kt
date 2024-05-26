@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.CollectionCard
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
@@ -34,7 +36,7 @@ fun AllCollectionsScreen( /* TODO finish this sample */
     val gridState = rememberLazyGridState()
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionOverviewScreen.route) }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -57,8 +59,11 @@ fun AllCollectionsScreen( /* TODO finish this sample */
                     contentPadding = PaddingValues(12.dp, 84.dp, 12.dp, 12.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(collections) { collection ->
-                        /*TODO put here collection cards*/
+                    items(collections) { compilation ->
+                        CollectionCard(
+                            compilation = compilation,
+                            navigateToRoute = navigateToRoute,
+                        )
                     }
                 }
         }

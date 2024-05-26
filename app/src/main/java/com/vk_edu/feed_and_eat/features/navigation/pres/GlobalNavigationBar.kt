@@ -31,7 +31,7 @@ fun GlobalNavigationBar(
     val barScreens = listOf(
         BottomScreen.HomeScreen,
         BottomScreen.SearchScreen,
-        BottomScreen.CollectionScreen,
+        BottomScreen.CollectionOverviewScreen,
         BottomScreen.InProgressScreen,
         BottomScreen.ProfileScreen
     )
@@ -76,16 +76,17 @@ fun GlobalNavigationBar(
                 modifier = Modifier
                     .background(Color.White)
                     .padding(vertical = 8.dp),
-                )
-            }
+            )
         }
     }
+}
 
 sealed class Screen(val route: String) {
     data object LoginScreen : Screen("LoginScreen")
     data object RegisterScreen : Screen("RegisterScreen")
     data object NewRecipeScreen : Screen("NewRecipeScreen")
     data object RecipeScreen : Screen("RecipeScreen")
+    data object CollectionScreen : Screen("CollectionScreen")
     data object Id : Screen("/{id}")
 }
 
@@ -93,12 +94,12 @@ sealed class BottomScreen(
     val route: String,
     val drawable : Int,
     val name : Int,
-    ) {
+) {
     data object HomeScreen : BottomScreen("HomeScreen",  R.drawable.home,  R.string.main)
     data object  SearchScreen : BottomScreen("SearchScreen", R.drawable.search, R.string.search)
-    data object CollectionScreen : BottomScreen("CollectionScreen", R.drawable.collection, R.string.collection)
     data object InProgressScreen : BottomScreen("inProgressScreen", R.drawable.progress, R.string.inProgress)
     data object ProfileScreen : BottomScreen("ProfileScreen", R.drawable.profile, R.string.profile)
+    data object CollectionOverviewScreen : BottomScreen("CollectionOverviewScreen", R.drawable.collection, R.string.collection)
 
 }
 

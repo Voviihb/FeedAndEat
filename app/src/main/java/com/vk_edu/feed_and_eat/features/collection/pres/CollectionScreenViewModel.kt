@@ -21,8 +21,6 @@ class CollectionScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepoImpl,
     private val _usersRepo: UsersRepoImpl
 ) : ViewModel() {
-    private val id = "vCrv6EvaBsSKUNTKstRr"
-
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData
 
@@ -42,7 +40,7 @@ class CollectionScreenViewModel @Inject constructor(
         loadUserFavourites()
     }
 
-    fun collectionRecipes(/*TODO pass id of collection here*/) {
+    fun collectionRecipes(id : String) {
         viewModelScope.launch {
             try {
                 _recipesRepo.loadCollectionRecipesCards(id).collect { response ->
