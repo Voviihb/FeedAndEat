@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,9 +17,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +44,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -48,13 +57,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.graphics.BoxWithCards
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
-import com.vk_edu.feed_and_eat.common.graphics.InfoSquareButton
-import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
-import com.vk_edu.feed_and_eat.common.graphics.RatingBarPres
-import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
+import com.vk_edu.feed_and_eat.common.graphics.RatingBar
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import kotlinx.coroutines.launch
@@ -249,7 +254,7 @@ fun RecipeImageContainer(
             modifier = Modifier
                 .width((screenWidth.value + 4).dp)
                 .height(labelHeight.dp)
-                .background(colorResource(id = R.color.half_transparent_blue))
+                .background(colorResource(id = R.color.transparent_pale_cyan))
                 .border(1.dp, colorResource(id = R.color.medium_cyan))
         )
     }
@@ -320,7 +325,7 @@ fun RatingContainer(
                 .padding(start = 12.dp, end = 36.dp)
         ) {
             Row{
-                RatingBarPres(model.rating)
+                RatingBar(model.rating.toFloat(), modifier = Modifier.height(25.dp))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     model.rating.toString(),
@@ -329,7 +334,7 @@ fun RatingContainer(
             }
             Row{
                 MediumIcon(
-                    painter = painterResource(R.drawable.povar),
+                    painter = painterResource(R.drawable.cooked_icon),
                     color = colorResource(id = R.color.black),
                     modifier = Modifier.size(32.dp)
                 )
@@ -348,26 +353,9 @@ fun RatingContainer(
 fun RecipePreview(
     navigateBack : () -> Unit,
     navigateToStep: (Int) -> Unit,
-    step : Int? = null,
     viewModel: RecipesScreenViewModel,
 ) {
-    val recipe = viewModel.recipe.value
-    if (step != null){
-        if (viewModel.loading.value) {
-            LoadingCircular()
-        } else {
-            if (viewModel.errorMessage.value != null) {
-                RepeatButton(onClick = {
-                    viewModel.clearError()
-                    viewModel.clearCollectionError()
-                    viewModel.loadRecipeById(viewModel.recipe.value.id ?: "")
-                    viewModel.loadCollections()
-                })
-            } else {
-                navigateToStep(step - 1)
-            }
-        }
-    }
+    val recipe  = viewModel.recipe.value
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     drawerState.isAnimationRunning
     val scope = rememberCoroutineScope()
@@ -434,6 +422,81 @@ fun RecipePreview(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun InfoSquareButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+){
+    Button(
+        onClick = onClick,
+        contentPadding = PaddingValues(0.dp),
+        shape = RectangleShape,
+        colors = ButtonDefaults.outlinedButtonColors(colorResource(R.color.transparent)),
+        modifier = modifier
+            .height(60.dp)
+            .width(60.dp)
+            .background(colorResource(R.color.white), shape = RoundedCornerShape(12.dp))
+            .clip(shape = RoundedCornerShape(12.dp))
+            .border(
+                2.dp,
+                color = colorResource(id = R.color.dark_cyan),
+                shape = RoundedCornerShape(12.dp)
+            ),
+    ){
+        Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = stringResource(id = R.string.info),
+            tint = colorResource(id = R.color.dark_cyan),
+            modifier = Modifier
+                .height(50.dp)
+                .width(50.dp)
+        )
+    }
+}
+
+
+@Composable
+fun TextBox(text : String){
+    val lightWhite =  colorResource(id = R.color.white)
+    Text(
+        text = text,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .padding(5.dp)
+            .width(80.dp)
+            .background(lightWhite, shape = RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(4.dp)),
+    )
+}
+
+@Composable
+fun BoxWithCards(bigText : List<String?>){
+    val turquoise = colorResource(id = R.color.dark_cyan)
+    val lightBlue = colorResource(id = R.color.pale_cyan)
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(70.dp),
+        contentPadding = PaddingValues(5.dp),
+        modifier = Modifier
+            .padding(12.dp)
+            .height(200.dp)
+            .fillMaxWidth()
+            .background(lightBlue, RoundedCornerShape(12.dp))
+            .border(2.dp, turquoise, RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+    ){
+        for (item in bigText){
+            item{
+                if (item != null){
+                    TextBox(
+                        text = item,
+                    )
                 }
             }
         }

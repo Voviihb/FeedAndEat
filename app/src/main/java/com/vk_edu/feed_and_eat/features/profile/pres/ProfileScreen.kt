@@ -1,61 +1,54 @@
 package com.vk_edu.feed_and_eat.features.profile.pres
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.BoldText
+import com.vk_edu.feed_and_eat.common.graphics.DarkText
+import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
+import com.vk_edu.feed_and_eat.ui.theme.LargeText
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
 @Composable
 fun ProfileScreen(
     navigateToRoute: (String) -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
-    val profileInfo by viewModel.profileState
-    val loading by viewModel.loading
-    val selectedThemeOption by viewModel.selectedTheme
-    val selectedProfileOption by viewModel.selectedProfileType
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.ProfileScreen.route) }
     ) { padding ->
@@ -68,110 +61,87 @@ fun ProfileScreen(
             LaunchedEffect(Unit) {
                 viewModel.loadProfileInfo()
             }
-            if (loading) {
-                LoadingCircular(modifier = Modifier.padding(4.dp))
+            if (viewModel.loading.value) {
+                LoadingCircular()
             } else {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(12.dp),
                 ) {
-                    UserInfoBlock(profileInfo)
+                    UserInfoBlock(viewModel.profileState.value)
+                    AboutMeBlock(viewModel.profileState.value, viewModel)
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        AboutMeBlock(profileInfo, viewModel)
                         SaveInfoButton(viewModel = viewModel)
                         LogoutButton(viewModel = viewModel, navigateToRoute = navigateToRoute)
-                        SettingsBlock(viewModel, selectedThemeOption, selectedProfileOption)
                     }
-
                 }
             }
         }
     }
-
 }
 
 @Composable
-private fun UserInfoBlock(profileInfo: Profile) {
-    Row(modifier = Modifier.fillMaxWidth()) {
+private fun UserInfoBlock(profileInfo: Profile, modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
         Image(
             painter = painterResource(id = R.drawable.user_default_icon),
             contentDescription = stringResource(R.string.user_profile_icon),
             modifier = Modifier.size(100.dp)
         )
         Column(
-            modifier = Modifier.padding(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = stringResource(R.string.e_mail),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Normal
-                )
-                Text(
-
+                LightText(text = stringResource(R.string.e_mail), fontSize = LargeText)
+                DarkText(
                     text = profileInfo.email ?: stringResource(id = R.string.anonymous_user),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Right
+                    fontSize = LargeText
                 )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = stringResource(R.string.nickname),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Normal
-                )
-                Text(
+                LightText(text = stringResource(R.string.nickname), fontSize = LargeText)
+                DarkText(
                     text = profileInfo.nickname ?: stringResource(id = R.string.anonymous_user),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Right
+                    fontSize = LargeText
                 )
             }
-
         }
     }
 }
 
 @Composable
-private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel) {
+private fun AboutMeBlock(
+    profileInfo: Profile,
+    viewModel: ProfileScreenViewModel,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(R.string.about_me),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Normal
-        )
+        LightText(text = stringResource(R.string.about_me), fontSize = LargeText)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .padding(vertical = 8.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .border(
-                    1.dp,
-                    colorResource(id = R.color.dark_cyan),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .background(Color.Transparent)
-
+                .border(1.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
         ) {
             TextField(
                 value = profileInfo.aboutMe,
-                onValueChange = { viewModel.aboutMeChanged(it) },
                 modifier = Modifier.fillMaxSize(),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = colorResource(id = R.color.white_cyan),
@@ -184,18 +154,20 @@ private fun AboutMeBlock(profileInfo: Profile, viewModel: ProfileScreenViewModel
                     unfocusedTextColor = Color.Black,
                     disabledTextColor = Color.Black,
                 ),
-                placeholder = { Text(stringResource(R.string.enter_information_about_yourself)) },
-                textStyle = TextStyle(fontSize = 20.sp)
+                placeholder = { LightText(
+                    text = stringResource(R.string.enter_information_about_yourself),
+                    fontSize = MediumText
+                ) },
+                textStyle = TextStyle(fontSize = MediumText),
+                onValueChange = { viewModel.aboutMeChanged(it) }
             )
         }
-
     }
 }
 
 @Composable
-private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
+private fun SaveInfoButton(viewModel: ProfileScreenViewModel, modifier: Modifier = Modifier) {
     Button(
-        onClick = { viewModel.updateUserProfile() },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.white_cyan),
@@ -203,147 +175,43 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel) {
             disabledContainerColor = colorResource(id = R.color.white_cyan),
             disabledContentColor = colorResource(id = R.color.black)
         ),
-        modifier = Modifier
-            .padding(vertical = 16.dp)
-            .border(
-                1.dp,
-                colorResource(id = R.color.dark_cyan),
-                shape = RoundedCornerShape(12.dp)
-            )
-
+        border = BorderStroke(1.dp, colorResource(id = R.color.dark_cyan)),
+        modifier = modifier.shadow(12.dp, RoundedCornerShape(12.dp)),
+        onClick = { viewModel.updateUserProfile() }
     ) {
-        Column(
-            modifier = Modifier
-                .padding(vertical = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                stringResource(R.string.save_information),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-
+        BoldText(
+            text = stringResource(R.string.save_information),
+            fontSize = LargeText,
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
     }
 }
 
 @Composable
-private fun LogoutButton(viewModel: ProfileScreenViewModel, navigateToRoute: (String) -> Unit) {
+private fun LogoutButton(
+    viewModel: ProfileScreenViewModel,
+    navigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
-        onClick = {
-            viewModel.logout(navigateToRoute)
-        },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
-            containerColor = Color.Red,
+            containerColor = colorResource(id = R.color.red),
             contentColor = colorResource(id = R.color.white),
-            disabledContainerColor = Color.Red,
+            disabledContainerColor = colorResource(id = R.color.red),
             disabledContentColor = colorResource(id = R.color.white)
         ),
-        modifier = Modifier.padding(bottom = 16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(vertical = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(stringResource(R.string.logout), fontSize = 24.sp, fontWeight = FontWeight.Medium)
+        modifier = modifier.shadow(12.dp, RoundedCornerShape(12.dp)),
+        onClick = {
+            viewModel.logout(navigateToRoute)
         }
-    }
-}
-
-@Composable
-private fun SettingsBlock(
-    viewModel: ProfileScreenViewModel,
-    selectedThemeOption: ThemeSelection,
-    selectedProfileOption: ProfileType
-) {
-    val themes = mapOf(
-        ThemeSelection.LIGHT to stringResource(R.string.light_theme),
-        ThemeSelection.DARK to stringResource(R.string.dark_theme),
-        ThemeSelection.AS_SYSTEM to stringResource(R.string.as_system_theme)
-    )
-    val profileTypes = mapOf(
-        ProfileType.PUBLIC to stringResource(R.string.public_profile),
-        ProfileType.PRIVATE to stringResource(R.string.private_profile)
-    )
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = stringResource(R.string.settings),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(vertical = 8.dp)
+            text = stringResource(R.string.logout),
+            fontSize = LargeText,
+            color = colorResource(R.color.white),
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 4.dp)
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.theme),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Normal
-            )
-            Column(
-                Modifier
-                    .selectableGroup()
-                    .width(200.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                viewModel.themes.forEach { element ->
-                    Row(verticalAlignment = Alignment.CenterVertically)
-                    {
-                        RadioButton(
-                            selected = (element == selectedThemeOption),
-                            onClick = { viewModel.onThemeOptionSelected(element) },
-                            colors = RadioButtonColors(
-                                selectedColor = Color.Black,
-                                unselectedColor = Color.Black,
-                                disabledSelectedColor = Color.Black,
-                                disabledUnselectedColor = Color.Black
-                            )
-                        )
-                        Text(text = themes[element].toString(), fontSize = 20.sp)
-                    }
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.profile),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Normal
-            )
-            Column(
-                Modifier
-                    .selectableGroup()
-                    .width(200.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                viewModel.profileType.forEach { element ->
-                    Row(verticalAlignment = Alignment.CenterVertically)
-                    {
-                        RadioButton(
-                            selected = (element == selectedProfileOption),
-                            onClick = { viewModel.onProfileOptionSelected(element) },
-                            colors = RadioButtonColors(
-                                selectedColor = Color.Black,
-                                unselectedColor = Color.Black,
-                                disabledSelectedColor = Color.Black,
-                                disabledUnselectedColor = Color.Black
-                            )
-                        )
-                        Text(text = profileTypes[element].toString(), fontSize = 20.sp)
-                    }
-                }
-            }
-        }
     }
 }

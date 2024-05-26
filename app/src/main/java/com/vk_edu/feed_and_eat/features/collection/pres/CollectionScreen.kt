@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -20,7 +21,6 @@ import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
 
@@ -28,12 +28,14 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 fun CollectionScreen(
     navigateToRoute: (String) -> Unit,
     navigateBack: () -> Unit,
+    id : String,
+    destination: String,
     viewModel: CollectionScreenViewModel = hiltViewModel()
 ) {
-    viewModel.collectionRecipes()
+    viewModel.collectionRecipes(id)
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, destination) }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -45,7 +47,7 @@ fun CollectionScreen(
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(onClick = {
                     viewModel.clearError()
-                    viewModel.collectionRecipes()
+                    viewModel.collectionRecipes(id)
                 })
             else
                 CardsGrid(viewModel = viewModel, navigateToRoute)
@@ -61,6 +63,9 @@ fun CardsGrid(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val userFavourites by viewModel.favouriteRecipeIds
+    val favouritesId by viewModel.favouritesCollectionId
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -70,15 +75,12 @@ fun CardsGrid(
     ) {
         items(viewModel.cardsData.value) { cardData ->
             DishCard(
-                link = cardData.image,
-                ingredients = cardData.ingredients,
-                steps = cardData.steps,
-                name = cardData.name,
-                rating = cardData.rating,
-                cooked = cardData.cooked,
-                id = cardData.recipeId,
-                navigateToRoute = navigateToRoute,
-                addToFavourites = null /* TODO pass function */
+                recipeCard = cardData,
+                inFavourites = cardData.recipeId in userFavourites,
+                favouritesCollectionId = favouritesId,
+                addToFavourites = viewModel::addRecipeToUserCollection,
+                removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+                navigateToRoute = navigateToRoute
             )
         }
     }
