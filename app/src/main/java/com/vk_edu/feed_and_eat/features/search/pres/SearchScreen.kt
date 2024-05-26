@@ -210,7 +210,7 @@ fun CardsGrid(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val userFavourites by viewModel.favouritesData
+    val userFavourites by viewModel.favouriteRecipeIds
     val gridState = rememberLazyGridState()
     val cardsData = viewModel.cardsDataPager.collectAsLazyPagingItems()
     if (viewModel.reloadData.value) {
@@ -234,13 +234,12 @@ fun CardsGrid(
                 val cardData = cardsData[index]
                 if (cardData != null)
                     DishCard(
-                        navigateToRoute = navigateToRoute,
-                        inFavourites = cardData.recipeId in userFavourites,
                         recipeCard = cardData,
+                        inFavourites = cardData.recipeId in userFavourites,
+                        favouritesCollectionId = viewModel.favouritesCollectionId.value,
                         addToFavourites = viewModel::addRecipeToUserCollection,
                         removeFromFavourites = viewModel::removeRecipeFromUserCollection,
-                        updateFavourites = viewModel::loadUserFavourites,
-                        favouritesId = viewModel.favouritesId.value
+                        navigateToRoute = navigateToRoute
                     )
             }
         }

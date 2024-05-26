@@ -32,14 +32,13 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 @Composable
 fun DishCard(
     recipeCard: RecipeCard,
-    inFavourites: Boolean = false,
-    favouritesId: String?,
+    inFavourites: Boolean,
+    favouritesCollectionId: String?,
     addToFavourites: ((String, RecipeCard) -> Unit),
     removeFromFavourites: ((String, RecipeCard) -> Unit),
-    updateFavourites: (() -> Unit),
-    modifier: Modifier = Modifier,
-    largeCard: Boolean = false,
     navigateToRoute: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    largeCard: Boolean = false
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -128,22 +127,18 @@ fun DishCard(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {
-                        if (favouritesId != null) {
-                            if (inFavourites) {
-                                removeFromFavourites(favouritesId, recipeCard)
-                                updateFavourites()
-                            } else {
-                                addToFavourites(favouritesId, recipeCard)
-                                updateFavourites()
-                            }
+                        if (favouritesCollectionId != null) {
+                            if (inFavourites)
+                                removeFromFavourites(favouritesCollectionId, recipeCard)
+                            else
+                                addToFavourites(favouritesCollectionId, recipeCard)
                         }
                     }
                 ) {
                     SmallIcon(
-                        painter = painterResource(R.drawable.like_icon),
-                        color = if (inFavourites) colorResource(id = R.color.red) else colorResource(
-                            R.color.white
-                        ),
+                        painter = if (inFavourites) painterResource(R.drawable.shaded_like_icon)
+                        else painterResource(R.drawable.like_icon),
+                        color = colorResource(R.color.white)
                     )
                 }
             }

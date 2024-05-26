@@ -62,8 +62,8 @@ fun CardsGrid(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val userFavourites by viewModel.favouritesData
-    val favouritesId by viewModel.favouritesId
+    val userFavourites by viewModel.favouriteRecipeIds
+    val favouritesId by viewModel.favouritesCollectionId
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -74,13 +74,12 @@ fun CardsGrid(
     ) {
         items(viewModel.cardsData.value) { cardData ->
             DishCard(
-                navigateToRoute = navigateToRoute,
-                inFavourites = cardData.recipeId in userFavourites,
                 recipeCard = cardData,
-                favouritesId = favouritesId,
+                inFavourites = cardData.recipeId in userFavourites,
+                favouritesCollectionId = favouritesId,
                 addToFavourites = viewModel::addRecipeToUserCollection,
                 removeFromFavourites = viewModel::removeRecipeFromUserCollection,
-                updateFavourites = viewModel::loadUserFavourites
+                navigateToRoute = navigateToRoute
             )
         }
     }

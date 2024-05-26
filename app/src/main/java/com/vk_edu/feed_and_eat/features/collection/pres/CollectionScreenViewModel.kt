@@ -26,13 +26,11 @@ class CollectionScreenViewModel @Inject constructor(
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData
 
-    private val _collectionsData = mutableStateOf(listOf<Compilation>())
+    private val _favouriteRecipeIds = mutableStateOf(listOf<String>())
+    val favouriteRecipeIds: State<List<String>> = _favouriteRecipeIds
 
-    private val _favouritesData = mutableStateOf(listOf<String>())
-    val favouritesData: State<List<String>> = _favouritesData
-
-    private val _favouritesId = mutableStateOf<String?>(null)
-    val favouritesId: State<String?> = _favouritesId
+    private val _favouritesCollectionId = mutableStateOf<String?>(null)
+    val favouritesCollectionId: State<String?> = _favouritesCollectionId
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -83,6 +81,7 @@ class CollectionScreenViewModel @Inject constructor(
     fun loadUserFavourites() {
         viewModelScope.launch {
             try {
+                var collectionsData = listOf<Compilation>()
                 val user = _authRepo.getUserId()
                 if (user != null) {
                     _usersRepo.getUserCollections(userId = user).collect { response ->
@@ -90,7 +89,7 @@ class CollectionScreenViewModel @Inject constructor(
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 if (response.data != null) {
-                                    _collectionsData.value = response.data
+                                    collectionsData = response.data
                                 }
                             }
 
@@ -101,8 +100,8 @@ class CollectionScreenViewModel @Inject constructor(
                     }
 
                     val favouritesId =
-                        _collectionsData.value.filter { it.name == "Favourites" }[0].id
-                    _favouritesId.value = favouritesId
+                        collectionsData.filter { it.name == "Favourites" }[0].id
+                    _favouritesCollectionId.value = favouritesId
 
                     if (favouritesId != null) {
                         _recipesRepo.loadCollectionRecipesId(id = favouritesId)
@@ -111,7 +110,7 @@ class CollectionScreenViewModel @Inject constructor(
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
                                         if (response.data != null) {
-                                            _favouritesData.value = response.data.recipeIds
+                                            _favouriteRecipeIds.value = response.data.recipeIds
                                         }
                                     }
 
@@ -144,9 +143,11 @@ class CollectionScreenViewModel @Inject constructor(
                         recipe.image
                     ).collect { response ->
                         when (response) {
-                            is Response.Loading -> _loading.value = true
+                            is Response.Loading -> { }
                             is Response.Success -> {
-                                /* TODO add success flow */
+                                val favouriteIds = _favouriteRecipeIds.value.toMutableList()
+                                favouriteIds.add(recipe.recipeId)
+                                _favouriteRecipeIds.value = favouriteIds
                             }
 
                             is Response.Failure -> {
@@ -159,7 +160,6 @@ class CollectionScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 onError(e)
             }
-            _loading.value = false
         }
     }
 
@@ -169,9 +169,11 @@ class CollectionScreenViewModel @Inject constructor(
                 _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe.recipeId)
                     .collect { response ->
                         when (response) {
-                            is Response.Loading -> _loading.value = true
+                            is Response.Loading -> { }
                             is Response.Success -> {
-                                /* TODO add success flow */
+                                val favouriteIds = _favouriteRecipeIds.value.toMutableList()
+                                favouriteIds.remove(recipe.recipeId)
+                                _favouriteRecipeIds.value = favouriteIds
                             }
 
                             is Response.Failure -> {
@@ -182,7 +184,6 @@ class CollectionScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 onError(e)
             }
-            _loading.value = false
         }
     }
 
