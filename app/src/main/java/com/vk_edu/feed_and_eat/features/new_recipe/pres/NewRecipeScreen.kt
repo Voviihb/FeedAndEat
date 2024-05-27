@@ -8,6 +8,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,29 +17,43 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedTextInput
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
-import com.vk_edu.feed_and_eat.ui.theme.LargeText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
@@ -58,13 +74,14 @@ fun NewRecipeScreen(
                 .background(colorResource(R.color.white))
         ) {
             FirstPart(viewModel)
-            SecondPart(viewModel, navigateBack)
+            SecondPart(viewModel)
+            WindowDialog(viewModel, navigateBack)
         }
     }
 }
 
 @Composable
-fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, modifier: Modifier = Modifier) {
+fun SecondPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
@@ -121,8 +138,7 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
                     .height(40.dp)
                     .weight(2f),
                 onClick = {
-                    viewModel.saveRecipe()
-                    navigateBack()
+                    viewModel.openWindowDialog()
                 }
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -132,7 +148,9 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
                 modifier = Modifier
                     .height(40.dp)
                     .weight(2f),
-                onClick = navigateBack
+                onClick = {
+                    viewModel.openWindowCancelDialog()
+                }
             )
         }
     }
@@ -232,3 +250,114 @@ fun FirstPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier
         }
     }
 }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun WindowDialog(
+    viewModel: NewRecipeScreenViewModel,
+    navigateBack: () -> Unit
+) {
+    if (viewModel.activeWindowDialog.value) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ){
+            AlertDialog(
+                onDismissRequest = { viewModel.closeDialogs() },
+                title = { LightText(
+                            text = "Choose tags for your recipe (if you want) and confirm saving recipe",
+                            fontSize = MediumText
+                        ) },
+                text = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .background(colorResource(R.color.white_cyan), RoundedCornerShape(8.dp))
+                            .border(1.dp, colorResource(R.color.medium_cyan), RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        FlowRow(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            val localDensity = LocalDensity.current
+                            for (index in 0 until viewModel.tags.value.size) {
+                                var rowHeightDp by remember { mutableStateOf(100.dp) }
+                                Card(
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = CardColors(
+                                        colorResource(R.color.white), colorResource(R.color.white),
+                                        colorResource(R.color.white), colorResource(R.color.white)
+                                    ),
+                                    modifier = Modifier.height(rowHeightDp),
+                                    onClick = { viewModel.tagCheckingChanged(index) }
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(8.dp, 4.dp)
+                                    ) {
+                                        Checkbox(
+                                            checked = viewModel.tags.value[index].ckecked,
+                                            colors = CheckboxColors(
+                                                colorResource(R.color.black),
+                                                colorResource(R.color.black),
+                                                colorResource(R.color.white),
+                                                colorResource(R.color.white),
+                                                colorResource(R.color.white),
+                                                colorResource(R.color.white),
+                                                colorResource(R.color.white),
+                                                colorResource(R.color.black),
+                                                colorResource(R.color.black),
+                                                colorResource(R.color.black),
+                                                colorResource(R.color.black),
+                                                colorResource(R.color.black)
+                                            ),
+                                            modifier = Modifier.size(16.dp),
+                                            onCheckedChange = { viewModel.tagCheckingChanged(index) }
+                                        )
+                                        DarkText(
+                                            text = viewModel.tags.value[index].name,
+                                            fontSize = SmallText,
+                                            modifier = Modifier
+                                                .onGloballyPositioned { coordinates ->
+                                                    val rowHeightDpCurrent =
+                                                        with(localDensity) { coordinates.size.height.toDp() } + 8.dp
+                                                    if (rowHeightDp == 100.dp)
+                                                        rowHeightDp = rowHeightDpCurrent
+                                                }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    OutlinedThemeButton(
+                        text = "Confirm save",
+                        fontSize = MediumText,
+                        modifier = Modifier
+                            .height(40.dp),
+                        onClick = {
+                            viewModel.closeDialogs()
+                            viewModel.saveRecipe()
+                            navigateBack()
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .border(
+                        2.dp,
+                        colorResource(id = R.color.dark_cyan),
+                        RoundedCornerShape(24.dp)
+                    )
+                    .clip(RoundedCornerShape(24.dp))
+            )
+        }
+    }
+}
+

@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
@@ -46,7 +47,8 @@ class NewRecipeRepoImpl @Inject constructor(
             instructions = instructions,
             tags = tags,
             user = user,
-            created = Date(Timestamp(System.currentTimeMillis()).time)
+            created = Date(Timestamp(System.currentTimeMillis()).time),
+            nutrients = Nutrients(10e9, 10e9, 10e9, 10e9)
         )
         db.collection(RECIPES_COLLECTION).document(docId).set(recipe).await()
         return@repoTryCatchBlock docId

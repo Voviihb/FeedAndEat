@@ -5,16 +5,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
+import com.vk_edu.feed_and_eat.features.search.pres.TagChecking
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NewRecipeScreenViewModel @Inject constructor(
+    private val _recipesRepo: RecipesRepoImpl,
     private val _authRepo: AuthRepoImpl,
     private val _newRecipeRepo: NewRecipeRepoImpl
 ) : ViewModel() {
@@ -33,14 +36,42 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _currentStepIndex = mutableStateOf(0)
     val currentStepIndex: State<Int> = _currentStepIndex
 
-    private val _tags = mutableStateOf(listOf<String>())
-    val tags: State<List<String>> = _tags
+    private val _tags = mutableStateOf(listOf<TagChecking>())
+    val tags: State<List<TagChecking>> = _tags
+
+    private val _activeWindowDialog = mutableStateOf(false)
+    val activeWindowDialog: State<Boolean> = _activeWindowDialog
+
+    private val _activeWindowCancelDialog = mutableStateOf(false)
+    val activeWindowCancelDialog: State<Boolean> = _activeWindowCancelDialog
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
+
+    init {
+        viewModelScope.launch {
+            try {
+                _recipesRepo.loadTags().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            _tags.value = response.data.map { TagChecking(it.name, false) }
+                        }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
+    }
 
     fun saveRecipe() {
         viewModelScope.launch {
@@ -51,7 +82,7 @@ class NewRecipeScreenViewModel @Inject constructor(
                         _name.value,
                         _imagePath.value,
                         _steps.value,
-                        _tags.value
+                        _tags.value.filter { it.ckecked }.map { it.name }
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
@@ -119,16 +150,23 @@ class NewRecipeScreenViewModel @Inject constructor(
         _currentStep.value = _currentStep.value.copy(paragraph = text)
     }
 
-    fun addTag(tag: String) {
+    fun tagCheckingChanged(tag: Int) {
         val actualTags = _tags.value.toMutableList()
-        actualTags.add(tag)
+        actualTags[tag] = TagChecking(tags.value[tag].name, !tags.value[tag].ckecked)
         _tags.value = actualTags
     }
 
-    fun deleteTag(tag: String) {
-        val actualTags = _tags.value.toMutableList()
-        actualTags.remove(tag)
-        _tags.value = actualTags
+    fun closeDialogs() {
+        _activeWindowDialog.value = false
+        _activeWindowCancelDialog.value = false
+    }
+
+    fun openWindowDialog() {
+        _activeWindowDialog.value = true
+    }
+
+    fun openWindowCancelDialog() {
+        _activeWindowCancelDialog.value = true
     }
 
     private fun onError(message: Exception?) {
