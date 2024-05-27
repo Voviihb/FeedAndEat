@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -254,6 +255,7 @@ private fun ProfileImage(link: Any?, onClick: () -> Unit, modifier: Modifier = M
         contentScale = ContentScale.Crop,
         modifier = modifier
             .size(100.dp)
+            .clip(CircleShape)
             .clickable(onClick = onClick)
     )
 }
@@ -272,6 +274,7 @@ private fun DefaultProfileImage(onClick: () -> Unit, modifier: Modifier = Modifi
         contentScale = ContentScale.Crop,
         modifier = modifier
             .size(100.dp)
+            .clip(CircleShape)
             .clickable(onClick = onClick)
     )
 }
