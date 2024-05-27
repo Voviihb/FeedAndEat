@@ -38,8 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
-import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
+import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
@@ -140,12 +140,12 @@ fun CollectionCard(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LargeIcon(
+            MediumIcon(
                 painter = painterResource(id = R.drawable.plus), 
                 color = colorResource(id = R.color.dark_cyan),
                 modifier = Modifier
                     .aspectRatio(4f / 3f)
-                    .padding(12.dp)
+                    .padding(24.dp)
             )
             BoldText(
                 text = stringResource(id = R.string.new_collection),

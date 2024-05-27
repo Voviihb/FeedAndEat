@@ -203,7 +203,7 @@ class SearchScreenViewModel @Inject constructor(
                     }
 
                     val favouritesId =
-                        collectionsData.filter { it.name == "Favourites" }[0].id
+                        collectionsData.filter { it.name == FAVOURITES }[0].id
                     _favouritesCollectionId.value = favouritesId
 
                     if (favouritesId != null) {
@@ -345,5 +345,6 @@ class SearchScreenViewModel @Inject constructor(
 
     companion object {
         private const val LIMIT = 20
+        private const val FAVOURITES = "Favourites"
     }
 }

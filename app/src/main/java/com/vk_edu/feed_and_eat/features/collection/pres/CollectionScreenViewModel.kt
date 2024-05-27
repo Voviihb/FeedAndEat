@@ -98,7 +98,7 @@ class CollectionScreenViewModel @Inject constructor(
                     }
 
                     val favouritesId =
-                        collectionsData.filter { it.name == "Favourites" }[0].id
+                        collectionsData.filter { it.name == FAVOURITES }[0].id
                     _favouritesCollectionId.value = favouritesId
 
                     if (favouritesId != null) {
@@ -192,5 +192,9 @@ class CollectionScreenViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    companion object {
+        private const val FAVOURITES = "Favourites"
     }
 }

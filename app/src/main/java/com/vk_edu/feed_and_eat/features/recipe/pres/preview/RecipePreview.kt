@@ -273,6 +273,7 @@ fun RecipePreview(
                             BottomBar(
                                 navigateToStep,
                                 viewModel,
+                                recipe,
                                 Modifier.height(60.dp)
                             )
                         },
