@@ -102,7 +102,7 @@ private fun UserInfoBlock(
             viewModel.imageChanged(uri)
         }
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
         if (viewModel.imagePath.value != null) {
