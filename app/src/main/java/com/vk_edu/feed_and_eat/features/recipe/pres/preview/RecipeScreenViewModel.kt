@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
@@ -21,13 +22,13 @@ class RecipesScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
     private val privateRecipe = mutableStateOf(Recipe())
-    var recipe : State<Recipe> = privateRecipe
+    var recipe: State<Recipe> = privateRecipe
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
     private val _collectionLoading = mutableStateOf(false)
-    val collectionLoading : State<Boolean> = _collectionLoading
+    val collectionLoading: State<Boolean> = _collectionLoading
 
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
@@ -36,10 +37,10 @@ class RecipesScreenViewModel @Inject constructor(
     val collectionErrorMessage: State<Exception?> = _errorMessage
 
     private val _collectionList = mutableStateOf(listOf(CollectionDataModel()))
-    val collectionsList : State<List<CollectionDataModel>>? = _collectionList
+    val collectionsList: State<List<CollectionDataModel>> = _collectionList
 
     private val _collectionButtonExpanded = mutableStateOf(false)
-    val collectionButtonExpanded : State<Boolean> = _collectionButtonExpanded
+    val collectionButtonExpanded: State<Boolean> = _collectionButtonExpanded
 
     fun loadRecipeById(id: String) {
         viewModelScope.launch {
@@ -86,11 +87,11 @@ class RecipesScreenViewModel @Inject constructor(
 
     fun isUserAuthenticated() = _authRepo.isUserAuthenticatedInFirebase()
 
-    fun loadCollections(){
+    fun loadCollections() {
         viewModelScope.launch {
             try {
                 val userId = _authRepo.getUserId()
-                if (userId != null){
+                if (userId != null) {
                     _usersRepo.getUserCollections(userId).collect { response ->
                         when (response) {
                             is Response.Loading -> _collectionLoading.value = true
@@ -114,7 +115,38 @@ class RecipesScreenViewModel @Inject constructor(
         }
     }
 
-    fun expand(){
+    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
+        viewModelScope.launch {
+            try {
+                val user = _authRepo.getUserId()
+                if (user != null) {
+                    _recipesRepo.addRecipeToUserCollection(
+                        user,
+                        collectionId,
+                        recipe.recipeId,
+                        recipe.image
+                    ).collect { response ->
+                        when (response) {
+                            is Response.Loading -> {}
+                            is Response.Success -> {
+
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+        }
+    }
+
+
+    fun expand() {
         _collectionButtonExpanded.value = !_collectionButtonExpanded.value
     }
 }

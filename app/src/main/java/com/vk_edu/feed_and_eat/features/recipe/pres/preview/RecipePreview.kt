@@ -60,8 +60,8 @@ import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
-import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
+import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import kotlinx.coroutines.launch
@@ -404,6 +404,7 @@ fun RecipePreview(
                             BottomBar(
                                 navigateToStep,
                                 viewModel,
+                                recipe,
                                 Modifier.height(60.dp)
                             )
                         },

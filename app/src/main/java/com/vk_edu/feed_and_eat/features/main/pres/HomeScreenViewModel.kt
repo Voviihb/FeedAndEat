@@ -239,25 +239,26 @@ class HomeScreenViewModel @Inject constructor(
                     }
 
                     val favouritesId = collectionsData.filter {
-                        it.name == "Favourites"
+                        it.name == FAVOURITES
                     }[0].id
                     _favouritesCollectionId.value = favouritesId
 
                     if (favouritesId != null) {
-                        _recipesRepo.loadCollectionRecipesId(id = favouritesId).collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    if (response.data != null) {
-                                        _favouriteRecipeIds.value = response.data.recipeIds
+                        _recipesRepo.loadCollectionRecipesId(id = favouritesId)
+                            .collect { response ->
+                                when (response) {
+                                    is Response.Loading -> _loading.value = true
+                                    is Response.Success -> {
+                                        if (response.data != null) {
+                                            _favouriteRecipeIds.value = response.data.recipeIds
+                                        }
+                                    }
+
+                                    is Response.Failure -> {
+                                        onError(response.e)
                                     }
                                 }
-
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
                             }
-                        }
                     }
                 }
             } catch (e: Exception) {
@@ -279,7 +280,7 @@ class HomeScreenViewModel @Inject constructor(
                         recipe.image
                     ).collect { response ->
                         when (response) {
-                            is Response.Loading -> { }
+                            is Response.Loading -> {}
                             is Response.Success -> {
                                 val favouriteIds = _favouriteRecipeIds.value.toMutableList()
                                 favouriteIds.add(recipe.recipeId)
@@ -305,7 +306,7 @@ class HomeScreenViewModel @Inject constructor(
                 _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe.recipeId)
                     .collect { response ->
                         when (response) {
-                            is Response.Loading -> { }
+                            is Response.Loading -> {}
                             is Response.Success -> {
                                 val favouriteIds = _favouriteRecipeIds.value.toMutableList()
                                 favouriteIds.remove(recipe.recipeId)
@@ -330,5 +331,9 @@ class HomeScreenViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    companion object {
+        private const val FAVOURITES = "Favourites"
     }
 }
