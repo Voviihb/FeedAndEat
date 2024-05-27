@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
@@ -126,6 +126,7 @@ fun InfoSurface(
                         RoundedCornerShape(12.dp, 0.dp, 0.dp, 12.dp)
                     )
                     .clip(RoundedCornerShape(12.dp, 0.dp, 0.dp, 12.dp))
+//                    .verticalScroll(rememberScrollState())
                     .border(
                         2.dp,
                         colorResource(id = R.color.dark_cyan),
@@ -133,51 +134,54 @@ fun InfoSurface(
                     )
             ){
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 12.dp)
+                        .padding(vertical = 8.dp)
+
                 ) {
                     listOf(
-                        listOf(stringResource(id = R.string.small_ingredients), model.ingredients.size),
+                        listOf(stringResource(id = R.string.ingredients), model.ingredients.size),
                         listOf(stringResource(id = R.string.step), model.instructions.size)
                     ).forEach{data ->
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Box(
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
-                                .clip(shape = RoundedCornerShape(12.dp))
                                 .fillMaxWidth()
-                                .background(colorResource(id = R.color.pale_cyan), RoundedCornerShape(12.dp))
-                                .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
-                                .clip(RoundedCornerShape(12.dp))
-                        ){
+                        ) {
                             Text(
-                                text = "${data[0]}: " + data[1],
+                                text = "${data[0]}:",
                                 fontSize = MediumText,
                                 color = colorResource(id = R.color.gray),
                                 textAlign = TextAlign.Start,
-                                modifier = Modifier.padding(8.dp)
+                                modifier = Modifier
+                                )
+                            DarkText(
+                                text = "${data[1]}",
+                                fontSize = MediumText,
+                                modifier = Modifier
                             )
                         }
-
                     }
+
                     Text(
-                        stringResource(
-                            id = R.string.ingredients),
+                        "${stringResource(
+                            id = R.string.ingredients)}:",
                         fontSize = SmallText,
                         color = colorResource(R.color.gray),
                     )
                     BoxWithCards(bigText = ingredients.map { it.name }.toList())
                     Text(
-                        stringResource(
-                            id = R.string.tags_data),
+                        "${stringResource(
+                        id = R.string.tags_data)}:",
                         fontSize = SmallText,
                         color = colorResource(R.color.gray),
                     )
                     BoxWithCards(bigText = model.tags ?: listOf())
                     Text(
-                        stringResource(
-                            id = R.string.energy_value),
+                        "${stringResource(
+                            id = R.string.energy_value)}:",
                         fontSize = MediumText,
                         color = colorResource(R.color.gray)
                     )
@@ -187,7 +191,7 @@ fun InfoSurface(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 8.dp, end = 12.dp)
+//                                    .padding(start = 8.dp, end = 12.dp)
                             ){
                                 Text(
                                     text = names[i],
@@ -225,7 +229,6 @@ fun TextBox(text : String){
 fun BoxWithCards(bigText : List<String?>){
     Box(
         modifier = Modifier
-
     ) {
         FlowRow(
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -233,9 +236,9 @@ fun BoxWithCards(bigText : List<String?>){
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .height(200.dp)
-                .background(colorResource(id = R.color.pale_cyan), RoundedCornerShape(12.dp))
-                .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
+                .height(144.dp)
+                .background(colorResource(id = R.color.white_cyan), RoundedCornerShape(12.dp))
+                .border(2.dp, colorResource(id = R.color.medium_cyan), RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ){
             for (item in bigText){

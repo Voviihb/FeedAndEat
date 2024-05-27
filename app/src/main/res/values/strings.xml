@@ -96,7 +96,7 @@
     <string name="imageDescription">Image of this dish</string>
     <string name="icon">Icon</string>
     <string name="small_ingredients">Ingr.</string>
-    <string name="ingredients">Ingredients:</string>
+    <string name="ingredients">Ingredients</string>
     <string name="steps">Steps:</string>
     <string name="searchLabel">Search</string>
     <string name="title1">Daily recipe</string>
