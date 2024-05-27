@@ -45,8 +45,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
+import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
+import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
@@ -213,9 +215,26 @@ fun InfoSquareButton(
 fun RecipePreview(
     navigateBack : () -> Unit,
     navigateToStep: (Int) -> Unit,
+    step : Int? = null,
     viewModel: RecipesScreenViewModel,
 ) {
-    val recipe  = viewModel.recipe.value
+    val recipe = viewModel.recipe.value
+    if (step != null){
+        if (viewModel.loading.value) {
+            LoadingCircular()
+        } else {
+            if (viewModel.errorMessage.value != null) {
+                RepeatButton(onClick = {
+                    viewModel.clearError()
+                    viewModel.clearCollectionError()
+                    viewModel.loadRecipeById(viewModel.recipe.value.id ?: "")
+                    viewModel.loadCollections()
+                })
+            } else {
+                navigateToStep(step - 1)
+            }
+        }
+    }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     drawerState.isAnimationRunning
     val scope = rememberCoroutineScope()

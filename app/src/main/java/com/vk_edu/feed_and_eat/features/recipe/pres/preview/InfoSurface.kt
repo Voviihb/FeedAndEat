@@ -133,12 +133,13 @@ fun InfoSurface(
                     )
             ){
                 Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(horizontal = 8.dp)
                 ) {
                     listOf(
-                        listOf(stringResource(id = R.string.ingr), model.ingredients.size),
+                        listOf(stringResource(id = R.string.small_ingredients), model.ingredients.size),
                         listOf(stringResource(id = R.string.step), model.instructions.size)
                     ).forEach{data ->
                         Spacer(modifier = Modifier.height(12.dp))
@@ -162,7 +163,7 @@ fun InfoSurface(
                     }
                     Text(
                         stringResource(
-                            id = R.string.ingridients),
+                            id = R.string.ingredients),
                         fontSize = SmallText,
                         color = colorResource(R.color.gray),
                     )

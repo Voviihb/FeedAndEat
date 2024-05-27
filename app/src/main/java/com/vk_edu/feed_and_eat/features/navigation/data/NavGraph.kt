@@ -121,10 +121,10 @@ fun NavGraph(
         }
         composable(
             route = Screen.RecipeScreen.route + Screen.Id.route + Screen.Number.route,
-                arguments = listOf(
-                    navArgument(navId){ type = NavType.StringType},
-                    navArgument(navNumber){ type = NavType.IntType }
-                )
+            arguments = listOf(
+                navArgument(navId){ type = NavType.StringType},
+                navArgument(navNumber){ type = NavType.IntType }
+            )
         ){entry ->
             val id = entry.arguments?.getString(navId)
             val number = entry.arguments?.getInt(navNumber)
