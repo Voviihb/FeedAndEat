@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -29,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -102,9 +104,10 @@ fun CreateInstructions(viewModel: NewRecipeScreenViewModel, modifier: Modifier =
             )
         }
 
-        val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            viewModel.changeImagePath(uri)
-        }
+        val launcher =
+            rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+                viewModel.changeImagePath(uri)
+            }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -149,7 +152,9 @@ fun CreateInstructions(viewModel: NewRecipeScreenViewModel, modifier: Modifier =
             items(viewModel.instructions.value) { instruction ->
                 Row {
                     Text(instruction.paragraph)
-                    Text(instruction.timers.toString())
+                    if (instruction.timers != null) {
+                        Text(instruction.timers.toString())
+                    }
                 }
             }
         }
@@ -178,12 +183,24 @@ fun CreateInstructions(viewModel: NewRecipeScreenViewModel, modifier: Modifier =
             }
         else
             Column {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     LightText(text = "Text paragraph", fontSize = MediumText)
+
                     OutlinedTextField(
-                        value = viewModel.name.value,
-                        textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
-                        placeholder = { LightText(text = "Enter paragraph", fontSize = MediumText) },
+                        value = viewModel.newInstruction.value?.paragraph ?: "",
+                        textStyle = TextStyle(
+                            fontSize = MediumText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = "Enter paragraph",
+                                fontSize = MediumText
+                            )
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = colorResource(R.color.white_cyan),
@@ -203,9 +220,119 @@ fun CreateInstructions(viewModel: NewRecipeScreenViewModel, modifier: Modifier =
                             .height(200.dp)
                             .fillMaxWidth(),
                         onValueChange = { value ->
-                            viewModel.changeName(value)
+                            viewModel.changeParagraph(value)
                         }
                     )
+
+                    if (viewModel.newTimer.value == null) {
+                        OutlinedButton(
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonColors(
+                                colorResource(R.color.white_cyan), colorResource(R.color.white_cyan),
+                                colorResource(R.color.white_cyan), colorResource(R.color.white_cyan)
+                            ),
+                            border = BorderStroke(1.dp, colorResource(R.color.medium_cyan)),
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier
+                                .height(70.dp)
+                                .fillMaxWidth(0.5f),
+                            onClick = {
+                                viewModel.createTimer()
+                            }
+                        ) {
+                            Text(
+                                text = "Add new timer",
+                                color = colorResource(R.color.dark_cyan),
+                                fontSize = LargeText
+                            )
+                        }
+                    }
+                    else {
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "Enter timer values")
+                            Row() {
+                                OutlinedTextField(
+                                    value = (viewModel.newTimer.value?.lowerLimit ?: "0").toString(),
+                                    textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
+                                    placeholder = { LightText(text = "Lower limit", fontSize = LargeText) },
+                                    shape = RoundedCornerShape(8.dp),
+                                    singleLine = true,
+                                    colors = TextFieldDefaults.colors(
+                                        unfocusedContainerColor = colorResource(R.color.white_cyan),
+                                        focusedContainerColor = colorResource(R.color.white_cyan),
+                                        errorContainerColor = colorResource(R.color.white_cyan),
+                                        focusedIndicatorColor = colorResource(R.color.medium_cyan),
+                                        unfocusedIndicatorColor = colorResource(R.color.medium_cyan),
+                                        disabledIndicatorColor = colorResource(R.color.medium_cyan),
+                                        errorIndicatorColor = colorResource(R.color.medium_cyan),
+                                        focusedTextColor = colorResource(R.color.black),
+                                        unfocusedTextColor = colorResource(R.color.black),
+                                        disabledTextColor = colorResource(R.color.black),
+                                        cursorColor = colorResource(R.color.black),
+                                        errorCursorColor = colorResource(R.color.black)
+                                    ),
+                                    modifier = Modifier
+                                        .height(50.dp)
+                                        .weight(1f),
+                                    onValueChange = { value ->
+                                        viewModel.lowerLimitChanged(value)
+                                    },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                )
+                                OutlinedTextField(
+                                    value = (viewModel.newTimer.value?.upperLimit ?: "0").toString(),
+                                    textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
+                                    placeholder = { LightText(text = "Upper limit", fontSize = LargeText) },
+                                    shape = RoundedCornerShape(8.dp),
+                                    singleLine = true,
+                                    colors = TextFieldDefaults.colors(
+                                        unfocusedContainerColor = colorResource(R.color.white_cyan),
+                                        focusedContainerColor = colorResource(R.color.white_cyan),
+                                        errorContainerColor = colorResource(R.color.white_cyan),
+                                        focusedIndicatorColor = colorResource(R.color.medium_cyan),
+                                        unfocusedIndicatorColor = colorResource(R.color.medium_cyan),
+                                        disabledIndicatorColor = colorResource(R.color.medium_cyan),
+                                        errorIndicatorColor = colorResource(R.color.medium_cyan),
+                                        focusedTextColor = colorResource(R.color.black),
+                                        unfocusedTextColor = colorResource(R.color.black),
+                                        disabledTextColor = colorResource(R.color.black),
+                                        cursorColor = colorResource(R.color.black),
+                                        errorCursorColor = colorResource(R.color.black)
+                                    ),
+                                    modifier = Modifier
+                                        .height(50.dp)
+                                        .weight(1f),
+                                    onValueChange = { value ->
+                                        viewModel.upperLimitChanged(value)
+                                    },
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                )
+                            }
+                        }
+                    }
+
+
+                    OutlinedButton(
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonColors(
+                            colorResource(R.color.white_cyan), colorResource(R.color.white_cyan),
+                            colorResource(R.color.white_cyan), colorResource(R.color.white_cyan)
+                        ),
+                        border = BorderStroke(2.dp, colorResource(R.color.medium_cyan)),
+                        contentPadding = PaddingValues(36.dp, 16.dp),
+                        onClick = {
+                            viewModel.addInstruction()
+                        }
+                    ) {
+                        Text(
+                            text = "Save paragraph",
+                            color = colorResource(R.color.dark_cyan),
+                            fontSize = MediumText
+                        )
+                    }
+
                 }
             }
     }

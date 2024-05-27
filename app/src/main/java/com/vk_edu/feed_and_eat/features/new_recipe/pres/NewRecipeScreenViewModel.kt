@@ -23,6 +23,9 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _newInstruction = mutableStateOf<Instruction?>(null)
     val newInstruction: State<Instruction?> = _newInstruction
 
+    private val _newTimer = mutableStateOf<Timer?>(null)
+    val newTimer: State<Timer?> = _newTimer
+
     private val _name = mutableStateOf("")
     val name: State<String> = _name
 
@@ -87,6 +90,22 @@ class NewRecipeScreenViewModel @Inject constructor(
         _newInstruction.value = Instruction()
     }
 
+    fun createTimer() {
+        _newTimer.value = Timer()
+    }
+
+    fun lowerLimitChanged(value: String) {
+        _newTimer.value = _newTimer.value?.copy(
+            lowerLimit = value.toInt()
+        )
+    }
+
+    fun upperLimitChanged(value: String) {
+        _newTimer.value = _newTimer.value?.copy(
+            upperLimit = value.toInt()
+        )
+    }
+
     fun changeParagraph(newParagraph: String) {
         _newInstruction.value = _newInstruction.value?.copy(
             paragraph = newParagraph
@@ -120,7 +139,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         val actualInstructions = _instructions.value.toMutableList()
         actualInstructions.add(_newInstruction.value ?: Instruction())
         _instructions.value = actualInstructions
-        _newInstruction.value = Instruction()
+        _newInstruction.value = null
     }
 
     fun addTag(tag: String) {
