@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
-import com.vk_edu.feed_and_eat.common.code.recipeToRecipeCard
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.SmallIcon
@@ -107,12 +106,13 @@ fun BottomBar(
                     if (viewModel.recipe.value.id in viewModel.favouriteRecipeIds.value){
                             viewModel.removeRecipeFromUserCollection(
                                 collectionId = viewModel.favouritesCollectionId.value ?: "",
-                                recipe = recipeToRecipeCard(viewModel.recipe.value)
+                                id = viewModel.recipe.value.id ?: ""
                             )
                         } else {
                         viewModel.addRecipeToUserCollection(
                             collectionId = viewModel.favouritesCollectionId.value ?: "",
-                            recipe = recipeToRecipeCard(viewModel.recipe.value)
+                            id = viewModel.recipe.value.id ?: "",
+                            image = viewModel.recipe.value.image ?: ""
                         )
                     }
                 },

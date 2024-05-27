@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
@@ -43,7 +42,7 @@ class RecipesScreenViewModel @Inject constructor(
     val collectionErrorMessage: State<Exception?> = _errorMessage
 
     private val _collectionList = mutableStateOf(listOf(CollectionDataModel()))
-    val collectionsList : State<List<CollectionDataModel>>? = _collectionList
+    val collectionsList : State<List<CollectionDataModel>> = _collectionList
 
     private val _collectionButtonExpanded = mutableStateOf(false)
     val collectionButtonExpanded : State<Boolean> = _collectionButtonExpanded
@@ -125,7 +124,7 @@ class RecipesScreenViewModel @Inject constructor(
         _collectionButtonExpanded.value = !_collectionButtonExpanded.value
     }
 
-    fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
+    fun addRecipeToUserCollection(collectionId: String, id: String, image : String) {
         viewModelScope.launch {
             try {
                 val user = _authRepo.getUserId()
@@ -133,14 +132,14 @@ class RecipesScreenViewModel @Inject constructor(
                     _recipesRepo.addRecipeToUserCollection(
                         user,
                         collectionId,
-                        recipe.recipeId,
-                        recipe.image
+                        id,
+                        image
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> { }
                             is Response.Success -> {
                                 val favouriteIds = _favouriteRecipeIds.value.toMutableList()
-                                favouriteIds.add(recipe.recipeId)
+                                favouriteIds.add(id)
                                 _favouriteRecipeIds.value = favouriteIds
                             }
 
@@ -157,16 +156,16 @@ class RecipesScreenViewModel @Inject constructor(
         }
     }
 
-    fun removeRecipeFromUserCollection(collectionId: String, recipe: RecipeCard) {
+    fun removeRecipeFromUserCollection(collectionId: String, id : String) {
         viewModelScope.launch {
             try {
-                _recipesRepo.removeRecipeFromUserCollection(collectionId, recipe.recipeId)
+                _recipesRepo.removeRecipeFromUserCollection(collectionId, id)
                     .collect { response ->
                         when (response) {
                             is Response.Loading -> { }
                             is Response.Success -> {
                                 val favouriteIds = _favouriteRecipeIds.value.toMutableList()
-                                favouriteIds.remove(recipe.recipeId)
+                                favouriteIds.remove(id)
                                 _favouriteRecipeIds.value = favouriteIds
                             }
 
