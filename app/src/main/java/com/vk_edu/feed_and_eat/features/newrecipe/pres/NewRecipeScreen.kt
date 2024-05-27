@@ -14,10 +14,11 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 
 @Composable
 fun NewRecipeScreen(
-    navigateToRoute : (String) -> Unit
+    navigateToRoute : (String) -> Unit,
+    navigateNoState: (String) -> Unit,
 ) {
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.SearchScreen.route) }
     ) {padding ->
         Column(
             modifier = Modifier.padding(padding)

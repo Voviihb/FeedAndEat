@@ -53,11 +53,12 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun InProgressScreen(
     navigateToRoute: (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     viewModel: InProgressScreenViewModel = hiltViewModel()
 ) {
     val activeTimerState by viewModel.activeTimerState.collectAsState(emptyMap())
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.InProgressScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.InProgressScreen.route) }
     ) { padding ->
         Box(
             modifier = Modifier

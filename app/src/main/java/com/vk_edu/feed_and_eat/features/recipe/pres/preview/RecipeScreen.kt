@@ -17,6 +17,7 @@ import com.vk_edu.feed_and_eat.features.recipe.domain.RecipeNavGraph
 fun RecipeScreen(
     navigateToRoute: (String) -> Unit,
     navigateBack: () -> Unit,
+    navigateNoState: (String) -> Unit,
     id: String,
     destination: String,
     viewModel: RecipesScreenViewModel = hiltViewModel()
@@ -27,7 +28,7 @@ fun RecipeScreen(
     }
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, destination) },
     ) { padding ->
         if (viewModel.loading.value) {
             LoadingCircular()
@@ -58,6 +59,7 @@ fun RecipeScreen(
 fun RecipeScreen(
     navigateToRoute: (String) -> Unit,
     navigateBack: () -> Unit,
+    navigateNoState: (String) -> Unit,
     id: String,
     destination: String,
     number : Int,
@@ -69,7 +71,7 @@ fun RecipeScreen(
     }
 
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, destination) },
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, destination) },
     ) { padding ->
         if (viewModel.loading.value) {
             LoadingCircular()

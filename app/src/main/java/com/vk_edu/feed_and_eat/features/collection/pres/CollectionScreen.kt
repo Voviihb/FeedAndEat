@@ -13,10 +13,11 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 @Composable
 fun CollectionScreen(
     navigateToRoute: (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     navigateBack: () -> Unit,
 ) {
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionOverviewScreen.route) },
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.CollectionOverviewScreen.route) },
     ) { padding ->
         val navController = rememberNavController()
         Box(modifier = Modifier.padding(padding)){

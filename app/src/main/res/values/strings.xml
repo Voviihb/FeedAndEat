@@ -130,4 +130,8 @@
     <string name="rate">Rate</string>
     <!-- inProgress screen -->
     <string name="timer_format">%1$02d:%2$02d:%3$02d</string>
+<!--    collection screen-->
+    <string name="new_collection">Новая коллекция</string>
+    <string name="input_collection_name">Введите назвывание коллекции:</string>
+    <string name="confirm">Подтвердить</string>
 </resources>

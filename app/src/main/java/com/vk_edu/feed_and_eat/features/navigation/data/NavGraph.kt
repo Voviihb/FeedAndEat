@@ -39,7 +39,6 @@ fun NavGraph(
     val recipe = stringResource(id = R.string.recipe)
 
     val navigateToRoute: (String) -> Unit = {route ->
-
         navController.navigate(route) {
             if (route.substring(0, 6) != recipe){
                 popUpTo(navController.graph.findStartDestination().id) {
@@ -50,6 +49,10 @@ fun NavGraph(
             launchSingleTop = true
             restoreState = true
         }
+    }
+
+    val navigateNoState: (String) -> Unit = {route ->
+        navController.navigate(route)
     }
 
     val navigateBack = {
@@ -67,26 +70,38 @@ fun NavGraph(
     ) {
         composable(BottomScreen.HomeScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.HomeScreen.route)
-            HomeScreen(navigateToRoute)
+            HomeScreen(
+                navigateToRoute,
+                navigateNoState)
         }
         composable(BottomScreen.SearchScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.SearchScreen.route)
-            SearchScreen(navigateToRoute)
+            SearchScreen(
+                navigateToRoute,
+                navigateNoState
+            )
         }
         composable(BottomScreen.CollectionOverviewScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.CollectionOverviewScreen.route)
             CollectionScreen(
                 navigateToRoute = navigateToRoute,
+                navigateNoState = navigateNoState,
                 navigateBack = navigateBack,
             )
         }
         composable(BottomScreen.InProgressScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.InProgressScreen.route)
-            InProgressScreen(navigateToRoute)
+            InProgressScreen(
+                navigateToRoute,
+                navigateNoState
+            )
         }
         composable(BottomScreen.ProfileScreen.route) {
             viewModel.changeBottomDestination(BottomScreen.ProfileScreen.route)
-            ProfileScreen(navigateToRoute)
+            ProfileScreen(
+                navigateToRoute,
+                navigateNoState
+            )
         }
         composable(Screen.LoginScreen.route) {
             LoginScreen(
@@ -100,7 +115,10 @@ fun NavGraph(
             )
         }
         composable(Screen.NewRecipeScreen.route) {
-            NewRecipeScreen(navigateToRoute)
+            NewRecipeScreen(
+                navigateToRoute,
+                navigateNoState
+            )
         }
         composable(
             route = Screen.RecipeScreen.route + Screen.Id.route + Screen.Number.route,
@@ -115,6 +133,7 @@ fun NavGraph(
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
+                navigateNoState = navigateNoState,
                 id = id ?: "",
                 number = number ?: 0,
                 destination = destination
@@ -129,22 +148,10 @@ fun NavGraph(
             RecipeScreen(
                 navigateToRoute = navigateToRoute,
                 navigateBack = navigateBack,
+                navigateNoState = navigateNoState,
                 id = id ?: "",
                 destination = destination
             )
         }
-//        composable(
-//            route = Screen.CollectionScreen.route + Screen.Id.route,
-//            arguments = listOf(navArgument(navId){ type = NavType.StringType })
-//        ) {entry ->
-//            val id = entry.arguments?.getString(navId)
-//            val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
-//            CollectionScreen(
-//                navigateToRoute = navigateToRoute,
-//                navigateBack = navigateBack,
-//                id = id ?: "",
-//                destination = destination
-//            )
-//        }
     }
 }

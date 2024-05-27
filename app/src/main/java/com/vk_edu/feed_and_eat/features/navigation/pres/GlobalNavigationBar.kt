@@ -26,6 +26,7 @@ import com.vk_edu.feed_and_eat.R
 @Composable
 fun GlobalNavigationBar(
     navigateToRoute : (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     currentDestination : String
 ){
     val barScreens = listOf(
@@ -71,7 +72,11 @@ fun GlobalNavigationBar(
                     .background(Color.White)
                     .padding(vertical = 8.dp),
                 onClick = {
-                    navigateToRoute(barScreens[index].route)
+                    if (currentDestination == barScreens[index].route){
+                        navigateNoState(barScreens[index].route)
+                    } else {
+                        navigateToRoute(barScreens[index].route)
+                    }
                 }
             )
         }

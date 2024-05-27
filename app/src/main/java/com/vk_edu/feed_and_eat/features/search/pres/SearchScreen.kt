@@ -83,10 +83,11 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun SearchScreen(
     navigateToRoute: (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     viewModel: SearchScreenViewModel = hiltViewModel()
 ) {
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.SearchScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.SearchScreen.route) }
     ) { padding ->
         Box(
             contentAlignment = Alignment.TopEnd,

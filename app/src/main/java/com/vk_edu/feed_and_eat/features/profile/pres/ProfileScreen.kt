@@ -47,10 +47,11 @@ import com.vk_edu.feed_and_eat.ui.theme.MediumText
 @Composable
 fun ProfileScreen(
     navigateToRoute: (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.ProfileScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.ProfileScreen.route) }
     ) { padding ->
         Box(
             modifier = Modifier

@@ -20,6 +20,9 @@ class AllCollectionsScreenViewModel @Inject constructor(
     private val _usersRepo: UsersRepoImpl,
     private val _authRepo: AuthRepoImpl
 ) : ViewModel() {
+    private val _activeWindowDialog = mutableStateOf(false)
+    val activeWindowDialog : State<Boolean> = _activeWindowDialog
+
     private val _collectionsData = mutableStateOf(listOf<CollectionDataModel>())
     val collectionsData: State<List<CollectionDataModel>> = _collectionsData
 
@@ -91,7 +94,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
                             is Response.Failure -> onError(response.e)
                         }
                     }
-
+                    loadAllUserCollections()
                 }
 
             } catch (e: Exception) {
@@ -108,6 +111,10 @@ class AllCollectionsScreenViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    fun openWindowDialog(){
+        _activeWindowDialog.value = !_activeWindowDialog.value
     }
 
     init {
