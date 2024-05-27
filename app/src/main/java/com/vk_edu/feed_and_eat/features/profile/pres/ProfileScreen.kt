@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -27,19 +29,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
-import com.vk_edu.feed_and_eat.common.graphics.DefaultProfileImage
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
-import com.vk_edu.feed_and_eat.common.graphics.ProfileImage
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
@@ -232,4 +237,41 @@ private fun LogoutButton(
             modifier = Modifier.padding(vertical = 4.dp)
         )
     }
+}
+
+
+@Composable
+private fun ProfileImage(link: Any?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest
+            .Builder(context = LocalContext.current)
+            .data(link)
+            .crossfade(true)
+            .build(),
+        error = painterResource(R.drawable.broken_image),
+        placeholder = painterResource(R.drawable.loading_image),
+        contentDescription = stringResource(R.string.user_profile_icon),
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(100.dp)
+            .clickable(onClick = onClick)
+    )
+}
+
+@Composable
+private fun DefaultProfileImage(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest
+            .Builder(context = LocalContext.current)
+            .data(R.drawable.user_default_icon)
+            .crossfade(true)
+            .build(),
+        error = painterResource(R.drawable.broken_image),
+        placeholder = painterResource(R.drawable.user_default_icon),
+        contentDescription = stringResource(R.string.user_profile_icon),
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(100.dp)
+            .clickable(onClick = onClick)
+    )
 }
