@@ -72,14 +72,14 @@ fun AllCollectionsScreen(
                 ) {
                     viewModel.collectionsData.value.forEach {compilation ->
                         item {
-                            CollectionCard(
+                            AddDishCard(
                                 compilation = compilation,
                                 navigateToCollection = navigateToCollection,
                             )
                         }
                     }
                     item{
-                        CollectionCard(
+                        AddDishCard(
                             viewModel = viewModel,
                         )
                     }
@@ -90,7 +90,7 @@ fun AllCollectionsScreen(
 
 
 @Composable
-fun CollectionCard(
+fun AddDishCard(
     compilation: CollectionDataModel,
     navigateToCollection: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -121,7 +121,7 @@ fun CollectionCard(
 }
 
 @Composable
-fun CollectionCard(
+fun AddDishCard(
     viewModel: AllCollectionsScreenViewModel,
     modifier: Modifier = Modifier
 ){

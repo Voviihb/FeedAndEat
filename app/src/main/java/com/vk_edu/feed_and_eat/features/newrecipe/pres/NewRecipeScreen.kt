@@ -18,7 +18,7 @@ fun NewRecipeScreen(
     navigateNoState: (String) -> Unit,
 ) {
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.SearchScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.CollectionOverviewScreen.route) }
     ) {padding ->
         Column(
             modifier = Modifier.padding(padding)
