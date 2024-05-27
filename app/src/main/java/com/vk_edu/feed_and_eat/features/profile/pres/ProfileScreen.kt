@@ -1,9 +1,11 @@
 package com.vk_edu.feed_and_eat.features.profile.pres
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -27,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,6 +39,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
@@ -69,8 +76,8 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.padding(12.dp),
                 ) {
-                    UserInfoBlock(viewModel.profileState.value)
-                    AboutMeBlock(viewModel.profileState.value, viewModel)
+                    UserInfoBlock(viewModel = viewModel, profileInfo = viewModel.profileState.value)
+                    AboutMeBlock(profileInfo = viewModel.profileState.value, viewModel = viewModel)
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,16 +93,31 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserInfoBlock(profileInfo: Profile, modifier: Modifier = Modifier) {
+private fun UserInfoBlock(
+    viewModel: ProfileScreenViewModel,
+    profileInfo: Profile,
+    modifier: Modifier = Modifier
+) {
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            viewModel.imageChanged(uri)
+        }
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.user_default_icon),
-            contentDescription = stringResource(R.string.user_profile_icon),
-            modifier = Modifier.size(100.dp)
-        )
+        if (viewModel.imagePath.value != null) {
+            ProfileImage(
+                link = viewModel.imagePath.value,
+                onClick = { launcher.launch("image/*") })
+        } else if (profileInfo.avatar != null) {
+            ProfileImage(
+                link = profileInfo.avatar,
+                onClick = { launcher.launch("image/*") })
+        } else {
+            DefaultProfileImage(onClick = { launcher.launch("image/*") })
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -155,10 +177,12 @@ private fun AboutMeBlock(
                     unfocusedTextColor = Color.Black,
                     disabledTextColor = Color.Black,
                 ),
-                placeholder = { LightText(
-                    text = stringResource(R.string.enter_information_about_yourself),
-                    fontSize = MediumText
-                ) },
+                placeholder = {
+                    LightText(
+                        text = stringResource(R.string.enter_information_about_yourself),
+                        fontSize = MediumText
+                    )
+                },
                 textStyle = TextStyle(fontSize = MediumText),
                 onValueChange = { viewModel.aboutMeChanged(it) }
             )
@@ -215,4 +239,43 @@ private fun LogoutButton(
             modifier = Modifier.padding(vertical = 4.dp)
         )
     }
+}
+
+
+@Composable
+private fun ProfileImage(link: Any?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest
+            .Builder(context = LocalContext.current)
+            .data(link)
+            .crossfade(true)
+            .build(),
+        error = painterResource(R.drawable.broken_image),
+        placeholder = painterResource(R.drawable.loading_image),
+        contentDescription = stringResource(R.string.user_profile_icon),
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(100.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+    )
+}
+
+@Composable
+private fun DefaultProfileImage(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = ImageRequest
+            .Builder(context = LocalContext.current)
+            .data(R.drawable.user_default_icon)
+            .crossfade(true)
+            .build(),
+        error = painterResource(R.drawable.broken_image),
+        placeholder = painterResource(R.drawable.user_default_icon),
+        contentDescription = stringResource(R.string.user_profile_icon),
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(100.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+    )
 }
