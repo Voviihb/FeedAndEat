@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.SmallIcon
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.recipe.domain.models.TimerTypes
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
@@ -147,8 +147,7 @@ fun CountdownConstantTimer(
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .height(400.dp)
+        modifier = Modifier.height(400.dp)
     ) {
         Box{
             if (viewModel.runTimerFlag[name]?.value == true){
@@ -282,7 +281,7 @@ private fun StartButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
@@ -292,12 +291,11 @@ private fun StartButton(
         border = BorderStroke(
             2.dp,
             colorResource(id = R.color.black)
-        ),
-        modifier = modifier.padding(horizontal = 8.dp)
+        )
     ) {
-        Icon(
+        SmallIcon(
             painter = painterResource(id = R.drawable.play),
-            contentDescription = stringResource(id = R.string.to_play)
+            color = colorResource(R.color.black)
         )
     }
 }
@@ -308,7 +306,7 @@ private fun PauseButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
@@ -318,12 +316,11 @@ private fun PauseButton(
         border = BorderStroke(
             2.dp,
             colorResource(id = R.color.black)
-        ),
-        modifier = modifier.padding(horizontal = 8.dp)
+        )
     ) {
-        Icon(
+        SmallIcon(
             painter = painterResource(id = R.drawable.pause),
-            contentDescription = stringResource(id = R.string.to_pause)
+            color = colorResource(R.color.black)
         )
     }
 }
@@ -334,7 +331,7 @@ private fun DropButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+        contentPadding = PaddingValues(16.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             colorResource(id = R.color.white),
@@ -344,12 +341,11 @@ private fun DropButton(
         border = BorderStroke(
             2.dp,
             colorResource(id = R.color.black)
-        ),
-        modifier = modifier.padding(horizontal = 8.dp)
+        )
     ) {
-        Icon(
+        SmallIcon(
             painter = painterResource(id = R.drawable.drop),
-            contentDescription = stringResource(id = R.string.to_drop)
+            color = colorResource(R.color.black)
         )
     }
 }
@@ -396,13 +392,13 @@ fun ButtonContainer(
     dropAction: () -> Unit,
     name : String,
     viewModel: StepScreenViewModel,
-){
+) {
     Row(
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DropButton (dropAction)
-        if (viewModel.isRunning[name]?.value == true){
+        if (viewModel.isRunning[name]?.value == true) {
             PauseButton(pauseAction)
         } else {
             StartButton(playAction)
@@ -446,7 +442,7 @@ fun Timer(
     viewModel : StepScreenViewModel,
     modifier: Modifier = Modifier,
 ){
-    val name = "${viewModel.name.value} - step ${viewModel.id.intValue}:"
+    val name = "${viewModel.name.value} - step ${viewModel.id.intValue + 1}:"
     if (viewModel.currentTimerMap.getOrDefault(name, "") == ""){
         viewModel.initTimer(name)
     }

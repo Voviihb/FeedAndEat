@@ -54,10 +54,11 @@ import com.vk_edu.feed_and_eat.ui.theme.LargeText
 @Composable
 fun HomeScreen(
     navigateToRoute: (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.HomeScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.HomeScreen.route) }
     ) { padding ->
         if (viewModel.loading.value)
             Box(

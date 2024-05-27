@@ -28,6 +28,8 @@ class StepScreenViewModel @Inject constructor(
 ): ViewModel(){
     val name = mutableStateOf("")
     val id = mutableIntStateOf(0)
+    var recipeId: MutableState<String?> = mutableStateOf(null)
+    var recipeImage: MutableState<String?> = mutableStateOf(null)
 
     private var privateTimerMap = mutableMapOf<String, MutableState<Int>>()
     val currentTimerMap : Map<String, MutableState<Int>> = privateTimerMap
@@ -114,6 +116,14 @@ class StepScreenViewModel @Inject constructor(
         timerService.putExtra(
             TimerService.TIMER_TIME,
             time
+        )
+        timerService.putExtra(
+            TimerService.RECIPE_ID,
+            recipeId.value
+        )
+        timerService.putExtra(
+            TimerService.RECIPE_IMAGE,
+            recipeImage.value
         )
         application.startService(timerService)
     }

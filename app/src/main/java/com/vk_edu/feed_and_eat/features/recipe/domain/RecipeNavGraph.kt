@@ -1,7 +1,9 @@
 package com.vk_edu.feed_and_eat.features.recipe.domain
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,21 +16,27 @@ import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipesScreenViewMod
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.CongratulationScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreen
 
+fun getStartDestination(step : Int?): String {
+    return if (step == null)
+        Routes.Recipe.route
+    else
+        Routes.StartWithStep.route
+}
 
 @Composable
 fun RecipeNavGraph(
     navigateToRoute: (String) -> Unit,
     navigateBack : () -> Unit,
     navController: NavHostController,
+    step: Int? = null,
     viewModel: RecipesScreenViewModel,
 ){
-    val recipe = viewModel.recipe.value
-    val instructions = recipe.instructions
+    val recipe by viewModel.recipe
     val navId = stringResource(id = R.string.nav_id)
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Recipe.route,
+        startDestination = getStartDestination(step),
     ){
         val navigateToStep: (Int) -> Unit = {
             navController.navigate(Routes.Step.route + "/$it"){
@@ -39,6 +47,10 @@ fun RecipeNavGraph(
 
         val navigateToRecipe: (String) -> Unit = {
             navController.navigate(it) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                    inclusive = true
+                }
                 launchSingleTop = true
                 restoreState = true
             }
@@ -46,29 +58,43 @@ fun RecipeNavGraph(
 
         composable(Routes.Recipe.route){
             RecipePreview(
-                navigateBack,
-                navigateToStep,
-                viewModel
+                navigateBack = navigateBack,
+                navigateToStep = navigateToStep,
+                viewModel = viewModel,
             )
         }
+
         composable(Routes.Congrats.route){
             CongratulationScreen(
                 recipe,
                 navigateToRoute
             )
         }
+
         composable(
-            Routes.Step.route + "/{" + navId + "}",
-            arguments = listOf(navArgument(navId){ type = NavType.StringType })
-        ) {backStackEntry->
-            val id = backStackEntry.arguments?.getString(navId)
+            route = Routes.Step.route + Routes.Id.route,
+            arguments = listOf(navArgument(navId){ type = NavType.IntType })
+        ) {entry ->
+            val id = entry.arguments?.getInt(navId)?: 0
             StepScreen(
                 navigateToStep = navigateToStep,
                 navigateToRecipe = navigateToRecipe,
-                data = instructions[id?.toInt() ?: 0],
-                id = id?.toInt() ?: 0,
-                maxId = instructions.size - 1,
-                name = recipe.name
+                data = recipe.instructions[id],
+                id = id,
+                maxId = recipe.instructions.size - 1,
+                name = recipe.name,
+                recipeId = recipe.id,
+                recipeImage = recipe.image
+            )
+        }
+        composable(
+            route = Routes.StartWithStep.route,
+        ){
+            RecipePreview(
+                navigateBack = navigateBack,
+                navigateToStep = navigateToStep,
+                step = step,
+                viewModel = viewModel,
             )
         }
     }

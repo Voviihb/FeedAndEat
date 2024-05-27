@@ -76,7 +76,7 @@ class CollectionScreenViewModel @Inject constructor(
         }
     }
 
-    fun loadUserFavourites() {
+    private fun loadUserFavourites() {
         viewModelScope.launch {
             try {
                 var collectionsData = listOf<CollectionDataModel>()
