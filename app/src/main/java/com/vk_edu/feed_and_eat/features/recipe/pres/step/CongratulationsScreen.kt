@@ -38,6 +38,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeIconSize
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
 
 @Composable
 private fun RateRecipe(
@@ -178,7 +179,7 @@ fun CongratulationScreen(
                 text = stringResource(id = R.string.to_main),
                 overflow = TextOverflow.Visible,
                 textAlign = TextAlign.Center,
-                fontSize = LargeText,
+                fontSize = MediumText,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
