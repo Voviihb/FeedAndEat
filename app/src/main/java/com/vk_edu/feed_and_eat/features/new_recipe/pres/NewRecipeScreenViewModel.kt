@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
-import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
@@ -19,21 +18,20 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepoImpl,
     private val _newRecipeRepo: NewRecipeRepoImpl
 ) : ViewModel() {
-
-    private val _newInstruction = mutableStateOf<Instruction?>(null)
-    val newInstruction: State<Instruction?> = _newInstruction
-
-    private val _newTimer = mutableStateOf<Timer?>(null)
-    val newTimer: State<Timer?> = _newTimer
-
     private val _name = mutableStateOf("")
     val name: State<String> = _name
 
     private val _imagePath = mutableStateOf<Uri?>(null)
     val imagePath: State<Uri?> = _imagePath
 
-    private val _instructions = mutableStateOf(listOf<Instruction>())
-    val instructions: State<List<Instruction>> = _instructions
+    private val _steps = mutableStateOf(listOf(Instruction()))
+    val steps: State<List<Instruction>> = _steps
+
+    private val _currentStep = mutableStateOf(Instruction())
+    val currentStep: State<Instruction> = _currentStep
+
+    private val _currentStepIndex = mutableStateOf(0)
+    val currentStepIndex: State<Int> = _currentStepIndex
 
     private val _tags = mutableStateOf(listOf<String>())
     val tags: State<List<String>> = _tags
@@ -44,28 +42,28 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    fun addNewRecipe(
-        name: String,
-        instructions: List<Instruction>,
-        tags: List<String>?
-    ) {
+    fun saveRecipe() {
         viewModelScope.launch {
             try {
                 val user = _authRepo.getUserId()
                 if (user != null) {
-                    _newRecipeRepo.addNewRecipe(user, name, _imagePath.value, instructions, tags)
-                        .collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
+                    _newRecipeRepo.addNewRecipe(user,
+                        _name.value,
+                        _imagePath.value,
+                        _steps.value,
+                        _tags.value
+                    ).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
 
-                                }
+                            }
 
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
+                            is Response.Failure -> {
+                                onError(response.e)
                             }
                         }
+                    }
                 }
 
             } catch (e: Exception) {
@@ -75,10 +73,6 @@ class NewRecipeScreenViewModel @Inject constructor(
         }
     }
 
-    fun imageChanged(value: Uri?) {
-        _imagePath.value = value
-    }
-
     fun changeName(newName: String) {
         _name.value = newName
     }
@@ -86,60 +80,43 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun changeImagePath(newImagePath:Uri?) {
         _imagePath.value = newImagePath
     }
-    fun createInstruction() {
-        _newInstruction.value = Instruction()
+
+    fun goToPreviousStep() {
+        val actualSteps = _steps.value.toMutableList()
+        actualSteps[_currentStepIndex.value] = _currentStep.value
+        _steps.value = actualSteps
+        _currentStepIndex.value -= 1
+        _currentStep.value = actualSteps[_currentStepIndex.value]
     }
 
-    fun createTimer() {
-        _newTimer.value = Timer()
+    fun goToNextStep() {
+        val actualSteps = _steps.value.toMutableList()
+        actualSteps[_currentStepIndex.value] = _currentStep.value
+        _steps.value = actualSteps
+        _currentStepIndex.value += 1
+        _currentStep.value = actualSteps[_currentStepIndex.value]
     }
 
-    fun lowerLimitChanged(value: String) {
-        _newTimer.value = _newTimer.value?.copy(
-            lowerLimit = value.toInt()
-        )
+    fun createNewStep() {
+        val actualSteps = _steps.value.toMutableList()
+        actualSteps[_currentStepIndex.value] = _currentStep.value
+        actualSteps.add(Instruction())
+        _steps.value = actualSteps
+        _currentStepIndex.value += 1
+        _currentStep.value = actualSteps[_currentStepIndex.value]
     }
 
-    fun upperLimitChanged(value: String) {
-        _newTimer.value = _newTimer.value?.copy(
-            upperLimit = value.toInt()
-        )
+    fun deleteCurrentStep() {
+        val actualSteps = _steps.value.toMutableList()
+        actualSteps.removeAt(_currentStepIndex.value)
+        _steps.value = actualSteps
+        if (_currentStepIndex.value > 0)
+            _currentStepIndex.value -= 1
+        _currentStep.value = actualSteps[_currentStepIndex.value]
     }
 
-    fun changeParagraph(newParagraph: String) {
-        _newInstruction.value = _newInstruction.value?.copy(
-            paragraph = newParagraph
-        )
-    }
-
-    fun addTimer(timerType: TimerType, num1: String, num2: String) {
-        val actualTimers = _newInstruction.value?.timers?.toMutableList() ?: mutableListOf()
-        actualTimers.add(
-            Timer(
-                type = timerType.str,
-                lowerLimit = if (timerType == TimerType.RANGE) num1.toInt() else null,
-                upperLimit = if (timerType == TimerType.RANGE) num2.toInt() else null,
-                number = if (timerType == TimerType.CONSTANT) num1.toInt() else null
-            )
-        )
-        _newInstruction.value = _newInstruction.value?.copy(
-            timers = actualTimers
-        )
-    }
-
-    fun deleteTimer(index: Int) {
-        val actualTimers = _newInstruction.value?.timers?.toMutableList()
-        actualTimers?.removeAt(index)
-        _newInstruction.value = _newInstruction.value?.copy(
-            timers = actualTimers
-        )
-    }
-
-    fun addInstruction() {
-        val actualInstructions = _instructions.value.toMutableList()
-        actualInstructions.add(_newInstruction.value ?: Instruction())
-        _instructions.value = actualInstructions
-        _newInstruction.value = null
+    fun changeInstruction(text: String) {
+        _currentStep.value = _currentStep.value.copy(paragraph = text)
     }
 
     fun addTag(tag: String) {
