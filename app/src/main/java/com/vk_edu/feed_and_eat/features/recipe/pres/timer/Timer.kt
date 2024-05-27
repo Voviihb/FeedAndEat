@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.SmallIcon
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.recipe.domain.models.TimerTypes
 import com.vk_edu.feed_and_eat.features.recipe.pres.step.StepScreenViewModel
@@ -144,11 +144,10 @@ fun CountdownConstantTimer(
         }
     }
 
-    Box(
-        contentAlignment = Alignment.TopCenter,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp)
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.height(400.dp)
     ) {
         Box{
             if (viewModel.runTimerFlag[name]?.value == true){
@@ -165,32 +164,27 @@ fun CountdownConstantTimer(
             }
         }
 
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if ((viewModel.isRunning[name]?.value == false) &&
-                (viewModel.runTimerFlag[name]?.value == true)
-            ) {
-                StartButton({
-                    viewModel.startTimer(name, totalMillis.toInt() / 1000)
-                })
-            } else {
-                ButtonContainer(
-                    playAction = {
-                        viewModel.resumeTimer(name)
-                    },
-                    pauseAction = {
-                        viewModel.pauseTimer(name)
-                    },
-                    dropAction = {
-                        viewModel.stopTimer(name)
-                        viewModel.changeInit(name)
-                    },
-                    name = name,
-                    viewModel = viewModel
-                )
-            }
+        if ((viewModel.isRunning[name]?.value == false) &&
+            (viewModel.runTimerFlag[name]?.value == true))
+        {
+            StartButton ({
+                viewModel.startTimer(name, totalMillis.toInt() / 1000)
+            })
+        } else {
+            ButtonContainer(
+                playAction = {
+                    viewModel.resumeTimer(name)
+                },
+                pauseAction = {
+                    viewModel.pauseTimer(name)
+                },
+                dropAction = {
+                    viewModel.stopTimer(name)
+                    viewModel.changeInit(name)
+                },
+                name = name,
+                viewModel = viewModel
+            )
         }
     }
 }
@@ -299,9 +293,9 @@ private fun StartButton(
             colorResource(id = R.color.black)
         )
     ) {
-        Icon(
+        SmallIcon(
             painter = painterResource(id = R.drawable.play),
-            contentDescription = stringResource(id = R.string.to_play)
+            color = colorResource(R.color.black)
         )
     }
 }
@@ -324,9 +318,9 @@ private fun PauseButton(
             colorResource(id = R.color.black)
         )
     ) {
-        Icon(
+        SmallIcon(
             painter = painterResource(id = R.drawable.pause),
-            contentDescription = stringResource(id = R.string.to_pause)
+            color = colorResource(R.color.black)
         )
     }
 }
@@ -349,9 +343,9 @@ private fun DropButton(
             colorResource(id = R.color.black)
         )
     ) {
-        Icon(
+        SmallIcon(
             painter = painterResource(id = R.drawable.drop),
-            contentDescription = stringResource(id = R.string.to_drop)
+            color = colorResource(R.color.black)
         )
     }
 }

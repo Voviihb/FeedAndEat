@@ -35,18 +35,21 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
+import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.recipe.domain.TimerState
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
+import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -61,31 +64,39 @@ fun InProgressScreen(
         bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.InProgressScreen.route) }
     ) { padding ->
         Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .padding(padding)
                 .background(colorResource(id = R.color.white_cyan))
+                .fillMaxSize()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                LazyColumn(
+            if (activeTimerState.keys.isEmpty())
+                LightText(
+                    text = stringResource(R.string.default_label),
+                    fontSize = MediumText,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(80.dp)
+                )
+            else
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    items(activeTimerState.keys.toList().size) { count ->
-                        val timerState = activeTimerState[activeTimerState.keys.toList()[count]]
-                        if (timerState != null) {
-                            TimerCard(
-                                name = activeTimerState.keys.toList()[count],
-                                timerState = timerState,
-                                navigateToRoute = navigateToRoute,
-                                color = if (count % 2 == 0) R.color.light_cyan else R.color.white,
-                                viewModel = viewModel
-                            )
+                    LazyColumn {
+                        items(activeTimerState.keys.toList().size) { count ->
+                            val timerState = activeTimerState[activeTimerState.keys.toList()[count]]
+                            if (timerState != null) {
+                                TimerCard(
+                                    name = activeTimerState.keys.toList()[count],
+                                    timerState = timerState,
+                                    navigateToRoute = navigateToRoute,
+                                    color = if (count % 2 == 0) R.color.light_cyan else R.color.white,
+                                    viewModel = viewModel
+                                )
+                            }
                         }
                     }
                 }
-            }
         }
     }
 }
