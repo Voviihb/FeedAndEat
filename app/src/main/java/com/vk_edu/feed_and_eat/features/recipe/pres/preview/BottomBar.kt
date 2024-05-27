@@ -3,19 +3,16 @@ package com.vk_edu.feed_and_eat.features.recipe.pres.preview
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -137,8 +134,7 @@ fun DropDownContainer(
         viewModel.collectionsList.value.forEach { collection ->
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .clickable { }
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -154,7 +150,6 @@ fun DropDownContainer(
                             colorResource(id = R.color.dark_cyan),
                             RoundedCornerShape(8.dp)
                         )
-                        .padding(start = 12.dp, end = 4.dp)
                         .clip(RoundedCornerShape(8.dp))
 
                 ) {
@@ -162,8 +157,7 @@ fun DropDownContainer(
                         collection.picture?.let {
                             DishImage(
                                 link = it,
-                                modifier = Modifier
-                                    .height(48.dp)
+                                modifier = Modifier.height(48.dp)
                             )
                         }
                     } else {
@@ -175,8 +169,8 @@ fun DropDownContainer(
                                 .aspectRatio(4f / 3f)
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    DarkText(text = collection.name, fontSize = LargeText)
+
+                    DarkText(text = collection.name, fontSize = LargeText, modifier = Modifier.padding(horizontal = 8.dp))
                     AddButtonShapePlus(
                         onClick = {
                             if (collection.id != null) {
