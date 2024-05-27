@@ -1,13 +1,16 @@
 package com.vk_edu.feed_and_eat.features.profile.data
 
+import android.net.Uri
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.FirebaseStorage
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
+import com.vk_edu.feed_and_eat.features.profile.pres.Profile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -17,7 +20,8 @@ import javax.inject.Singleton
 
 @Singleton
 class UsersRepoImpl @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val storage: FirebaseStorage
 ) : UsersRepository {
     /**
      * Loads all additional user data
@@ -53,9 +57,22 @@ class UsersRepoImpl @Inject constructor(
      * */
     override fun updateUserData(
         userId: String,
-        userData: HashMap<String, Any?>
+        userData: Profile,
+        imagePath: Uri?
     ): Flow<Response<Void>> = repoTryCatchBlock {
-        db.collection(USERS_COLLECTION).document(userId).update(userData).await()
+        var imageUrl: String? = userData.avatar
+        if (imagePath != null) {
+            val imgRef = storage.getReference(USERS_AVATARS).child(userId)
+            val uploadTask = imgRef.putFile(imagePath).await()
+            if (uploadTask.task.isSuccessful) {
+                imageUrl = imgRef.downloadUrl.await().toString()
+            }
+        }
+        val data: HashMap<String, Any?> = hashMapOf(
+            AVATAR_URL_VALUE to imageUrl,
+            ABOUT_ME_VALUE to userData.aboutMe,
+        )
+        db.collection(USERS_COLLECTION).document(userId).update(data).await()
     }.flowOn(Dispatchers.IO)
 
     /**
@@ -74,5 +91,9 @@ class UsersRepoImpl @Inject constructor(
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val COLLECTIONS_ID_LIST_FIELD = "collectionsIdList"
+        private const val USERS_AVATARS = "users_avatars"
+
+        private const val AVATAR_URL_VALUE = "avatarUrl"
+        private const val ABOUT_ME_VALUE = "aboutMeData"
     }
 }

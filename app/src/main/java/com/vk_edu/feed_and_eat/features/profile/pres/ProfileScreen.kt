@@ -1,7 +1,8 @@
 package com.vk_edu.feed_and_eat.features.profile.pres
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,8 +36,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
+import com.vk_edu.feed_and_eat.common.graphics.DefaultProfileImage
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
+import com.vk_edu.feed_and_eat.common.graphics.ProfileImage
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
@@ -68,8 +69,8 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.padding(12.dp),
                 ) {
-                    UserInfoBlock(viewModel.profileState.value)
-                    AboutMeBlock(viewModel.profileState.value, viewModel)
+                    UserInfoBlock(viewModel = viewModel, profileInfo = viewModel.profileState.value)
+                    AboutMeBlock(profileInfo = viewModel.profileState.value, viewModel = viewModel)
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -85,16 +86,31 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserInfoBlock(profileInfo: Profile, modifier: Modifier = Modifier) {
+private fun UserInfoBlock(
+    viewModel: ProfileScreenViewModel,
+    profileInfo: Profile,
+    modifier: Modifier = Modifier
+) {
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            viewModel.imageChanged(uri)
+        }
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.user_default_icon),
-            contentDescription = stringResource(R.string.user_profile_icon),
-            modifier = Modifier.size(100.dp)
-        )
+        if (viewModel.imagePath.value != null) {
+            ProfileImage(
+                link = viewModel.imagePath.value,
+                onClick = { launcher.launch(ProfileScreenViewModel.IMAGE_PATH_DIALOG) })
+        } else if (profileInfo.avatar != null) {
+            ProfileImage(
+                link = profileInfo.avatar,
+                onClick = { launcher.launch(ProfileScreenViewModel.IMAGE_PATH_DIALOG) })
+        } else {
+            DefaultProfileImage(onClick = { launcher.launch(ProfileScreenViewModel.IMAGE_PATH_DIALOG) })
+        }
+
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -154,10 +170,12 @@ private fun AboutMeBlock(
                     unfocusedTextColor = Color.Black,
                     disabledTextColor = Color.Black,
                 ),
-                placeholder = { LightText(
-                    text = stringResource(R.string.enter_information_about_yourself),
-                    fontSize = MediumText
-                ) },
+                placeholder = {
+                    LightText(
+                        text = stringResource(R.string.enter_information_about_yourself),
+                        fontSize = MediumText
+                    )
+                },
                 textStyle = TextStyle(fontSize = MediumText),
                 onValueChange = { viewModel.aboutMeChanged(it) }
             )

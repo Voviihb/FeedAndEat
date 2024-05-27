@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.profile.pres
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -26,6 +27,9 @@ class ProfileScreenViewModel @Inject constructor(
 
     private var _user = UserModel()
 
+    private val _imagePath = mutableStateOf<Uri?>(null)
+    val imagePath: State<Uri?> = _imagePath
+
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
@@ -41,11 +45,7 @@ class ProfileScreenViewModel @Inject constructor(
                     _usersRepo.getUserData(userId).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
-                            is Response.Success -> if (response.data != null) {
-                                _user = response.data
-                            } else {
-                                _user = UserModel()
-                            }
+                            is Response.Success -> _user = response.data ?: UserModel()
 
                             is Response.Failure -> onError(response.e)
                         }
@@ -94,12 +94,11 @@ class ProfileScreenViewModel @Inject constructor(
             try {
                 val userId = _authRepo.getUserId()
                 if (userId != null) {
-                    val data: HashMap<String, Any?> = hashMapOf(
-                        AVATAR_URL_VALUE to _profileState.value.avatar,
-                        ABOUT_ME_VALUE to _profileState.value.aboutMe
+                    _usersRepo.updateUserData(
+                        userId,
+                        profileState.value,
+                        imagePath = imagePath.value
                     )
-
-                    _usersRepo.updateUserData(userId, data)
                         .collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
@@ -127,6 +126,11 @@ class ProfileScreenViewModel @Inject constructor(
         )
     }
 
+    fun imageChanged(value: Uri?) {
+        _imagePath.value = value
+    }
+
+
     private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false
@@ -137,7 +141,6 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val AVATAR_URL_VALUE = "avatarUrl"
-        private const val ABOUT_ME_VALUE = "aboutMeData"
+        const val IMAGE_PATH_DIALOG = "\"image/*\""
     }
 }
