@@ -25,8 +25,8 @@ fun getStartDestination(step : Int?): String {
 
 @Composable
 fun RecipeNavGraph(
-    navigateToRoute: (String) -> Unit,
     navigateBack : () -> Unit,
+    navigateNoState: (String) -> Unit,
     navController: NavHostController,
     step: Int? = null,
     viewModel: RecipesScreenViewModel,
@@ -67,7 +67,7 @@ fun RecipeNavGraph(
         composable(Routes.Congrats.route){
             CongratulationScreen(
                 recipe,
-                navigateToRoute
+                navigateNoState,
             )
         }
 

@@ -44,8 +44,8 @@ fun RecipeScreen(
                 Box(modifier = Modifier.padding(padding)) {
                     val navController = rememberNavController()
                     RecipeNavGraph(
-                        navigateToRoute = navigateToRoute,
                         navigateBack = navigateBack,
+                        navigateNoState = navigateNoState,
                         navController = navController,
                         viewModel = viewModel,
                     )
@@ -87,8 +87,8 @@ fun RecipeScreen(
                 Box(modifier = Modifier.padding(padding)) {
                     val navController = rememberNavController()
                     RecipeNavGraph(
-                        navigateToRoute = navigateToRoute,
                         navigateBack = navigateBack,
+                        navigateNoState = navigateNoState,
                         navController = navController,
                         step = number,
                         viewModel = viewModel
