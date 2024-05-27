@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
+import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
@@ -75,6 +77,12 @@ fun RecipeImageContainer(
             DishImage(
                 link = model.image,
                 modifier = Modifier
+            )
+        } else {
+            LargeIcon(
+                painter = painterResource(id = R.drawable.broken_image),
+                color = colorResource(id = R.color.gray),
+                modifier = Modifier.aspectRatio(4f / 3f)
             )
         }
         Text(text = model.name,
@@ -117,7 +125,8 @@ fun TextContainer(
                     shape = RoundedCornerShape(20.dp),
                 )
                 .clip(shape = RoundedCornerShape(20.dp))
-                .fillMaxHeight()
+                .fillMaxWidth()
+                .defaultMinSize(minWidth = 20.dp, minHeight = 300.dp)
                 .border(
                     1.dp,
                     colorResource(id = R.color.dark_cyan),
