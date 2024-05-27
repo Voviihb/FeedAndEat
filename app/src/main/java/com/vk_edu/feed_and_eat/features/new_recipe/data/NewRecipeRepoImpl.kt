@@ -48,7 +48,7 @@ class NewRecipeRepoImpl @Inject constructor(
             tags = tags,
             user = user,
             created = Date(Timestamp(System.currentTimeMillis()).time),
-            nutrients = Nutrients(10e9, 10e9, 10e9, 10e9)
+            nutrients = Nutrients(10e9, 10e9, 10e9, 10e9, 10e9)
         )
         db.collection(RECIPES_COLLECTION).document(docId).set(recipe).await()
         return@repoTryCatchBlock docId
