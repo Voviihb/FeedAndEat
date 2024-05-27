@@ -34,11 +34,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.SmallIcon
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
+import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
 fun BottomBar(
@@ -174,10 +176,7 @@ fun DropDownContainer(
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        collection.name,
-                        fontSize = 20.sp
-                    )
+                    DarkText(text = collection.name, fontSize = LargeText)
                     AddButtonShapePlus(
                         onClick = {
                             if (collection.id != null) {
