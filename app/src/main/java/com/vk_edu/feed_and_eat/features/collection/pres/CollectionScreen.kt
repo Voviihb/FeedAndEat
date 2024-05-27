@@ -14,7 +14,6 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 fun CollectionScreen(
     navigateToRoute: (String) -> Unit,
     navigateNoState: (String) -> Unit,
-    navigateBack: () -> Unit,
 ) {
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.CollectionOverviewScreen.route) },

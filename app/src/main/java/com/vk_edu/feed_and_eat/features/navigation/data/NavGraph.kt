@@ -86,7 +86,6 @@ fun NavGraph(
             CollectionScreen(
                 navigateToRoute = navigateToRoute,
                 navigateNoState = navigateNoState,
-                navigateBack = navigateBack,
             )
         }
         composable(BottomScreen.InProgressScreen.route) {
