@@ -102,13 +102,13 @@ private fun UserInfoBlock(
         if (viewModel.imagePath.value != null) {
             ProfileImage(
                 link = viewModel.imagePath.value,
-                onClick = { launcher.launch(ProfileScreenViewModel.IMAGE_PATH_DIALOG) })
+                onClick = { launcher.launch("image/*") })
         } else if (profileInfo.avatar != null) {
             ProfileImage(
                 link = profileInfo.avatar,
-                onClick = { launcher.launch(ProfileScreenViewModel.IMAGE_PATH_DIALOG) })
+                onClick = { launcher.launch("image/*") })
         } else {
-            DefaultProfileImage(onClick = { launcher.launch(ProfileScreenViewModel.IMAGE_PATH_DIALOG) })
+            DefaultProfileImage(onClick = { launcher.launch("image/*") })
         }
 
         Column(

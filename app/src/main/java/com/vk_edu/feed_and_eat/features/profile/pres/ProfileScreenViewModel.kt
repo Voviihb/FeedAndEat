@@ -139,8 +139,4 @@ class ProfileScreenViewModel @Inject constructor(
     fun clearError() {
         _errorMessage.value = null
     }
-
-    companion object {
-        const val IMAGE_PATH_DIALOG = "\"image/*\""
-    }
 }
