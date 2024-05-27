@@ -39,6 +39,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
+import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 
 @Composable
@@ -65,7 +66,7 @@ fun NewRecipeScreen(
 @Composable
 fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxWidth()
             .padding(12.dp)
@@ -75,11 +76,11 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
                 if (viewModel.currentStepIndex.value > 0)
                     OutlinedThemeButton(
                         text = "Go to previous",
-                        fontSize = MediumText,
+                        fontSize = SmallText,
                         modifier = Modifier
-                            .height(48.dp)
+                            .height(32.dp)
                             .fillMaxWidth()
-                            .padding(0.dp, 0.dp, 8.dp, 0.dp),
+                            .padding(0.dp, 0.dp, 4.dp, 0.dp),
                         onClick = {
                             viewModel.goToPreviousStep()
                         }
@@ -87,11 +88,11 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
             }
             OutlinedThemeButton(
                 text = "Add new step",
-                fontSize = MediumText,
+                fontSize = SmallText,
                 modifier = Modifier
-                    .height(48.dp)
+                    .height(32.dp)
                     .weight(1f)
-                    .padding(8.dp, 0.dp),
+                    .padding(4.dp, 0.dp),
                 onClick = {
                     viewModel.createNewStep()
                 }
@@ -100,11 +101,11 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
                 if (viewModel.currentStepIndex.value < viewModel.steps.value.size - 1)
                     OutlinedThemeButton(
                         text = "Go to next",
-                        fontSize = MediumText,
+                        fontSize = SmallText,
                         modifier = Modifier
-                            .height(48.dp)
+                            .height(32.dp)
                             .fillMaxWidth()
-                            .padding(8.dp, 0.dp, 0.dp, 0.dp),
+                            .padding(4.dp, 0.dp, 0.dp, 0.dp),
                         onClick = {
                             viewModel.goToNextStep()
                         }
@@ -115,9 +116,9 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
         Row(modifier = Modifier.fillMaxWidth()) {
             OutlinedThemeButton(
                 text = "Save recipe",
-                fontSize = LargeText,
+                fontSize = MediumText,
                 modifier = Modifier
-                    .height(64.dp)
+                    .height(40.dp)
                     .weight(2f),
                 onClick = {
                     viewModel.saveRecipe()
@@ -127,9 +128,9 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
             Spacer(modifier = Modifier.weight(1f))
             OutlinedThemeButton(
                 text = "Cancel creation",
-                fontSize = LargeText,
+                fontSize = MediumText,
                 modifier = Modifier
-                    .height(64.dp)
+                    .height(40.dp)
                     .weight(2f),
                 onClick = navigateBack
             )
@@ -140,17 +141,17 @@ fun SecondPart(viewModel: NewRecipeScreenViewModel, navigateBack: () -> Unit, mo
 @Composable
 fun FirstPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxSize()
-            .padding(12.dp, 12.dp, 12.dp, 164.dp)
+            .padding(12.dp, 12.dp, 12.dp, 116.dp)
     ) {
         OutlinedTextInput(
             text = viewModel.name.value,
-            fontSize = LargeText,
+            fontSize = MediumText,
             placeholderText = "Recipe name",
             modifier = Modifier
-                .height(64.dp)
+                .height(56.dp)
                 .fillMaxWidth(),
             onValueChange = { value ->
                 viewModel.changeName(value)
@@ -172,9 +173,7 @@ fun FirstPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier
                 else
                     "Load new dish photo:",
                 fontSize = MediumText,
-                modifier = Modifier
-                    .height(64.dp)
-                    .weight(1f)
+                modifier = Modifier.weight(1f)
             )
             OutlinedButton(
                 shape = RoundedCornerShape(8.dp),
@@ -185,7 +184,7 @@ fun FirstPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier
                 border = BorderStroke(1.dp, colorResource(R.color.medium_cyan)),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier
-                    .height(64.dp)
+                    .height(56.dp)
                     .weight(1f),
                 onClick = {
                     launcher.launch("image/*")
