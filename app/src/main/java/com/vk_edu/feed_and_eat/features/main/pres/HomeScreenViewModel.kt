@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -331,7 +330,6 @@ class HomeScreenViewModel @Inject constructor(
     fun checkUserChanged() {
         val user = _authRepo.getUserId()
         if (currentUser != null && currentUser != user) {
-            Log.d("Taag", "User changed")
             getFavouriteRecipeIds()
         }
     }
