@@ -3,6 +3,7 @@ package com.vk_edu.feed_and_eat.features.new_recipe.pres
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -64,9 +66,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.BoldText
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.LightText
-import com.vk_edu.feed_and_eat.common.graphics.LightTextNoOverflow
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedTextInput
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
@@ -74,7 +76,6 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
-import com.vk_edu.feed_and_eat.ui.theme.SmallestText
 
 
 @Composable
@@ -107,6 +108,7 @@ fun NewRecipeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
     Column(
@@ -231,18 +233,22 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         colorResource(R.color.light_cyan)
                                     else
                                         colorResource(R.color.white)
-                                ),
+                                )
+                                .padding(horizontal = 4.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
                                 RadioButton(
                                     selected = timerState.type == TimerType.CONSTANT.str,
                                     colors = RadioButtonColors(
                                         colorResource(R.color.black), colorResource(R.color.black),
                                         colorResource(R.color.black), colorResource(R.color.black)
                                     ),
-                                    modifier = Modifier.height(12.dp),
+                                    modifier = Modifier.size(20.dp),
                                     onClick = { viewModel.changeTimerType(index) }
                                 )
                                 ClickableText(
@@ -264,16 +270,17 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                     var hours by remember { mutableStateOf("") }
                                     var minutes by remember { mutableStateOf("") }
 
+
                                     TextField(
                                         value = hours,
                                         textStyle = TextStyle(
-                                            fontSize = SmallestText,
+                                            fontSize = ExtraSmallText,
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightTextNoOverflow(
+                                            LightText(
                                                 text = "h",
-                                                fontSize = SmallestText,
+                                                fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
                                         },
@@ -293,11 +300,8 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredSize(48.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = colorResource(R.color.dark_cyan)
-                                            ),
+                                            .requiredHeight(64.dp)
+                                            .requiredWidth(52.dp),
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         onValueChange = { value ->
                                             hours = value
@@ -308,17 +312,17 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             )
                                         }
                                     )
-                                    DarkText(text = ":", fontSize = ExtraSmallText)
+                                    BoldText(text = ":", fontSize = ExtraSmallText)
                                     TextField(
                                         value = minutes,
                                         textStyle = TextStyle(
-                                            fontSize = SmallestText,
+                                            fontSize = ExtraSmallText,
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightTextNoOverflow(
+                                            LightText(
                                                 text = "m",
-                                                fontSize = SmallestText,
+                                                fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
                                         },
@@ -338,11 +342,8 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredSize(48.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = colorResource(R.color.dark_cyan)
-                                            ),
+                                            .requiredHeight(64.dp)
+                                            .requiredWidth(52.dp),
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         onValueChange = { value ->
                                             minutes = value
@@ -367,13 +368,13 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                     TextField(
                                         value = hours1,
                                         textStyle = TextStyle(
-                                            fontSize = SmallestText,
+                                            fontSize = ExtraSmallText,
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightTextNoOverflow(
+                                            LightText(
                                                 text = "h",
-                                                fontSize = SmallestText,
+                                                fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
                                         },
@@ -393,11 +394,8 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredSize(48.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = colorResource(R.color.dark_cyan)
-                                            ),
+                                            .requiredHeight(64.dp)
+                                            .requiredWidth(52.dp),
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         onValueChange = { value ->
                                             hours1 = value
@@ -408,17 +406,17 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             )
                                         }
                                     )
-                                    DarkText(text = ":", fontSize = ExtraSmallText)
+                                    BoldText(text = ":", fontSize = ExtraSmallText)
                                     TextField(
                                         value = minutes1,
                                         textStyle = TextStyle(
-                                            fontSize = SmallestText,
+                                            fontSize = ExtraSmallText,
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightTextNoOverflow(
+                                            LightText(
                                                 text = "m",
-                                                fontSize = SmallestText,
+                                                fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
                                         },
@@ -438,11 +436,8 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredSize(48.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = colorResource(R.color.dark_cyan)
-                                            ),
+                                            .requiredHeight(64.dp)
+                                            .requiredWidth(52.dp),
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         onValueChange = { value ->
                                             minutes1 = value
@@ -454,18 +449,18 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         }
                                     )
 
-                                    DarkText(text = "-", fontSize = ExtraSmallText)
+                                    BoldText(text = "-", fontSize = ExtraSmallText)
 
                                     TextField(
                                         value = hours2,
                                         textStyle = TextStyle(
-                                            fontSize = SmallestText,
+                                            fontSize = ExtraSmallText,
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightTextNoOverflow(
+                                            LightText(
                                                 text = "h",
-                                                fontSize = SmallestText,
+                                                fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
                                         },
@@ -485,11 +480,8 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredSize(48.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = colorResource(R.color.dark_cyan)
-                                            ),
+                                            .requiredHeight(64.dp)
+                                            .requiredWidth(52.dp),
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         onValueChange = { value ->
                                             hours2 = value
@@ -500,17 +492,17 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             )
                                         }
                                     )
-                                    DarkText(text = ":", fontSize = ExtraSmallText)
+                                    BoldText(text = ":", fontSize = ExtraSmallText)
                                     TextField(
                                         value = minutes2,
                                         textStyle = TextStyle(
-                                            fontSize = SmallestText,
+                                            fontSize = ExtraSmallText,
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightTextNoOverflow(
+                                            LightText(
                                                 text = "m",
-                                                fontSize = SmallestText,
+                                                fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
                                         },
@@ -530,11 +522,8 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredSize(48.dp)
-                                            .border(
-                                                width = 1.dp,
-                                                color = colorResource(R.color.dark_cyan)
-                                            ),
+                                            .requiredHeight(64.dp)
+                                            .requiredWidth(52.dp),
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                         onValueChange = { value ->
                                             minutes2 = value
@@ -549,7 +538,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                 }
                             }
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
                                 ClickableText(
                                     text = AnnotatedString("Range"),
                                     style = TextStyle(
@@ -565,7 +557,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         colorResource(R.color.black), colorResource(R.color.black),
                                         colorResource(R.color.black), colorResource(R.color.black)
                                     ),
-                                    modifier = Modifier.height(12.dp),
+                                    modifier = Modifier.size(20.dp),
                                     onClick = { viewModel.changeTimerType(index) }
                                 )
                             }
