@@ -80,6 +80,7 @@
     <string name="inProgress">In progress</string>
     <string name="profile">Profile</string>
     <string name="nav_id">id</string>
+    <string name="collection_id">CollectionId</string>
     <string name="nav_number">number</string>
     <string name="recipe">Recipe</string>
 <!--    screen names-->

@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -36,7 +38,6 @@ import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
-import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 
@@ -59,7 +60,12 @@ fun CollectionPreview(
                     viewModel.collectionRecipes(id)
                 })
             else
-                CardsGrid(viewModel = viewModel, navigateToRoute)
+                CardsGrid(
+                    viewModel = viewModel,
+                    navigateToRoute = navigateToRoute,
+                    navigateToCollection = navigateToCollection,
+                    id = id
+                )
 
             SquareArrowButton(onClick = { navigateToCollection(CollectionRoutes.AllCollections.route) })
         }
@@ -69,6 +75,8 @@ fun CollectionPreview(
 fun CardsGrid(
     viewModel: CollectionScreenViewModel,
     navigateToRoute: (String) -> Unit,
+    navigateToCollection: (String) -> Unit,
+    id : String,
     modifier: Modifier = Modifier
 ) {
     val userFavourites by viewModel.favouriteRecipeIds
@@ -88,13 +96,14 @@ fun CardsGrid(
         modifier = modifier.fillMaxSize()
     ) {
         items(viewModel.cardsData.value) { cardData ->
+            Log.d("CARD", "${cardData.recipeId}")
             DishCard(
                 recipeCard = cardData,
                 inFavourites = cardData.recipeId in userFavourites,
                 favouritesCollectionId = favouritesId,
                 addToFavourites = viewModel::addRecipeToUserCollection,
                 removeFromFavourites = viewModel::removeRecipeFromUserCollection,
-                navigateToRoute = navigateToRoute,
+                navigateToRoute = { navigateToCollection("${CollectionRoutes.RecipeWithoutNavBar.route}/$id/${cardData.recipeId}") },
                 modifier = Modifier
                     .onGloballyPositioned { coordinates ->
                         columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
@@ -102,7 +111,11 @@ fun CardsGrid(
             )
         }
         item {
-            AddDishCard(navigateToRoute = navigateToRoute)
+            AddDishCard(
+                navigateToRoute = navigateToCollection,
+                id = id,
+                modifier = Modifier.height(if (columnHeightDp > 0.dp) columnHeightDp else 240.dp)
+            )
         }
     }
 }
@@ -110,6 +123,7 @@ fun CardsGrid(
 @Composable
 fun AddDishCard(
     navigateToRoute: (String) -> Unit,
+    id : String,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -122,7 +136,7 @@ fun AddDishCard(
             .fillMaxHeight()
             .shadow(12.dp, RoundedCornerShape(16.dp)),
         onClick = {
-            navigateToRoute(Screen.NewRecipeScreen.route)
+            navigateToRoute("${CollectionRoutes.NewRecipe.route}/$id")
         }
     ) {
         Column(

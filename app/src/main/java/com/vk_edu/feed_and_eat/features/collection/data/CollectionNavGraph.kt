@@ -17,13 +17,18 @@ import com.vk_edu.feed_and_eat.features.collection.pres.AllCollectionsScreen
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionPreview
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionRoutes
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreenViewModel
+import com.vk_edu.feed_and_eat.features.new_recipe.pres.NewRecipeScreen
+import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipeWithoutNavBar
 
 @Composable
 fun CollectionNavGraph(
     navigateToRoute: (String) -> Unit,
+    navigateBack: () -> Unit,
+    navigateNoState: (String) -> Unit,
     navController: NavHostController,
 ) {
     val navId = stringResource(id = R.string.nav_id)
+    val collectionId = stringResource(id = R.string.collection_id)
     val navigateToCollection: (String) -> Unit = {route ->
         navController.navigate(route) {
                 popUpTo(navController.graph.findStartDestination().id) {
@@ -40,9 +45,22 @@ fun CollectionNavGraph(
         startDestination = CollectionRoutes.AllCollections.route,
         modifier = Modifier.padding(0.dp)
     ) {
+//        Log.d("LOG", CollectionRoutes.RecipeWithoutNavBar.route + CollectionRoutes.CollecttionId.route + CollectionRoutes.Id.route)
         composable(CollectionRoutes.AllCollections.route){
             AllCollectionsScreen(
                 navigateToCollection
+            )
+        }
+        composable(
+            route = CollectionRoutes.NewRecipe.route + CollectionRoutes.Id.route,
+            arguments = listOf(navArgument(navId){ type = NavType.StringType })
+        ){entry ->
+            val id = entry.arguments?.getString(navId)
+            NewRecipeScreen(
+                navigateToRoute = navigateToRoute,
+                navigateBack = navigateBack,
+                collectionId = id ?: "",
+                navigateToCollection = navigateToCollection
             )
         }
         composable(
@@ -57,6 +75,23 @@ fun CollectionNavGraph(
                 navigateToCollection = navigateToCollection,
                 id = id ?: "",
                 viewModel
+            )
+        }
+        composable(
+            route = CollectionRoutes.RecipeWithoutNavBar.route + CollectionRoutes.CollecttionId.route + CollectionRoutes.Id.route,
+            arguments = listOf(
+                navArgument(collectionId){ type = NavType.StringType },
+                navArgument(navId){ type = NavType.StringType },
+                )
+        ) {entry ->
+            val collectionId = entry.arguments?.getString(collectionId)
+            val id = entry.arguments?.getString(navId) ?: ""
+            val destination = navController.previousBackStackEntry?.destination?.route ?: CollectionRoutes.AllCollections.route
+            RecipeWithoutNavBar(
+                navigateToRoute = navigateToRoute,
+                navigateBack = { navigateToCollection("${CollectionRoutes.Collection.route}/$collectionId") },
+                navigateNoState = navigateNoState,
+                id = id ?: "",
             )
         }
     }

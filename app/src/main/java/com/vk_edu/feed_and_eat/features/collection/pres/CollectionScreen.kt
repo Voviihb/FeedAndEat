@@ -13,6 +13,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 @Composable
 fun CollectionScreen(
     navigateToRoute: (String) -> Unit,
+    navigateBack: () -> Unit,
     navigateNoState: (String) -> Unit,
 ) {
     Scaffold(
@@ -22,6 +23,8 @@ fun CollectionScreen(
         Box(modifier = Modifier.padding(padding)){
             CollectionNavGraph(
                 navigateToRoute = navigateToRoute,
+                navigateBack = navigateBack,
+                navigateNoState = navigateNoState,
                 navController = navController
             )
         }

@@ -31,7 +31,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -57,8 +56,6 @@ import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedTextInput
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
-import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
-import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
@@ -66,17 +63,19 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 @Composable
 fun NewRecipeScreen(
     navigateToRoute : (String) -> Unit,
-    navigateNoState: (String) -> Unit,
+    navigateBack: () -> Unit,
+    collectionId: String,
+    navigateToCollection: (String) -> Unit,
     viewModel: NewRecipeScreenViewModel = hiltViewModel()
 ) {
-    val navigateBack = { navigateToRoute(BottomScreen.CollectionOverviewScreen.route) }
-    Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.CollectionOverviewScreen.route) }
-    ) { padding ->
+//    val navigateBack = { navigateToRoute(BottomScreen.CollectionOverviewScreen.route) }
+//    Scaffold(
+//        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.CollectionOverviewScreen.route) }
+//    ) { padding ->
         Box(
             contentAlignment = Alignment.BottomCenter,
             modifier = Modifier
-                .padding(padding)
+//                .padding(padding)
                 .background(colorResource(R.color.white))
         ) {
             MainPart(viewModel)
@@ -85,7 +84,7 @@ fun NewRecipeScreen(
             WindowCancelDialog(viewModel, navigateBack)
         }
     }
-}
+
 
 @Composable
 fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
