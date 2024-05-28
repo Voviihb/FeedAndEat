@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -74,39 +75,40 @@ import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
+import com.vk_edu.feed_and_eat.features.collection.pres.CollectionRoutes
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 
 @Composable
 fun NewRecipeScreen(
-    navigateToRoute: (String) -> Unit,
-    navigateNoState: (String) -> Unit,
+    navigateToRoute : (String) -> Unit,
+    navigateBack: () -> Unit,
+    collectionId: String,
+    navigateToCollection: (String) -> Unit,
     viewModel: NewRecipeScreenViewModel = hiltViewModel()
 ) {
-    val navigateBack = { navigateToRoute(BottomScreen.CollectionOverviewScreen.route) }
-    Scaffold(
-        bottomBar = {
-            GlobalNavigationBar(
-                navigateToRoute,
-                navigateNoState,
-                BottomScreen.CollectionOverviewScreen.route
-            )
-        }
-    ) { padding ->
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-            modifier = Modifier
-                .padding(padding)
-                .background(colorResource(R.color.white))
-        ) {
-            MainPart(viewModel)
-            ButtonsBlock(viewModel)
-            WindowDialog(viewModel, navigateBack)
-            WindowCancelDialog(viewModel, navigateBack)
-        }
+    viewModel.setCollectionId(collectionId)
+    Box(
+        contentAlignment = Alignment.BottomCenter,
+        modifier = Modifier
+            .background(colorResource(R.color.white))
+    ) {
+        MainPart(viewModel)
+        ButtonsBlock(viewModel)
+        WindowDialog(
+            viewModel,
+            navigateToCollection,
+            collectionId
+        )
+        WindowCancelDialog(
+            viewModel,
+            navigateToCollection,
+            collectionId
+        )
     }
 }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -671,7 +673,8 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
 @Composable
 fun WindowDialog(
     viewModel: NewRecipeScreenViewModel,
-    navigateBack: () -> Unit
+    navigateToCollection: (String) -> Unit,
+    collectionId: String
 ) {
     if (viewModel.activeWindowDialog.value) {
         Box(
@@ -766,7 +769,7 @@ fun WindowDialog(
                         onClick = {
                             viewModel.closeDialogs()
                             viewModel.saveRecipe()
-                            navigateBack()
+                            navigateToCollection("${CollectionRoutes.Collection.route}/$collectionId")
                         }
                     )
                 },
@@ -785,7 +788,8 @@ fun WindowDialog(
 @Composable
 fun WindowCancelDialog(
     viewModel: NewRecipeScreenViewModel,
-    navigateBack: () -> Unit
+    navigateToCollection: (String) -> Unit,
+    collectionId: String
 ) {
     if (viewModel.activeWindowCancelDialog.value) {
         Box(
@@ -808,7 +812,7 @@ fun WindowCancelDialog(
                         modifier = Modifier.height(40.dp),
                         onClick = {
                             viewModel.closeDialogs()
-                            navigateBack()
+                            navigateToCollection("${CollectionRoutes.Collection.route}/$collectionId")
                         }
                     )
                 },

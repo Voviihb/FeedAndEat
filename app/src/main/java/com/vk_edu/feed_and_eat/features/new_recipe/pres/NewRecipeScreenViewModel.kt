@@ -52,7 +52,7 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private val collectionId = "DhsIL0qrXWufKSTVDvx3"
+    private var collectionId = ""
 
     init {
         viewModelScope.launch {
@@ -305,6 +305,10 @@ class NewRecipeScreenViewModel @Inject constructor(
     private fun onError(message: Exception?) {
         _errorMessage.value = message
         _loading.value = false
+    }
+
+    fun setCollectionId(id : String){
+        collectionId = id
     }
 
     fun clearError() {

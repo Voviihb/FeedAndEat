@@ -53,24 +53,23 @@ fun TimeInfoCard(time: Int?, modifier: Modifier = Modifier) {
                 colorResource(R.color.white), colorResource(R.color.white)
             ),
             modifier = Modifier
-                .height(52.dp)
+                .height(56.dp)
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
             onClick = {  }
         ) {
             Row(
-                horizontalArrangement = Arrangement.Absolute.Left,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp, 0.dp, 8.dp, 0.dp)
+                    .padding(4.dp, 0.dp)
             ) {
                 LargeIcon(
                     painter = painterResource(R.drawable.clock),
                     color = colorResource(R.color.black),
                     modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                 )
-                Spacer(modifier = Modifier.width(10.dp))
                 if (time != null) {
                     val minutes = stringResource(id = R.string.minutes)
                     val hours = stringResource(id = R.string.hours)
@@ -109,24 +108,23 @@ fun TimeInfoCard(time1: Int, time2: Int, modifier: Modifier = Modifier) {
                 colorResource(R.color.white), colorResource(R.color.white)
             ),
             modifier = Modifier
-                .height(52.dp)
+                .height(56.dp)
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
             onClick = { }
         ) {
             Row(
-                horizontalArrangement = Arrangement.Absolute.Left,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp, 0.dp, 8.dp, 0.dp)
+                    .padding(4.dp, 0.dp)
             ) {
                 LargeIcon(
                     painter = painterResource(R.drawable.clock),
                     color = colorResource(R.color.black),
                     modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                 )
-                Spacer(modifier = Modifier.width(10.dp))
                 LightText(text = "$minText - $maxText", fontSize = LargeText)
             }
         }
