@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
@@ -167,6 +168,27 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     fun openWindowCancelDialog() {
         _activeWindowCancelDialog.value = true
+    }
+
+    fun addNewTimer(type: Boolean, num: String, num1: String, num2: String) {
+        val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
+        actualTimers.add(Timer(
+            type = if (!type) "constant" else "range",
+            number = if (!type) num.toInt() else null,
+            lowerLimit = if (type) num1.toInt() else null,
+            upperLimit = if (type) num2.toInt() else null
+        ))
+        _currentStep.value =  _currentStep.value.copy(
+            timers = actualTimers
+        )
+    }
+
+    fun deleteTimer(index: Int) {
+        val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
+        actualTimers.removeAt(index)
+        _currentStep.value =  _currentStep.value.copy(
+            timers = actualTimers
+        )
     }
 
     private fun onError(message: Exception?) {

@@ -28,8 +28,10 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +45,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -73,91 +76,16 @@ fun NewRecipeScreen(
                 .padding(padding)
                 .background(colorResource(R.color.white))
         ) {
-            FirstPart(viewModel)
-            SecondPart(viewModel)
+            MainPart(viewModel)
+            ButtonsBlock(viewModel)
             WindowDialog(viewModel, navigateBack)
+            WindowCancelDialog(viewModel, navigateBack)
         }
     }
 }
 
 @Composable
-fun SecondPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(12.dp)
-    ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Box(modifier = Modifier.weight(1f)) {
-                if (viewModel.currentStepIndex.value > 0)
-                    OutlinedThemeButton(
-                        text = "Go to previous",
-                        fontSize = SmallText,
-                        modifier = Modifier
-                            .height(32.dp)
-                            .fillMaxWidth()
-                            .padding(0.dp, 0.dp, 4.dp, 0.dp),
-                        onClick = {
-                            viewModel.goToPreviousStep()
-                        }
-                    )
-            }
-            OutlinedThemeButton(
-                text = "Add new step",
-                fontSize = SmallText,
-                modifier = Modifier
-                    .height(32.dp)
-                    .weight(1f)
-                    .padding(4.dp, 0.dp),
-                onClick = {
-                    viewModel.createNewStep()
-                }
-            )
-            Box(modifier = Modifier.weight(1f)) {
-                if (viewModel.currentStepIndex.value < viewModel.steps.value.size - 1)
-                    OutlinedThemeButton(
-                        text = "Go to next",
-                        fontSize = SmallText,
-                        modifier = Modifier
-                            .height(32.dp)
-                            .fillMaxWidth()
-                            .padding(4.dp, 0.dp, 0.dp, 0.dp),
-                        onClick = {
-                            viewModel.goToNextStep()
-                        }
-                    )
-            }
-        }
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            OutlinedThemeButton(
-                text = "Save recipe",
-                fontSize = MediumText,
-                modifier = Modifier
-                    .height(40.dp)
-                    .weight(2f),
-                onClick = {
-                    viewModel.openWindowDialog()
-                }
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            OutlinedThemeButton(
-                text = "Cancel creation",
-                fontSize = MediumText,
-                modifier = Modifier
-                    .height(40.dp)
-                    .weight(2f),
-                onClick = {
-                    viewModel.openWindowCancelDialog()
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun FirstPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
+fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
@@ -233,18 +161,108 @@ fun FirstPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier
                 .background(colorResource(R.color.white), RoundedCornerShape(12.dp))
                 .border(2.dp, colorResource(R.color.dark_cyan), RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
-                .padding(8.dp)
         ) {
-            OutlinedTextInput(
-                text = viewModel.currentStep.value.paragraph,
-                fontSize = MediumText,
-                placeholderText = "Enter instruction of step",
-                singleLine = false,
+            OutlinedTextField(
+                value = viewModel.currentStep.value.paragraph,
+                textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
+                placeholder = { LightText(text = "Enter instruction of step", fontSize = MediumText) },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = colorResource(R.color.white_cyan),
+                    focusedContainerColor = colorResource(R.color.white_cyan),
+                    errorContainerColor = colorResource(R.color.white_cyan),
+                    focusedIndicatorColor = colorResource(R.color.medium_cyan),
+                    unfocusedIndicatorColor = colorResource(R.color.medium_cyan),
+                    disabledIndicatorColor = colorResource(R.color.medium_cyan),
+                    errorIndicatorColor = colorResource(R.color.medium_cyan),
+                    focusedTextColor = colorResource(R.color.black),
+                    unfocusedTextColor = colorResource(R.color.black),
+                    disabledTextColor = colorResource(R.color.black),
+                    cursorColor = colorResource(R.color.black),
+                    errorCursorColor = colorResource(R.color.black)
+                ),
+                shape = RoundedCornerShape(0.dp),
                 modifier = Modifier
                     .height(180.dp)
                     .fillMaxWidth(),
                 onValueChange = { value ->
                     viewModel.changeInstruction(value)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Box(modifier = Modifier.weight(1f)) {
+                if (viewModel.currentStepIndex.value > 0)
+                    OutlinedThemeButton(
+                        text = "Go to previous",
+                        fontSize = SmallText,
+                        modifier = Modifier
+                            .height(32.dp)
+                            .fillMaxWidth()
+                            .padding(0.dp, 0.dp, 4.dp, 0.dp),
+                        onClick = {
+                            viewModel.goToPreviousStep()
+                        }
+                    )
+            }
+            OutlinedThemeButton(
+                text = "Add new step",
+                fontSize = SmallText,
+                modifier = Modifier
+                    .height(32.dp)
+                    .weight(1f)
+                    .padding(4.dp, 0.dp),
+                onClick = {
+                    viewModel.createNewStep()
+                }
+            )
+            Box(modifier = Modifier.weight(1f)) {
+                if (viewModel.currentStepIndex.value < viewModel.steps.value.size - 1)
+                    OutlinedThemeButton(
+                        text = "Go to next",
+                        fontSize = SmallText,
+                        modifier = Modifier
+                            .height(32.dp)
+                            .fillMaxWidth()
+                            .padding(4.dp, 0.dp, 0.dp, 0.dp),
+                        onClick = {
+                            viewModel.goToNextStep()
+                        }
+                    )
+            }
+        }
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            OutlinedThemeButton(
+                text = "Save recipe",
+                fontSize = MediumText,
+                modifier = Modifier
+                    .height(40.dp)
+                    .weight(2f),
+                onClick = {
+                    viewModel.openWindowDialog()
+                }
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            OutlinedThemeButton(
+                text = "Cancel creation",
+                fontSize = MediumText,
+                modifier = Modifier
+                    .height(40.dp)
+                    .weight(2f),
+                onClick = {
+                    viewModel.openWindowCancelDialog()
                 }
             )
         }
@@ -266,7 +284,7 @@ fun WindowDialog(
                 onDismissRequest = { viewModel.closeDialogs() },
                 title = { LightText(
                             text = "Choose tags for your recipe (if you want) and confirm saving recipe",
-                            fontSize = MediumText
+                            fontSize = SmallText
                         ) },
                 text = {
                     Box(
@@ -340,8 +358,7 @@ fun WindowDialog(
                     OutlinedThemeButton(
                         text = "Confirm save",
                         fontSize = MediumText,
-                        modifier = Modifier
-                            .height(40.dp),
+                        modifier = Modifier.height(40.dp),
                         onClick = {
                             viewModel.closeDialogs()
                             viewModel.saveRecipe()
@@ -356,6 +373,45 @@ fun WindowDialog(
                         RoundedCornerShape(24.dp)
                     )
                     .clip(RoundedCornerShape(24.dp))
+            )
+        }
+    }
+}
+
+@Composable
+fun WindowCancelDialog(
+    viewModel: NewRecipeScreenViewModel,
+    navigateBack: () -> Unit
+) {
+    if (viewModel.activeWindowCancelDialog.value) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ){
+            AlertDialog(
+                onDismissRequest = { viewModel.closeDialogs() },
+                title = { LightText(
+                    text = "Are you sure you want to leave? All your changes will not be saved!",
+                    fontSize = SmallText
+                ) },
+                text = { },
+                confirmButton = {
+                    OutlinedThemeButton(
+                        text = "Confirm cancel",
+                        fontSize = MediumText,
+                        modifier = Modifier.height(40.dp),
+                        onClick = {
+                            viewModel.closeDialogs()
+                            navigateBack()
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .border(
+                        2.dp,
+                        colorResource(id = R.color.dark_cyan),
+                        RoundedCornerShape(24.dp)
+                    )
             )
         }
     }
