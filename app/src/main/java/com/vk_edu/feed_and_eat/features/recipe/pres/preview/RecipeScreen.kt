@@ -98,3 +98,43 @@ fun RecipeScreen(
         }
     }
 }
+
+@Composable
+fun RecipeWithoutNavBar(
+    navigateToRoute: (String) -> Unit,
+    navigateBack: () -> Unit,
+    navigateNoState: (String) -> Unit,
+    id: String,
+    viewModel: RecipesScreenViewModel = hiltViewModel()
+){
+    viewModel.loadRecipeById(id)
+    if (viewModel.isUserAuthenticated()){
+        viewModel.loadCollections()
+    }
+
+    Scaffold {padding ->
+        if (viewModel.loading.value) {
+            LoadingCircular()
+        } else {
+            if (viewModel.errorMessage.value != null) {
+                RepeatButton(onClick = {
+                    viewModel.clearError()
+                    viewModel.clearCollectionError()
+                    viewModel.loadRecipeById(id)
+                    viewModel.loadCollections()
+                })
+            } else {
+                Box(Modifier.padding(padding)) {
+                    val navController = rememberNavController()
+                    RecipeNavGraph(
+                        navigateBack = navigateBack,
+                        navigateNoState = navigateNoState,
+                        navController = navController,
+                        viewModel = viewModel,
+                    )
+                }
+            }
+        }
+    }
+
+}
