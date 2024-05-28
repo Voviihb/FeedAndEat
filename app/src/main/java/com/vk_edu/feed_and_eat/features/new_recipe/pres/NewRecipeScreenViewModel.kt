@@ -202,15 +202,67 @@ class NewRecipeScreenViewModel @Inject constructor(
         _activeWindowCancelDialog.value = true
     }
 
-    fun addNewTimer(type: Boolean, num: String, num1: String, num2: String) {
+    fun addTimer() {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
         actualTimers.add(Timer(
-            type = if (!type) "constant" else "range",
-            number = if (!type) num.toInt() else null,
-            lowerLimit = if (type) num1.toInt() else null,
-            upperLimit = if (type) num2.toInt() else null
+            type = CONSTANT,
+            number = 0,
+            lowerLimit = 0,
+            upperLimit = 0
         ))
-        _currentStep.value =  _currentStep.value.copy(
+        _currentStep.value = _currentStep.value.copy(
+            timers = actualTimers
+        )
+    }
+
+    fun changeTimerType(index: Int) {
+        val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
+        actualTimers[index] = actualTimers[index].copy(
+            type = if (actualTimers[index].type == CONSTANT) RANGE else CONSTANT
+        )
+        _currentStep.value = _currentStep.value.copy(
+            timers = actualTimers
+        )
+    }
+
+    fun changeTimerNum(index: Int, numHour: String, numMinute: String) {
+        val numHourInt = numHour.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
+        val numMinuteInt = numMinute.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
+        val numInt = numHourInt * 60 + numMinuteInt
+
+        val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
+        actualTimers[index] = actualTimers[index].copy(
+            number = numInt
+        )
+        _currentStep.value = _currentStep.value.copy(
+            timers = actualTimers
+        )
+    }
+
+    fun changeTimerNum1(index: Int, num1Hour: String, num1Minute: String) {
+        val num1HourInt = num1Hour.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
+        val num1MinuteInt = num1Minute.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
+        val num1Int = num1HourInt * 60 + num1MinuteInt
+
+        val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
+        actualTimers[index] = actualTimers[index].copy(
+            lowerLimit = num1Int
+        )
+        _currentStep.value = _currentStep.value.copy(
+            timers = actualTimers
+        )
+    }
+
+    fun changeTimerNum2(index: Int, num2Hour: String, num2Minute: String) {
+        val num2HourInt = num2Hour.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
+        val num2MinuteInt = num2Minute.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
+        val num2Int = num2HourInt * 60 + num2MinuteInt
+
+        val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
+        actualTimers[index] = actualTimers[index].copy(
+            upperLimit = num2Int
+        )
+        _currentStep.value = _currentStep.value.copy(
             timers = actualTimers
         )
     }
@@ -230,5 +282,10 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    companion object {
+        private const val CONSTANT = "constant"
+        private const val RANGE = "range"
     }
 }
