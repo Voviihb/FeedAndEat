@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -201,14 +202,20 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(48.dp)
-                                .background(if (index % 2 == 0)
-                                    colorResource(R.color.light_cyan)
-                                else
-                                    colorResource(R.color.white)
+                                .background(
+                                    if (index % 2 == 0)
+                                        colorResource(R.color.light_cyan)
+                                    else
+                                        colorResource(R.color.white)
                                 )
                         ) {
                             /* TODO */
                         }
+                    }
+                }
+                item {
+                    Button(onClick = { viewModel.addTimer() }) {
+
                     }
                 }
             }
