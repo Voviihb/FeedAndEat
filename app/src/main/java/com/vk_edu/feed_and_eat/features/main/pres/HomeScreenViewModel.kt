@@ -41,6 +41,8 @@ class HomeScreenViewModel @Inject constructor(
     private val _favouritesCollectionId = mutableStateOf<String?>(null)
     val favouritesCollectionId: State<String?> = _favouritesCollectionId
 
+    private var currentUser: String? = null
+
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
@@ -223,6 +225,7 @@ class HomeScreenViewModel @Inject constructor(
                 var collectionsData = listOf<CollectionDataModel>()
                 val user = _authRepo.getUserId()
                 if (user != null) {
+                    currentUser = user
                     _usersRepo.getUserCollections(userId = user).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
@@ -321,6 +324,13 @@ class HomeScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 onError(e)
             }
+        }
+    }
+
+    fun checkUserChanged() {
+        val user = _authRepo.getUserId()
+        if (currentUser != null && currentUser != user) {
+            getFavouriteRecipeIds()
         }
     }
 
