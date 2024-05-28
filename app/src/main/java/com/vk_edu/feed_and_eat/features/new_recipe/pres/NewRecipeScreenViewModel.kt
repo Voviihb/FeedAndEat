@@ -52,6 +52,8 @@ class NewRecipeScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
+    private val collectionId = "DhsIL0qrXWufKSTVDvx3"
+
     init {
         viewModelScope.launch {
             try {
@@ -79,7 +81,8 @@ class NewRecipeScreenViewModel @Inject constructor(
             try {
                 val user = _authRepo.getUserId()
                 if (user != null) {
-                    _newRecipeRepo.addNewRecipe(user,
+                    _newRecipeRepo.addNewRecipe(
+                        user,
                         _name.value,
                         _imagePath.value,
                         _steps.value,
@@ -88,7 +91,37 @@ class NewRecipeScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
+                                val recipeId = response.data
+                                if (recipeId != null) {
+                                    _recipesRepo.loadRecipeById(recipeId).collect { response ->
+                                        when (response) {
+                                            is Response.Loading -> _loading.value = true
+                                            is Response.Success -> {
+                                                _recipesRepo.addRecipeToUserCollection(
+                                                    user,
+                                                    collectionId,
+                                                    recipeId,
+                                                    response.data?.image
+                                                ).collect { response ->
+                                                    when (response) {
+                                                        is Response.Loading -> { }
+                                                        is Response.Success -> {
 
+                                                        }
+
+                                                        is Response.Failure -> {
+                                                            onError(response.e)
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            is Response.Failure -> {
+                                                onError(response.e)
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
                             is Response.Failure -> {
@@ -97,7 +130,6 @@ class NewRecipeScreenViewModel @Inject constructor(
                         }
                     }
                 }
-
             } catch (e: Exception) {
                 onError(e)
             }

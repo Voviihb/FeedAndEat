@@ -84,6 +84,7 @@ fun AllCollectionsScreen(
                         )
                     }
                 }
+                WindowDialog(viewModel = viewModel)
             }
         }
     }
@@ -154,7 +155,6 @@ fun AddDishCard(
                 modifier = Modifier.padding(8.dp)
             )
         }
-        WindowDialog(viewModel = viewModel)
     }
 }
 

@@ -130,7 +130,8 @@
     <string name="default_label">Timers for running recipes will be displayed here</string>
     <string name="timer_format">%1$02d:%2$02d:%3$02d</string>
 <!--    collection screen-->
-    <string name="new_collection">New Collection</string>
+    <string name="new_collection">New collection</string>
     <string name="input_collection_name">Input collection name:</string>
     <string name="confirm">Confirm</string>
+    <string name="new_recipe">New recipe</string>
 </resources>

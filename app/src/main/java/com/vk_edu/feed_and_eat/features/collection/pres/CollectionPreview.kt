@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -98,15 +97,12 @@ fun CardsGrid(
                 navigateToRoute = navigateToRoute,
                 modifier = Modifier
                     .onGloballyPositioned { coordinates ->
-                    columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
-                }
+                        columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
+                    }
             )
         }
         item {
-            AddDishCard(
-                navigateToRoute = navigateToRoute,
-                modifier = Modifier.height(if (columnHeightDp > 0.dp) columnHeightDp else 240.dp)
-            )
+            AddDishCard(navigateToRoute = navigateToRoute)
         }
     }
 }
@@ -115,7 +111,7 @@ fun CardsGrid(
 fun AddDishCard(
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier
-){
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardColors(
@@ -141,9 +137,8 @@ fun AddDishCard(
                     .padding(24.dp)
             )
             BoldText(
-                text = stringResource(id = R.string.new_collection),
+                text = stringResource(id = R.string.new_recipe),
                 fontSize = LargeText,
-                fixLinesNumber = true,
                 modifier = Modifier.padding(8.dp)
             )
         }

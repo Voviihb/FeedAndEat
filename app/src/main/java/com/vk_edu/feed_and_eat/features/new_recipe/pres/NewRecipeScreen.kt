@@ -63,12 +63,13 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 @Composable
 fun NewRecipeScreen(
-    navigateToRoute: (String) -> Unit,
-    navigateBack: () -> Unit,
+    navigateToRoute : (String) -> Unit,
+    navigateNoState: (String) -> Unit,
     viewModel: NewRecipeScreenViewModel = hiltViewModel()
 ) {
+    val navigateBack = { navigateToRoute(BottomScreen.CollectionOverviewScreen.route) }
     Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, BottomScreen.CollectionScreen.route) }
+        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.CollectionOverviewScreen.route) }
     ) { padding ->
         Box(
             contentAlignment = Alignment.BottomCenter,
@@ -166,7 +167,6 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                 value = viewModel.currentStep.value.paragraph,
                 textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
                 placeholder = { LightText(text = "Enter instruction of step", fontSize = MediumText) },
-                singleLine = true,
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = colorResource(R.color.white_cyan),
                     focusedContainerColor = colorResource(R.color.white_cyan),
