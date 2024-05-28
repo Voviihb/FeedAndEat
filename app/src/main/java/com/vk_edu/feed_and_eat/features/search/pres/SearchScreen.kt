@@ -33,6 +33,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -48,6 +49,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +84,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.GlobalNavigationBar
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -100,10 +103,11 @@ fun SearchScreen(
                 viewModel = viewModel,
                 rightBlockEnabled = rightBlockEnabled,
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                drawerState = drawerState
             )
         },
-        actionButton = {onClick -> SortingAndFiltersButton(onClick) },
+        actionButton = { onClick -> SortingAndFiltersButton(onClick) },
     ) {
         Scaffold(
             bottomBar = {
@@ -258,8 +262,10 @@ fun CardsGrid(
 fun SortingAndFiltersBlock(
     viewModel: SearchScreenViewModel,
     rightBlockEnabled: MutableState<Boolean>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    drawerState: DrawerState,
 ) {
+    val scope = rememberCoroutineScope()
     Box(modifier = modifier.fillMaxHeight()) {
         Column(
             verticalArrangement = Arrangement.spacedBy(60.dp),
@@ -339,6 +345,9 @@ fun SortingAndFiltersBlock(
                     onClick = {
                         rightBlockEnabled.value = false
                         viewModel.setSortingAndFilters()
+                        scope.launch {
+                            if (drawerState.isOpen) drawerState.close()
+                        }
                     }
                 ) {
                     Text(
