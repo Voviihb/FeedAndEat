@@ -31,16 +31,14 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallText
 
 @Composable
 fun DishCard(
-    link: String,
-    ingredients: Int,
-    steps: Int, name: String,
-    rating: Double, cooked: Int,
-    id: String,
+    recipeCard: RecipeCard,
+    inFavourites: Boolean,
+    favouritesCollectionId: String?,
+    addToFavourites: ((String, RecipeCard) -> Unit),
+    removeFromFavourites: ((String, RecipeCard) -> Unit),
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
-    largeCard: Boolean = false,
-    recipeCard: RecipeCard? = null,
-    addToFavourites: ((String, RecipeCard) -> Unit)? = null
+    largeCard: Boolean = false
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -49,10 +47,10 @@ fun DishCard(
             colorResource(R.color.white), colorResource(R.color.white)
         ),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
-        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/$id") }
+        onClick = { navigateToRoute(Screen.RecipeScreen.route + "/${recipeCard.recipeId}") }
     ) {
         Column {
-            DishImage(link = link, modifier = Modifier.fillMaxWidth())
+            DishImage(link = recipeCard.image, modifier = Modifier.fillMaxWidth())
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier
@@ -60,7 +58,7 @@ fun DishCard(
                     .padding(8.dp, 4.dp)
             ) {
                 BoldText(
-                    text = name,
+                    text = recipeCard.name,
                     fontSize = MediumText,
                     lineHeight = SmallText,
                     fixLinesNumber = !largeCard,
@@ -72,11 +70,11 @@ fun DishCard(
                 ) {
                     LightText(
                         text = (if (largeCard) stringResource(R.string.ingredients)
-                        else stringResource(R.string.small_ingredients)) + " $ingredients",
+                        else stringResource(R.string.small_ingredients)) + " ${recipeCard.ingredients}",
                         fontSize = ExtraSmallText
                     )
                     LightText(
-                        text = stringResource(R.string.steps) + " $steps",
+                        text = stringResource(R.string.steps) + " ${recipeCard.steps}",
                         fontSize = ExtraSmallText
                     )
                 }
@@ -95,12 +93,12 @@ fun DishCard(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         RatingBar(
-                            rating.toFloat(),
+                            recipeCard.rating.toFloat(),
                             stars = 1,
                             modifier = Modifier.height(SmallIconSize)
                         )
                         DarkText(
-                            text = rating.toString(),
+                            text = recipeCard.rating.toString(),
                             fontSize = SmallText,
                             modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
                         )
@@ -114,7 +112,7 @@ fun DishCard(
                             color = colorResource(R.color.gray)
                         )
                         DarkText(
-                            text = cooked.toString(),
+                            text = recipeCard.cooked.toString(),
                             fontSize = SmallText,
                             modifier = Modifier.padding(0.dp, 4.dp, 0.dp, 0.dp)
                         )
@@ -129,16 +127,17 @@ fun DishCard(
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(if (largeCard) 60.dp else 44.dp, 36.dp),
                     onClick = {
-                        if (addToFavourites != null) {
-                            if (recipeCard != null) {
-                                addToFavourites("xJwRsIERXsZx3GtCxXch", recipeCard)
-                                /*TODO set userFavouritesCollectionId here*/
-                            }
+                        if (favouritesCollectionId != null) {
+                            if (inFavourites)
+                                removeFromFavourites(favouritesCollectionId, recipeCard)
+                            else
+                                addToFavourites(favouritesCollectionId, recipeCard)
                         }
                     }
                 ) {
                     SmallIcon(
-                        painter = painterResource(R.drawable.like_icon),
+                        painter = if (inFavourites) painterResource(R.drawable.shaded_like_icon)
+                        else painterResource(R.drawable.like_icon),
                         color = colorResource(R.color.white)
                     )
                 }

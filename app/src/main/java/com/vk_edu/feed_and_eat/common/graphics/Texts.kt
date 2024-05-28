@@ -5,19 +5,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.vk_edu.feed_and_eat.R
 
 
 @Composable
-fun LightText(text: String, fontSize: TextUnit, modifier: Modifier = Modifier) {
+fun LightText(text: String, fontSize: TextUnit, textAlign: TextAlign = TextAlign.Left, modifier: Modifier = Modifier) {
     Text(
         text = text,
         fontSize = fontSize,
         color = colorResource(R.color.gray),
         overflow = TextOverflow.Ellipsis,
         maxLines = 2,
+        textAlign = textAlign,
         modifier = modifier
     )
 }

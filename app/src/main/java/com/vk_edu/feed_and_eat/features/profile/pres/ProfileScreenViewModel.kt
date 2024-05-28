@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.profile.pres
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -24,15 +25,10 @@ class ProfileScreenViewModel @Inject constructor(
     private val _profileState = mutableStateOf(Profile(null, null, null, ""))
     val profileState: State<Profile> = _profileState
 
-    val themes = ThemeSelection.entries.toTypedArray()
-    private val _selectedTheme = mutableStateOf(themes[0])
-    val selectedTheme: State<ThemeSelection> = _selectedTheme
+    private var _user = UserModel()
 
-    val profileType = ProfileType.entries.toTypedArray()
-    private val _selectedProfileType = mutableStateOf(profileType[0])
-    val selectedProfileType: State<ProfileType> = _selectedProfileType
-
-    private val _user = mutableStateOf(UserModel())
+    private val _imagePath = mutableStateOf<Uri?>(null)
+    val imagePath: State<Uri?> = _imagePath
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -49,11 +45,7 @@ class ProfileScreenViewModel @Inject constructor(
                     _usersRepo.getUserData(userId).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
-                            is Response.Success -> if (response.data != null) {
-                                _user.value = response.data
-                            } else {
-                                _user.value = UserModel()
-                            }
+                            is Response.Success -> _user = response.data ?: UserModel()
 
                             is Response.Failure -> onError(response.e)
                         }
@@ -66,22 +58,9 @@ class ProfileScreenViewModel @Inject constructor(
                 _profileState.value = _profileState.value.copy(
                     nickname = nickname,
                     email = email,
-                    avatar = _user.value.avatarUrl,
-                    aboutMe = _user.value.aboutMeData ?: ""
+                    avatar = _user.avatarUrl,
+                    aboutMe = _user.aboutMeData ?: ""
                 )
-
-                _selectedTheme.value = when (_user.value.themeSettings) {
-                    ThemeSelection.LIGHT.themeName -> ThemeSelection.LIGHT
-                    ThemeSelection.DARK.themeName -> ThemeSelection.DARK
-                    ThemeSelection.AS_SYSTEM.themeName -> ThemeSelection.AS_SYSTEM
-                    else -> ThemeSelection.LIGHT
-                }
-
-                _selectedProfileType.value = when (_user.value.isProfilePrivate) {
-                    ProfileType.PUBLIC.type -> ProfileType.PUBLIC
-                    ProfileType.PRIVATE.type -> ProfileType.PRIVATE
-                    else -> ProfileType.PUBLIC
-                }
             } catch (e: Exception) {
                 onError(e)
             }
@@ -114,24 +93,12 @@ class ProfileScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val userId = _authRepo.getUserId()
-                val profileType = when (_selectedProfileType.value) {
-                    ProfileType.PUBLIC -> ProfileType.PUBLIC.type
-                    ProfileType.PRIVATE -> ProfileType.PRIVATE.type
-                }
-                val theme = when (_selectedTheme.value) {
-                    ThemeSelection.LIGHT -> ThemeSelection.LIGHT.themeName
-                    ThemeSelection.DARK -> ThemeSelection.DARK.themeName
-                    ThemeSelection.AS_SYSTEM -> ThemeSelection.AS_SYSTEM.themeName
-                }
                 if (userId != null) {
-                    val data: HashMap<String, Any?> = hashMapOf(
-                        AVATAR_URL_VALUE to _profileState.value.avatar,
-                        ABOUT_ME_VALUE to _profileState.value.aboutMe,
-                        IS_PROFILE_PRIVATE_VALUE to profileType,
-                        THEME_SETTINGS_VALUE to theme
+                    _usersRepo.updateUserData(
+                        userId,
+                        profileState.value,
+                        imagePath = imagePath.value
                     )
-
-                    _usersRepo.updateUserData(userId, data)
                         .collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
@@ -145,8 +112,6 @@ class ProfileScreenViewModel @Inject constructor(
                             }
                         }
                 }
-
-
             } catch (e: Exception) {
                 onError(e)
             }
@@ -161,12 +126,8 @@ class ProfileScreenViewModel @Inject constructor(
         )
     }
 
-    fun onThemeOptionSelected(theme: ThemeSelection) {
-        _selectedTheme.value = theme
-    }
-
-    fun onProfileOptionSelected(profileType: ProfileType) {
-        _selectedProfileType.value = profileType
+    fun imageChanged(value: Uri?) {
+        _imagePath.value = value
     }
 
 
@@ -177,12 +138,5 @@ class ProfileScreenViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
-    }
-
-    companion object {
-        private const val AVATAR_URL_VALUE = "avatarUrl"
-        private const val ABOUT_ME_VALUE = "aboutMeData"
-        private const val IS_PROFILE_PRIVATE_VALUE = "isProfilePrivate"
-        private const val THEME_SETTINGS_VALUE = "themeSettings"
     }
 }
