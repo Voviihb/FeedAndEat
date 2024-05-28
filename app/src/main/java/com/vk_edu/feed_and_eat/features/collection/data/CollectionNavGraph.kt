@@ -86,12 +86,11 @@ fun CollectionNavGraph(
         ) {entry ->
             val collectionId = entry.arguments?.getString(collectionId)
             val id = entry.arguments?.getString(navId) ?: ""
-            val destination = navController.previousBackStackEntry?.destination?.route ?: CollectionRoutes.AllCollections.route
             RecipeWithoutNavBar(
                 navigateToRoute = navigateToRoute,
                 navigateBack = { navigateToCollection("${CollectionRoutes.Collection.route}/$collectionId") },
                 navigateNoState = navigateNoState,
-                id = id ?: "",
+                id = id,
             )
         }
     }
