@@ -33,6 +33,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -41,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -64,10 +66,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.common.graphics.CustomSideDrawer
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishCard
 import com.vk_edu.feed_and_eat.common.graphics.LightText
@@ -86,34 +90,38 @@ fun SearchScreen(
     navigateNoState: (String) -> Unit,
     viewModel: SearchScreenViewModel = hiltViewModel()
 ) {
-    Scaffold(
-        bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.SearchScreen.route) }
-    ) { padding ->
-        Box(
-            contentAlignment = Alignment.TopEnd,
-            modifier = Modifier
-                .background(colorResource(R.color.pale_cyan))
-                .padding(padding)
-        ) {
-            CardsGrid(viewModel = viewModel, navigateToRoute = navigateToRoute)
-            SearchCard(viewModel = viewModel)
-
-            val rightBlockEnabled = remember { mutableStateOf(false) }
-            Row(modifier = Modifier.fillMaxSize()) {
-                SortingAndFiltersButton(
-                    rightBlockEnabled = rightBlockEnabled,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
+    val rightBlockEnabled = remember { mutableStateOf(true) }
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    CustomSideDrawer(
+        direction = LayoutDirection.Rtl,
+        drawerState = drawerState,
+        hiddenContent = {
+            SortingAndFiltersBlock(
+                viewModel = viewModel,
+                rightBlockEnabled = rightBlockEnabled,
+                modifier = Modifier
+                    .fillMaxHeight()
+            )
+        },
+        actionButton = {onClick -> SortingAndFiltersButton(onClick) },
+    ) {
+        Scaffold(
+            bottomBar = {
+                GlobalNavigationBar(
+                    navigateToRoute,
+                    navigateNoState,
+                    BottomScreen.SearchScreen.route
                 )
-                if (rightBlockEnabled.value)
-                    SortingAndFiltersBlock(
-                        viewModel = viewModel,
-                        rightBlockEnabled = rightBlockEnabled,
-                        modifier = Modifier
-                            .weight(3f)
-                            .fillMaxHeight()
-                    )
+            }
+        ) { padding ->
+            Box(
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier
+                    .background(colorResource(R.color.pale_cyan))
+                    .padding(padding)
+            ) {
+                CardsGrid(viewModel = viewModel, navigateToRoute = navigateToRoute)
+                SearchCard(viewModel = viewModel)
             }
         }
     }
@@ -568,12 +576,11 @@ fun Sorting(viewModel: SearchScreenViewModel, modifier: Modifier = Modifier) {
 
 @Composable
 fun SortingAndFiltersButton(
-    rightBlockEnabled: MutableState<Boolean>,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit,
 ) {
     Box(
         contentAlignment = Alignment.TopEnd,
-        modifier = modifier.padding(0.dp, 72.dp, 0.dp, 0.dp)
+        modifier = Modifier.padding(0.dp, 72.dp, 0.dp, 0.dp)
     ) {
         val focusManager = LocalFocusManager.current
         Button(
@@ -588,7 +595,7 @@ fun SortingAndFiltersButton(
                 .shadow(12.dp, RoundedCornerShape(8.dp)),
             onClick = {
                 focusManager.clearFocus()
-                rightBlockEnabled.value = !rightBlockEnabled.value
+                onClick()
             }
         ) {
             Box(

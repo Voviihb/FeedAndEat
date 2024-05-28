@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -54,16 +55,12 @@ fun CustomSideDrawer(
 //  pass a Composable of type (onClick: () -> Unit) : Unit here
 //  this is responsible for a display of the button which moves from the sid
     actionButton: @Composable (() -> Unit) -> Unit,
-//  this function works as onClick for actionButton
-//  it is important to separate the button and it's operator since...
-//  ...intercepting clicks is significant for the whole component
-    onClick: () -> Unit,
 //  if you want to color hiddenContent, pass custom modifier here
-    @SuppressLint("ModifierParameter") hiddenContentModifier : Modifier,
+    @SuppressLint("ModifierParameter") hiddenContentModifier : Modifier = Modifier,
 //  main content which will not move
     content : @Composable () -> Unit,
 ){
-
+    val scope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
 
     val screenWidth = configuration.screenWidthDp
@@ -75,13 +72,16 @@ fun CustomSideDrawer(
     val maxWidth = 360.dp
     val density = LocalDensity.current
 
-    val newOnClick = {
+    val newOnClick: () -> Unit = {
         actualPadding = if ((maxWidth + buttonSize.dp - actualPadding.dp) > screenWidth.dp){
             ((maxWidth.value + buttonSize) - screenWidth).toInt()
         } else {
             0
         }
-        onClick()
+        scope.launch {
+            if (drawerState.isOpen) drawerState.close()
+            else drawerState.open()
+        }
     }
 
     LaunchedEffect(key1 = Unit) {

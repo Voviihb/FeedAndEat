@@ -33,7 +33,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,7 +58,6 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.ui.theme.ExtraLargeText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
-import kotlinx.coroutines.launch
 
 @Composable
 fun RecipeImageContainer(
@@ -376,17 +374,10 @@ fun RecipePreview(
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     drawerState.isAnimationRunning
-    val scope = rememberCoroutineScope()
 
     CustomSideDrawer(
         direction = LayoutDirection.Rtl,
         drawerState = drawerState,
-        onClick = {
-            scope.launch {
-                if (drawerState.isOpen) drawerState.close()
-                else drawerState.open()
-            }
-        },
         hiddenContent = {
             RecipeInfo(recipe)
         },
