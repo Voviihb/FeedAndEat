@@ -56,7 +56,7 @@ fun TimeInfoCard(time: Int?, modifier: Modifier = Modifier) {
                 .height(52.dp)
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
-            onClick = { /* TODO add function */ }
+            onClick = {  }
         ) {
             Row(
                 horizontalArrangement = Arrangement.Absolute.Left,
@@ -112,7 +112,7 @@ fun TimeInfoCard(time1: Int, time2: Int, modifier: Modifier = Modifier) {
                 .height(52.dp)
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
-            onClick = { /* TODO add function */ }
+            onClick = { }
         ) {
             Row(
                 horizontalArrangement = Arrangement.Absolute.Left,

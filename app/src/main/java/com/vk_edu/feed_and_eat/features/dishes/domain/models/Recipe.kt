@@ -16,7 +16,6 @@ data class Instruction(
     val timers: List<Timer>? = null
 )
 
-/*TODO Rename to lowercase in repo*/
 @IgnoreExtraProperties
 data class Nutrients(
     val Calories: Double? = null,

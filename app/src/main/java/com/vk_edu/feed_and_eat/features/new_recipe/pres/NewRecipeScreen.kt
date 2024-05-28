@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -189,6 +190,28 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                     viewModel.changeInstruction(value)
                 }
             )
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(viewModel.currentStep.value.timers?.size ?: 0) { index ->
+                    val timerState = viewModel.currentStep.value.timers?.get(index)
+                    if (timerState != null) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .background(if (index % 2 == 0)
+                                    colorResource(R.color.light_cyan)
+                                else
+                                    colorResource(R.color.white)
+                                )
+                        ) {
+                            /* TODO */
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -292,7 +315,11 @@ fun WindowDialog(
                             .fillMaxWidth()
                             .height(120.dp)
                             .background(colorResource(R.color.white_cyan), RoundedCornerShape(8.dp))
-                            .border(1.dp, colorResource(R.color.medium_cyan), RoundedCornerShape(8.dp))
+                            .border(
+                                1.dp,
+                                colorResource(R.color.medium_cyan),
+                                RoundedCornerShape(8.dp)
+                            )
                             .clip(RoundedCornerShape(8.dp))
                             .verticalScroll(rememberScrollState())
                     ) {

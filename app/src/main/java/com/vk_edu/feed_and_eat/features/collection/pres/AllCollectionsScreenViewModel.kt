@@ -65,36 +65,33 @@ class AllCollectionsScreenViewModel @Inject constructor(
             try {
                 val userId = _authRepo.getUserId()
                 if (userId != null) {
-                    var newCollectionId = ""
                     _recipesRepo.createNewCollection().collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-                                newCollectionId = response.data
+                                val newCollectionId = response.data
+                                _usersRepo.addNewUserCollection(
+                                    userId = userId,
+                                    collection = CollectionDataModel(
+                                        id = newCollectionId,
+                                        name = name,
+                                        picture = null
+                                    )
+                                ).collect { response ->
+                                    when (response) {
+                                        is Response.Loading -> _loading.value = true
+                                        is Response.Success -> {
+                                            loadAllUserCollections()
+                                        }
+
+                                        is Response.Failure -> onError(response.e)
+                                    }
+                                }
                             }
 
                             is Response.Failure -> onError(response.e)
                         }
                     }
-
-                    _usersRepo.addNewUserCollection(
-                        userId = userId,
-                        collection = CollectionDataModel(
-                            id = newCollectionId,
-                            name = name,
-                            picture = null
-                        )
-                    ).collect { response ->
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
-                                /*TODO add combined flow*/
-                            }
-
-                            is Response.Failure -> onError(response.e)
-                        }
-                    }
-                    loadAllUserCollections()
                 }
 
             } catch (e: Exception) {

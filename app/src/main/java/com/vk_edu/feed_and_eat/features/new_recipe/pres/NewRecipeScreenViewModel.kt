@@ -79,13 +79,37 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun saveRecipe() {
         viewModelScope.launch {
             try {
+                val newSteps = _steps.value.map { step ->
+                    step.copy(
+                        timers = step.timers?.map { timer ->
+                            if (timer.type == RANGE) {
+                                if (timer.lowerLimit!! > timer.upperLimit!!)
+                                    Timer(
+                                        type = RANGE,
+                                        lowerLimit = timer.upperLimit,
+                                        upperLimit = timer.lowerLimit
+                                    )
+                                else if (timer.lowerLimit == timer.upperLimit)
+                                    Timer(type = CONSTANT, number = timer.upperLimit)
+                                else
+                                    Timer(
+                                        type = RANGE,
+                                        lowerLimit = timer.lowerLimit,
+                                        upperLimit = timer.upperLimit
+                                    )
+                            }
+                            else
+                                Timer(type = CONSTANT, number = timer.number)
+                        }
+                    )
+                }
                 val user = _authRepo.getUserId()
                 if (user != null) {
                     _newRecipeRepo.addNewRecipe(
                         user,
                         _name.value,
                         _imagePath.value,
-                        _steps.value,
+                        newSteps,
                         _tags.value.filter { it.ckecked }.map { it.name }
                     ).collect { response ->
                         when (response) {
@@ -164,7 +188,7 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun createNewStep() {
         val actualSteps = _steps.value.toMutableList()
         actualSteps[_currentStepIndex.value] = _currentStep.value
-        actualSteps.add(Instruction())
+        actualSteps.add(Instruction(timers = listOf()))
         _steps.value = actualSteps
         _currentStepIndex.value += 1
         _currentStep.value = actualSteps[_currentStepIndex.value]
