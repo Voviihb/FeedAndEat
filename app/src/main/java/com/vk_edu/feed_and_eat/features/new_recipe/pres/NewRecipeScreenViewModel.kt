@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.features.new_recipe.pres
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -253,6 +254,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         val numHourInt = numHour.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
         val numMinuteInt = numMinute.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
         val numInt = numHourInt * 60 + numMinuteInt
+        Log.d("Taag", numInt.toString())
 
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
         actualTimers[index] = actualTimers[index].copy(
@@ -267,6 +269,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         val num1HourInt = num1Hour.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
         val num1MinuteInt = num1Minute.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
         val num1Int = num1HourInt * 60 + num1MinuteInt
+        Log.d("Taag1", num1Int.toString())
 
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
         actualTimers[index] = actualTimers[index].copy(
@@ -281,6 +284,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         val num2HourInt = num2Hour.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
         val num2MinuteInt = num2Minute.filter { it.isDigit() }.ifEmpty { null }?.toInt() ?: 0
         val num2Int = num2HourInt * 60 + num2MinuteInt
+        Log.d("Taag2", num2Int.toString())
 
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
         actualTimers[index] = actualTimers[index].copy(
@@ -309,7 +313,7 @@ class NewRecipeScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val CONSTANT = "constant"
+        private const val CONSTANT = "const"
         private const val RANGE = "range"
     }
 }
