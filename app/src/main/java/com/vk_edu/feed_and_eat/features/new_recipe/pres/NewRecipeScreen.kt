@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,6 +58,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -65,6 +66,7 @@ import coil.request.ImageRequest
 import com.vk_edu.feed_and_eat.R
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.LightText
+import com.vk_edu.feed_and_eat.common.graphics.LightTextNoOverflow
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedTextInput
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
@@ -269,9 +271,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightText(
-                                                text = "hh",
-                                                fontSize = SmallestText
+                                            LightTextNoOverflow(
+                                                text = "h",
+                                                fontSize = SmallestText,
+                                                textAlign = TextAlign.Center
                                             )
                                         },
                                         singleLine = true,
@@ -290,8 +293,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredHeight(50.dp)
-                                            .width(60.dp)
+                                            .requiredSize(48.dp)
                                             .border(
                                                 width = 1.dp,
                                                 color = colorResource(R.color.dark_cyan)
@@ -314,9 +316,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightText(
-                                                text = "mm",
-                                                fontSize = SmallestText
+                                            LightTextNoOverflow(
+                                                text = "m",
+                                                fontSize = SmallestText,
+                                                textAlign = TextAlign.Center
                                             )
                                         },
                                         singleLine = true,
@@ -335,8 +338,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredHeight(50.dp)
-                                            .width(60.dp)
+                                            .requiredSize(48.dp)
                                             .border(
                                                 width = 1.dp,
                                                 color = colorResource(R.color.dark_cyan)
@@ -369,9 +371,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightText(
-                                                text = "hh",
-                                                fontSize = SmallestText
+                                            LightTextNoOverflow(
+                                                text = "h",
+                                                fontSize = SmallestText,
+                                                textAlign = TextAlign.Center
                                             )
                                         },
                                         singleLine = true,
@@ -390,8 +393,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredHeight(50.dp)
-                                            .width(60.dp)
+                                            .requiredSize(48.dp)
                                             .border(
                                                 width = 1.dp,
                                                 color = colorResource(R.color.dark_cyan)
@@ -414,9 +416,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightText(
-                                                text = "mm",
-                                                fontSize = SmallestText
+                                            LightTextNoOverflow(
+                                                text = "m",
+                                                fontSize = SmallestText,
+                                                textAlign = TextAlign.Center
                                             )
                                         },
                                         singleLine = true,
@@ -435,8 +438,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredHeight(50.dp)
-                                            .width(60.dp)
+                                            .requiredSize(48.dp)
                                             .border(
                                                 width = 1.dp,
                                                 color = colorResource(R.color.dark_cyan)
@@ -461,9 +463,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightText(
-                                                text = "hh",
-                                                fontSize = SmallestText
+                                            LightTextNoOverflow(
+                                                text = "h",
+                                                fontSize = SmallestText,
+                                                textAlign = TextAlign.Center
                                             )
                                         },
                                         singleLine = true,
@@ -482,8 +485,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredHeight(50.dp)
-                                            .width(60.dp)
+                                            .requiredSize(48.dp)
                                             .border(
                                                 width = 1.dp,
                                                 color = colorResource(R.color.dark_cyan)
@@ -506,9 +508,10 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             color = colorResource(R.color.black)
                                         ),
                                         placeholder = {
-                                            LightText(
-                                                text = "mm",
-                                                fontSize = SmallestText
+                                            LightTextNoOverflow(
+                                                text = "m",
+                                                fontSize = SmallestText,
+                                                textAlign = TextAlign.Center
                                             )
                                         },
                                         singleLine = true,
@@ -527,8 +530,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                             errorCursorColor = colorResource(R.color.red)
                                         ),
                                         modifier = Modifier
-                                            .requiredHeight(50.dp)
-                                            .width(60.dp)
+                                            .requiredSize(48.dp)
                                             .border(
                                                 width = 1.dp,
                                                 color = colorResource(R.color.dark_cyan)

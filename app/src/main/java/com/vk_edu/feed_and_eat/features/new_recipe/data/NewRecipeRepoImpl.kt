@@ -40,7 +40,6 @@ class NewRecipeRepoImpl @Inject constructor(
                 imageUrl = imgRef.downloadUrl.await().toString()
             }
         }
-
         val recipe = Recipe(
             name = name,
             image = imageUrl,
