@@ -69,8 +69,8 @@ fun DishCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     LightText(
-                        text = (if (largeCard) stringResource(R.string.ingredients)
-                        else stringResource(R.string.small_ingredients)) + " ${recipeCard.ingredients}",
+                        text = (if (largeCard) stringResource(R.string.ingredients) else stringResource(R.string.small_ingredients)) +
+                                " ${ if (recipeCard.ingredients > 0) recipeCard.ingredients else "-" }",
                         fontSize = ExtraSmallText
                     )
                     LightText(
