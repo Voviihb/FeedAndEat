@@ -50,6 +50,7 @@ import com.vk_edu.feed_and_eat.common.graphics.CustomSideDrawer
 import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.DishImage
 import com.vk_edu.feed_and_eat.common.graphics.LargeIcon
+import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.RatingBar
@@ -225,17 +226,19 @@ fun InfoSquareButton(
 @Composable
 fun TextBox(text : String){
     val lightWhite =  colorResource(id = R.color.white)
-    Text(
-        text = text,
-        maxLines = 1,
-        textAlign = TextAlign.Center,
-        fontSize = MediumText,
+    Box(
         modifier = Modifier
-            .padding(vertical = 4.dp)
-            .padding(start = 8.dp, top = 4.dp)
-            .background(lightWhite, shape = RoundedCornerShape(4.dp))
-            .clip(RoundedCornerShape(4.dp)),
-    )
+            .background(lightWhite, shape = RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp))
+    ){
+        DarkText(
+            text = text,
+            fontSize = MediumText,
+            modifier = Modifier
+                .padding(8.dp, 4.dp),
+        )
+    }
+
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -243,17 +246,18 @@ fun TextBox(text : String){
 fun BoxWithCards(bigText : List<String?>){
     Box(
         modifier = Modifier
+            .height(180.dp)
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .background(colorResource(id = R.color.white_cyan), RoundedCornerShape(8.dp))
+            .border(2.dp, colorResource(id = R.color.medium_cyan), RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp))
     ) {
         FlowRow(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .height(144.dp)
-                .background(colorResource(id = R.color.pale_cyan), RoundedCornerShape(12.dp))
-                .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(12.dp))
+                .padding(8.dp)
         ){
             for (item in bigText){
                 if (item != null){
@@ -283,67 +287,72 @@ fun RecipeInfo(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .padding(horizontal = 12.dp)
-            .padding(vertical = 8.dp)
-
+            .padding(12.dp)
     ) {
-        listOf(
-            listOf(stringResource(id = R.string.ingredients), recipe.ingredients.size),
-            listOf(stringResource(id = R.string.step), recipe.instructions.size)
-        ).forEach{data ->
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "${data[0]}:",
-                    fontSize = MediumText,
-                    color = colorResource(id = R.color.gray),
-                    textAlign = TextAlign.Start,
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            listOf(
+                listOf(stringResource(id = R.string.small_ingredients), recipe.ingredients.size),
+                listOf(stringResource(id = R.string.step), recipe.instructions.size)
+            ).forEach{data ->
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                )
-                DarkText(
-                    text = "${data[1]}",
-                    fontSize = MediumText,
-                    modifier = Modifier
-                )
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "${data[0]}",
+                        fontSize = MediumText,
+                        color = colorResource(id = R.color.gray),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                    )
+                    DarkText(
+                        text = "${data[1]}",
+                        fontSize = MediumText,
+                        modifier = Modifier
+                    )
+                }
             }
         }
 
-        Text(
-            "${stringResource(
-                id = R.string.ingredients)}:",
-            fontSize = SmallText,
-            color = colorResource(R.color.gray),
-        )
-        BoxWithCards(bigText = recipe.ingredients.map { it.name }.toList())
-        Text(
-            "${stringResource(
-                id = R.string.tags_data)}:",
-            fontSize = SmallText,
-            color = colorResource(R.color.gray),
-        )
-        BoxWithCards(bigText = recipe.tags ?: listOf())
-        Text(
-            "${stringResource(
-                id = R.string.energy_value)}:",
-            fontSize = MediumText,
-            color = colorResource(R.color.gray)
-        )
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                stringResource(id = R.string.tags_data),
+                fontSize = SmallText,
+                color = colorResource(R.color.gray),
+            )
+            BoxWithCards(bigText = recipe.tags ?: listOf())
+        }
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                stringResource(id = R.string.energy_value),
+                fontSize = MediumText,
+                color = colorResource(R.color.gray),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
             for (i in names.indices){
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
                 ){
-                    Text(
+                    LightText(
                         text = names[i],
                         fontSize = MediumText,
-                        color = colorResource(R.color.gray)
                     )
-                    Text(text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm))
+                    DarkText(
+                        text = (energyData[i] ?: "?").toString() + " " + stringResource(id = R.string.gramm),
+                        fontSize = MediumText
+                        )
                 }
             }
         }

@@ -4,11 +4,11 @@
     <string name="short_recipe">Short recipe</string>
     <string name="add_to_favourite">Add to favourites</string>
     <string name="add_to_playlist">Add to the collection</string>
-    <string name="step">Steps</string>
+    <string name="step">Steps:</string>
     <string name="repeat">Repeat</string>
     <string name="start_cooking">Start cooking</string>
-    <string name="tags_data">Tags</string>
-    <string name="energy_value">Nutrition Facts</string>
+    <string name="tags_data">Tags:</string>
+    <string name="energy_value">Nutrition facts:</string>
     <string name="calories_data">Calories</string>
     <string name="fats_data">Fats</string>
     <string name="proteins_data">Protein</string>
