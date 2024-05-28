@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.features.collection.data
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import com.vk_edu.feed_and_eat.features.collection.pres.AllCollectionsScreen
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionPreview
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionRoutes
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionScreenViewModel
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.new_recipe.pres.NewRecipeScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipeWithoutNavBar
 
@@ -40,12 +42,19 @@ fun CollectionNavGraph(
         }
     }
 
+    val navigateCollectionBack = {
+        val previous = navController.previousBackStackEntry?.destination?.route
+        navController.navigate(previous ?: BottomScreen.HomeScreen.route){
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = CollectionRoutes.AllCollections.route,
         modifier = Modifier.padding(0.dp)
     ) {
-//        Log.d("LOG", CollectionRoutes.RecipeWithoutNavBar.route + CollectionRoutes.CollecttionId.route + CollectionRoutes.Id.route)
         composable(CollectionRoutes.AllCollections.route){
             AllCollectionsScreen(
                 navigateToCollection
@@ -58,7 +67,7 @@ fun CollectionNavGraph(
             val id = entry.arguments?.getString(navId)
             NewRecipeScreen(
                 navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
+                navigateBack = navigateCollectionBack,
                 collectionId = id ?: "",
                 navigateToCollection = navigateToCollection
             )
@@ -70,6 +79,7 @@ fun CollectionNavGraph(
             val id = entry.arguments?.getString(navId)
             val viewModel : CollectionScreenViewModel = hiltViewModel()
             viewModel.collectionRecipes(id ?: "")
+            Log.d("ID", id.toString())
             CollectionPreview(
                 navigateToRoute = navigateToRoute,
                 navigateToCollection = navigateToCollection,

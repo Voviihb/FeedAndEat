@@ -3,7 +3,6 @@ package com.vk_edu.feed_and_eat.features.collection.pres
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,12 +48,12 @@ fun CollectionPreview(
     id : String,
     viewModel: CollectionScreenViewModel
 ) {
-    Box(
+    Scaffold(
         modifier = Modifier
             .background(colorResource(R.color.pale_cyan))
-        ) {
+        ) {padding ->
             if (viewModel.loading.value)
-                LoadingCircular()
+                LoadingCircular(Modifier.padding(padding))
             else if (viewModel.errorMessage.value != null)
                 RepeatButton(onClick = {
                     viewModel.clearError()
@@ -113,7 +113,7 @@ fun CardsGrid(
         item {
             AddDishCard(
                 navigateToRoute = navigateToCollection,
-                id = id,
+                collecitonId = id,
                 modifier = Modifier.height(if (columnHeightDp > 0.dp) columnHeightDp else 240.dp)
             )
         }
@@ -123,7 +123,7 @@ fun CardsGrid(
 @Composable
 fun AddDishCard(
     navigateToRoute: (String) -> Unit,
-    id : String,
+    collecitonId : String,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -136,7 +136,7 @@ fun AddDishCard(
             .fillMaxHeight()
             .shadow(12.dp, RoundedCornerShape(16.dp)),
         onClick = {
-            navigateToRoute("${CollectionRoutes.NewRecipe.route}/$id")
+            navigateToRoute("${CollectionRoutes.NewRecipe.route}/$collecitonId")
         }
     ) {
         Column(
