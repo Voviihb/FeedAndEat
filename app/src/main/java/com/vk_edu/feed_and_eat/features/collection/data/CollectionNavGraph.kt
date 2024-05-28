@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.collection.data
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -79,7 +78,6 @@ fun CollectionNavGraph(
             val id = entry.arguments?.getString(navId)
             val viewModel : CollectionScreenViewModel = hiltViewModel()
             viewModel.collectionRecipes(id ?: "")
-            Log.d("ID", id.toString())
             CollectionPreview(
                 navigateToRoute = navigateToRoute,
                 navigateToCollection = navigateToCollection,

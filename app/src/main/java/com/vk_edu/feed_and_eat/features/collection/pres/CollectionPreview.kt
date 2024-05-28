@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.collection.pres
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -96,7 +95,6 @@ fun CardsGrid(
         modifier = modifier.fillMaxSize()
     ) {
         items(viewModel.cardsData.value) { cardData ->
-            Log.d("CARD", "${cardData.recipeId}")
             DishCard(
                 recipeCard = cardData,
                 inFavourites = cardData.recipeId in userFavourites,
