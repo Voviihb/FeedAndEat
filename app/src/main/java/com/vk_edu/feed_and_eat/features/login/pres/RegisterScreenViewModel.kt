@@ -4,14 +4,25 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.vk_edu.feed_and_eat.PreferencesManager
+import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
+import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegisterScreenViewModel : ViewModel() {
+@HiltViewModel
+class RegisterScreenViewModel @Inject constructor(
+    private val _authRepo: AuthRepoImpl,
+    private val _usersRepo: UsersRepoImpl,
+    private val _recipesRepo: RecipesRepoImpl,
+    private val _preferencesManager: PreferencesManager
+) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
     val registerFormState: State<RegisterForm> = _registerFormState
 
@@ -21,25 +32,27 @@ class RegisterScreenViewModel : ViewModel() {
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private val _auth: FirebaseAuth = Firebase.auth
-    private val _authRepo = AuthRepoImpl(_auth)
 
-    val isUserAuthenticated get() = _authRepo.isUserAuthenticatedInFirebase()
-
-    private val _signUpState = mutableStateOf(false)
-    val signUpState: State<Boolean> = _signUpState
-
-    fun registerUserWithEmail() {
+    fun registerUserWithEmail(navigateToRoute: (String) -> Unit) {
         viewModelScope.launch {
             if (_registerFormState.value.password == _registerFormState.value.passwordControl) {
                 try {
                     _authRepo.firebaseSignUp(
                         _registerFormState.value.email,
-                        _registerFormState.value.password
+                        _registerFormState.value.password,
+                        _registerFormState.value.login
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
-                            is Response.Success -> _signUpState.value = true
+                            is Response.Success -> {
+                                val currentUserId = _authRepo.getUserId()
+                                if (currentUserId != null) {
+                                    writeUserId(_preferencesManager, currentUserId)
+                                    saveUserData()
+                                    navigateToRoute(BottomScreen.HomeScreen.route)
+                                }
+                            }
+
                             is Response.Failure -> onError(response.e)
                         }
                     }
@@ -54,6 +67,52 @@ class RegisterScreenViewModel : ViewModel() {
             _loading.value = false
         }
 
+    }
+
+    private fun saveUserData() {
+        viewModelScope.launch {
+            try {
+                val userId = _authRepo.getUserId()
+                var favouritesCollectionId = ""
+                _recipesRepo.createNewCollection().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            favouritesCollectionId = response.data
+                        }
+
+                        is Response.Failure -> onError(response.e)
+                    }
+                }
+                if (userId != null) {
+                    val data = UserModel(
+                        userId = userId,
+                        collectionsIdList = listOf(
+                            CollectionDataModel(
+                                id = favouritesCollectionId,
+                                name = FAVOURITES
+                            )
+                        )
+                    )
+                    _usersRepo.saveUserData(userId, data).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                /* TODO add success flow */
+                            }
+
+                            is Response.Failure -> {
+                                onError(response.e)
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                onError(e)
+            }
+            _loading.value = false
+        }
     }
 
     private fun onError(message: Exception?) {
@@ -87,5 +146,9 @@ class RegisterScreenViewModel : ViewModel() {
         _registerFormState.value = _registerFormState.value.copy(
             passwordControl = value
         )
+    }
+
+    companion object {
+        private const val FAVOURITES = "Favourites"
     }
 }

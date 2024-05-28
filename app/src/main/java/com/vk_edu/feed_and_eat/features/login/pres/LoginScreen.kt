@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.login.pres
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -57,13 +55,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.vk_edu.feed_and_eat.R
+import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun LoginScreen(context: Context) {
-    val viewModel: LoginScreenViewModel = viewModel()
+fun LoginScreen(
+    context: Context,
+    navigateToRoute: (String) -> Unit,
+    viewModel: LoginScreenViewModel = hiltViewModel()
+) {
     val loginForm by viewModel.loginFormState
     val errorMsg by viewModel.errorMessage
 
@@ -136,7 +138,7 @@ fun LoginScreen(context: Context) {
                     keyboardController = keyboardController
                 )
 
-                LoginButton(viewModel = viewModel)
+                LoginButton(viewModel = viewModel, navigateToRoute)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -145,7 +147,7 @@ fun LoginScreen(context: Context) {
                     color = colorResource(id = R.color.white)
                 )
 
-                NoAuthLoginButton(viewModel = viewModel)
+                NoAuthLoginButton(viewModel = viewModel, navigateToRoute)
 
             }
         }
@@ -157,16 +159,13 @@ fun LoginScreen(context: Context) {
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        RegisterButton(viewModel = viewModel, modifier = modifier)
+        RegisterButton(
+            viewModel = viewModel,
+            modifier = modifier
+        ) { navigateToRoute(Screen.RegisterScreen.route) }
 
     }
 
-    LaunchedEffect(Unit) {
-        if (viewModel.isUserAuthenticated) {
-            Toast.makeText(context, context.getString(R.string.authenticated), Toast.LENGTH_SHORT)
-                .show()
-        }
-    }
 }
 
 @Composable
@@ -329,10 +328,13 @@ private fun PasswordField(
 }
 
 @Composable
-private fun LoginButton(viewModel: LoginScreenViewModel) {
+private fun LoginButton(
+    viewModel: LoginScreenViewModel,
+    navigateToRoute: (String) -> Unit
+) {
     val loading by viewModel.loading
     Button(
-        onClick = { viewModel.loginWithEmail() },
+        onClick = { viewModel.loginWithEmail(navigateToRoute) },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -367,9 +369,12 @@ private fun LoginButton(viewModel: LoginScreenViewModel) {
 }
 
 @Composable
-private fun NoAuthLoginButton(viewModel: LoginScreenViewModel) {
+private fun NoAuthLoginButton(
+    viewModel: LoginScreenViewModel,
+    navigateToRoute: (String) -> Unit
+) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { viewModel.signInAnonymously(navigateToRoute) },
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -390,11 +395,13 @@ private fun NoAuthLoginButton(viewModel: LoginScreenViewModel) {
 }
 
 @Composable
-private fun RegisterButton(viewModel: LoginScreenViewModel, modifier: Modifier) {
+private fun RegisterButton(
+    viewModel: LoginScreenViewModel,
+    modifier: Modifier,
+    navigateToRoute: (String) -> Unit,
+) {
     Button(
-        onClick = { /*TODO delete sign out and replace with sign up screen nav*/
-            viewModel.logout()
-        },
+        onClick = { navigateToRoute(Screen.RegisterScreen.route) },
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
