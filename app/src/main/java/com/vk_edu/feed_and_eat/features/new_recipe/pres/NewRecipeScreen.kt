@@ -190,34 +190,6 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                     viewModel.changeInstruction(value)
                 }
             )
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(viewModel.currentStep.value.timers?.size ?: 0) { index ->
-                    val timerState = viewModel.currentStep.value.timers?.get(index)
-                    if (timerState != null) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .background(
-                                    if (index % 2 == 0)
-                                        colorResource(R.color.light_cyan)
-                                    else
-                                        colorResource(R.color.white)
-                                )
-                        ) {
-                            /* TODO */
-                        }
-                    }
-                }
-                item {
-                    Button(onClick = { viewModel.addTimer() }) {
-
-                    }
-                }
-            }
         }
     }
 }
