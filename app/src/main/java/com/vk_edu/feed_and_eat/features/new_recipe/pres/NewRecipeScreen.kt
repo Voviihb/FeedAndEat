@@ -234,7 +234,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                     else
                                         colorResource(R.color.white)
                                 )
-                                .padding(horizontal = 4.dp),
+                                .padding(horizontal = 6.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
