@@ -3,7 +3,6 @@ package com.vk_edu.feed_and_eat.features.recipe.domain
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -47,10 +46,6 @@ fun RecipeNavGraph(
 
         val navigateToRecipe: (String) -> Unit = {
             navController.navigate(it) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                    inclusive = true
-                }
                 launchSingleTop = true
                 restoreState = true
             }
