@@ -25,6 +25,18 @@ fun LightText(text: String, fontSize: TextUnit, textAlign: TextAlign = TextAlign
 }
 
 @Composable
+fun LightTextNoOverflow(text: String, fontSize: TextUnit, textAlign: TextAlign = TextAlign.Left, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        fontSize = fontSize,
+        color = colorResource(R.color.gray),
+        maxLines = 1,
+        textAlign = textAlign,
+        modifier = modifier
+    )
+}
+
+@Composable
 fun DarkText(text: String, fontSize: TextUnit, modifier: Modifier = Modifier) {
     Text(
         text = text,

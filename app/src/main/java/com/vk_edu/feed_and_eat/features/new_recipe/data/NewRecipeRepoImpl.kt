@@ -7,6 +7,7 @@ import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,6 @@ class NewRecipeRepoImpl @Inject constructor(
                 imageUrl = imgRef.downloadUrl.await().toString()
             }
         }
-
         val recipe = Recipe(
             name = name,
             image = imageUrl,
@@ -48,7 +48,9 @@ class NewRecipeRepoImpl @Inject constructor(
             tags = tags,
             user = user,
             created = Date(Timestamp(System.currentTimeMillis()).time),
-            nutrients = Nutrients(10e9, 10e9, 10e9, 10e9, 10e9)
+            nutrients = Nutrients(10e4, 10e4, 10e4, 10e4, 10e4),
+            servings = Servings(amount = 1, weight = 0),
+            reviews = listOf()
         )
         db.collection(RECIPES_COLLECTION).document(docId).set(recipe).await()
         return@repoTryCatchBlock docId

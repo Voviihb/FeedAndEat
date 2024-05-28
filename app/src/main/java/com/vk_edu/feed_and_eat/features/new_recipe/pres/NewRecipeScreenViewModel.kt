@@ -79,6 +79,9 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun saveRecipe() {
         viewModelScope.launch {
             try {
+                val actualSteps = _steps.value.toMutableList()
+                actualSteps[_currentStepIndex.value] = _currentStep.value
+                _steps.value = actualSteps
                 val newSteps = _steps.value.map { step ->
                     step.copy(
                         timers = step.timers?.map { timer ->
