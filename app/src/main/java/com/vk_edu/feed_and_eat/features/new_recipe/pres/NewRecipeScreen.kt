@@ -3,7 +3,6 @@ package com.vk_edu.feed_and_eat.features.new_recipe.pres
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +54,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -106,7 +106,6 @@ fun NewRecipeScreen(
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier) {
     Column(
@@ -118,7 +117,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
         OutlinedTextInput(
             text = viewModel.name.value,
             fontSize = MediumText,
-            placeholderText = "Recipe name",
+            placeholderText = stringResource(R.string.recipe_name_placeholder),
             modifier = Modifier
                 .height(56.dp)
                 .fillMaxWidth(),
@@ -138,9 +137,9 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
         ) {
             LightText(
                 text = if (viewModel.imagePath.value == null)
-                    "Load dish photo:"
+                    stringResource(R.string.load_dish_photo)
                 else
-                    "Load new dish photo:",
+                    stringResource(R.string.load_new_dish_photo),
                 fontSize = MediumText,
                 modifier = Modifier.weight(1f)
             )
@@ -161,7 +160,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
             ) {
                 if (viewModel.imagePath.value == null)
                     Text(
-                        text = "Click to load",
+                        text = stringResource(R.string.click_to_load),
                         color = colorResource(R.color.dark_cyan),
                         fontSize = MediumText
                     )
@@ -170,7 +169,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(viewModel.imagePath.value)
                             .build(),
-                        contentDescription = "dish image",
+                        contentDescription = stringResource(id = R.string.imageDescription),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -189,7 +188,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                 textStyle = TextStyle(fontSize = MediumText, color = colorResource(R.color.black)),
                 placeholder = {
                     LightText(
-                        text = "Enter instruction of step",
+                        text = stringResource(R.string.enter_instruction_of_step),
                         fontSize = MediumText
                     )
                 },
@@ -250,7 +249,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                     onClick = { viewModel.changeTimerType(index) }
                                 )
                                 ClickableText(
-                                    text = AnnotatedString("Const"),
+                                    text = AnnotatedString(stringResource(R.string.constant)),
                                     style = TextStyle(
                                         fontSize = ExtraSmallText,
                                         color = colorResource(R.color.black),
@@ -277,7 +276,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         ),
                                         placeholder = {
                                             LightText(
-                                                text = "h",
+                                                text = stringResource(R.string.h_hours),
                                                 fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
@@ -319,7 +318,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         ),
                                         placeholder = {
                                             LightText(
-                                                text = "m",
+                                                text = stringResource(R.string.m_minutes),
                                                 fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
@@ -371,7 +370,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         ),
                                         placeholder = {
                                             LightText(
-                                                text = "h",
+                                                text = stringResource(R.string.h_hours),
                                                 fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
@@ -413,7 +412,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         ),
                                         placeholder = {
                                             LightText(
-                                                text = "m",
+                                                text = stringResource(R.string.m_minutes),
                                                 fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
@@ -457,7 +456,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         ),
                                         placeholder = {
                                             LightText(
-                                                text = "h",
+                                                text = stringResource(R.string.h_hours),
                                                 fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
@@ -499,7 +498,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                         ),
                                         placeholder = {
                                             LightText(
-                                                text = "m",
+                                                text = stringResource(R.string.m_minutes),
                                                 fontSize = ExtraSmallText,
                                                 textAlign = TextAlign.Center
                                             )
@@ -541,7 +540,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                                 horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 ClickableText(
-                                    text = AnnotatedString("Range"),
+                                    text = AnnotatedString(stringResource(R.string.ranged)),
                                     style = TextStyle(
                                         fontSize = ExtraSmallText,
                                         color = colorResource(R.color.black),
@@ -571,7 +570,7 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
                         contentAlignment = Alignment.Center
                     ) {
                         OutlinedThemeButton(
-                            text = "Add new timer",
+                            text = stringResource(R.string.add_new_timer),
                             fontSize = SmallText,
                             modifier = Modifier
                                 .height(32.dp)
@@ -601,7 +600,7 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
             Box(modifier = Modifier.weight(1f)) {
                 if (viewModel.currentStepIndex.value > 0)
                     OutlinedThemeButton(
-                        text = "Go to previous",
+                        text = stringResource(R.string.go_to_previous),
                         fontSize = SmallText,
                         modifier = Modifier
                             .height(32.dp)
@@ -613,7 +612,7 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
                     )
             }
             OutlinedThemeButton(
-                text = "Add new step",
+                text = stringResource(R.string.add_new_step),
                 fontSize = SmallText,
                 modifier = Modifier
                     .height(32.dp)
@@ -626,7 +625,7 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
             Box(modifier = Modifier.weight(1f)) {
                 if (viewModel.currentStepIndex.value < viewModel.steps.value.size - 1)
                     OutlinedThemeButton(
-                        text = "Go to next",
+                        text = stringResource(R.string.go_to_next),
                         fontSize = SmallText,
                         modifier = Modifier
                             .height(32.dp)
@@ -641,7 +640,7 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
 
         Row(modifier = Modifier.fillMaxWidth()) {
             OutlinedThemeButton(
-                text = "Save recipe",
+                text = stringResource(R.string.save_recipe),
                 fontSize = MediumText,
                 modifier = Modifier
                     .height(40.dp)
@@ -652,7 +651,7 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
             )
             Spacer(modifier = Modifier.weight(1f))
             OutlinedThemeButton(
-                text = "Cancel creation",
+                text = stringResource(R.string.cancel_creation),
                 fontSize = MediumText,
                 modifier = Modifier
                     .height(40.dp)
@@ -681,7 +680,7 @@ fun WindowDialog(
                 onDismissRequest = { viewModel.closeDialogs() },
                 title = {
                     LightText(
-                        text = "Choose tags for your recipe (if you want) and confirm saving recipe",
+                        text = stringResource(R.string.alert_msg_new_recipe),
                         fontSize = SmallText
                     )
                 },
@@ -759,7 +758,7 @@ fun WindowDialog(
                 },
                 confirmButton = {
                     OutlinedThemeButton(
-                        text = "Confirm save",
+                        text = stringResource(R.string.confirm_save),
                         fontSize = MediumText,
                         modifier = Modifier.height(40.dp),
                         onClick = {
@@ -796,14 +795,14 @@ fun WindowCancelDialog(
                 onDismissRequest = { viewModel.closeDialogs() },
                 title = {
                     LightText(
-                        text = "Are you sure you want to leave? All your changes will not be saved!",
+                        text = stringResource(R.string.dialog_before_leave),
                         fontSize = SmallText
                     )
                 },
                 text = { },
                 confirmButton = {
                     OutlinedThemeButton(
-                        text = "Confirm cancel",
+                        text = stringResource(R.string.confirm_cancel),
                         fontSize = MediumText,
                         modifier = Modifier.height(40.dp),
                         onClick = {
