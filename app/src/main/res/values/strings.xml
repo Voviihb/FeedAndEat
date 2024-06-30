@@ -30,7 +30,7 @@
     <string name="minutes">min</string>
     <string name="hours">h</string>
     <string name="plus">+</string>
-<!--    login-->
+    <!--    login-->
     <string name="back">return</string>
     <string name="enter_password">Enter password</string>
     <string name="hide_password">Hide password</string>
@@ -73,7 +73,7 @@
     <string name="settings">Settings:</string>
     <string name="theme">Theme:</string>
     <string name="anonymous_user">Anonymous</string>
-<!--    navigation-->
+    <!--    navigation-->
     <string name="main">Main</string>
     <string name="search">Search</string>
     <string name="collection">Collections</string>
@@ -83,7 +83,7 @@
     <string name="collection_id">CollectionId</string>
     <string name="nav_number">number</string>
     <string name="recipe">Recipe</string>
-<!--    screen names-->
+    <!--    screen names-->
     <string name="HomeScreen">HomeScreen</string>
     <string name="CollectionScreen">CollectionScreen</string>
     <string name="ProfileScreen">ProfileScreen</string>
@@ -93,7 +93,7 @@
     <string name="RegisterScreen">RegisterScreen</string>
     <string name="RecipeScreen">RecipeScreen</string>
     <string name="inProgressScreen">Current tasks</string>
-<!-- card -->
+    <!-- card -->
     <string name="imageDescription">Image of this dish</string>
     <string name="icon">Icon</string>
     <string name="small_ingredients">Ingr.:</string>
@@ -111,7 +111,7 @@
     <string name="timer_is_at">⏱️ %1$s %2$02d:%3$02d:%4$02d</string>
     <string name="paused_timer_is_at">⏸️ %1$s paused, %2$02d:%3$02d:%4$02d left</string>
     <string name="timer_is_done">⌛️ %1$s is done!</string>
-<!-- search screen -->
+    <!-- search screen -->
     <string name="calories">Calories</string>
     <string name="sugar">Sugar</string>
     <string name="carbohydrates">Carbohydrates</string>
@@ -130,9 +130,29 @@
     <!-- inProgress screen -->
     <string name="default_label">Timers for running recipes will be displayed here</string>
     <string name="timer_format">%1$02d:%2$02d:%3$02d</string>
-<!--    collection screen-->
+    <!--    collection screen-->
     <string name="new_collection">New collection</string>
     <string name="input_collection_name">Input collection name:</string>
     <string name="confirm">Confirm</string>
     <string name="new_recipe">New recipe</string>
+    <!--    new recipe screen-->
+    <string name="recipe_name_placeholder">Recipe name</string>
+    <string name="load_dish_photo">Load dish photo:</string>
+    <string name="load_new_dish_photo">Load new dish photo:</string>
+    <string name="click_to_load">Click to load</string>
+    <string name="enter_instruction_of_step">Enter instruction of step</string>
+    <string name="constant">Const</string>
+    <string name="h_hours">h</string>
+    <string name="m_minutes">m</string>
+    <string name="ranged">Range</string>
+    <string name="add_new_timer">Add new timer</string>
+    <string name="go_to_previous">Go to previous</string>
+    <string name="add_new_step">Add new step</string>
+    <string name="go_to_next">Go to next</string>
+    <string name="save_recipe">Save recipe</string>
+    <string name="cancel_creation">Cancel creation</string>
+    <string name="alert_msg_new_recipe">Choose tags for your recipe (if you want) and confirm saving recipe</string>
+    <string name="confirm_save">Confirm save</string>
+    <string name="dialog_before_leave">Are you sure you want to leave? All your changes will be lost!</string>
+    <string name="confirm_cancel">Confirm cancel</string>
 </resources>

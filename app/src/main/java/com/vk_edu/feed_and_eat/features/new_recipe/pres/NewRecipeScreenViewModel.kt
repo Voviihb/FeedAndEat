@@ -120,31 +120,31 @@ class NewRecipeScreenViewModel @Inject constructor(
                             is Response.Success -> {
                                 val recipeId = response.data
                                 if (recipeId != null) {
-                                    _recipesRepo.loadRecipeById(recipeId).collect { response ->
-                                        when (response) {
+                                    _recipesRepo.loadRecipeById(recipeId).collect { response1 ->
+                                        when (response1) {
                                             is Response.Loading -> _loading.value = true
                                             is Response.Success -> {
                                                 _recipesRepo.addRecipeToUserCollection(
                                                     user,
                                                     collectionId,
                                                     recipeId,
-                                                    response.data?.image
-                                                ).collect { response ->
-                                                    when (response) {
+                                                    response1.data?.image
+                                                ).collect { response2 ->
+                                                    when (response2) {
                                                         is Response.Loading -> { }
                                                         is Response.Success -> {
 
                                                         }
 
                                                         is Response.Failure -> {
-                                                            onError(response.e)
+                                                            onError(response2.e)
                                                         }
                                                     }
                                                 }
                                             }
 
                                             is Response.Failure -> {
-                                                onError(response.e)
+                                                onError(response1.e)
                                             }
                                         }
                                     }
