@@ -100,8 +100,7 @@ class NewRecipeScreenViewModel @Inject constructor(
                                         lowerLimit = timer.lowerLimit,
                                         upperLimit = timer.upperLimit
                                     )
-                            }
-                            else
+                            } else
                                 Timer(type = CONSTANT, number = timer.number)
                         }
                     )
@@ -131,7 +130,7 @@ class NewRecipeScreenViewModel @Inject constructor(
                                                     response1.data?.image
                                                 ).collect { response2 ->
                                                     when (response2) {
-                                                        is Response.Loading -> { }
+                                                        is Response.Loading -> {}
                                                         is Response.Success -> {
 
                                                         }
@@ -168,7 +167,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         _name.value = newName
     }
 
-    fun changeImagePath(newImagePath:Uri?) {
+    fun changeImagePath(newImagePath: Uri?) {
         _imagePath.value = newImagePath
     }
 
@@ -231,12 +230,14 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     fun addTimer() {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
-        actualTimers.add(Timer(
-            type = CONSTANT,
-            number = 0,
-            lowerLimit = 0,
-            upperLimit = 0
-        ))
+        actualTimers.add(
+            Timer(
+                type = CONSTANT,
+                number = 0,
+                lowerLimit = 0,
+                upperLimit = 0
+            )
+        )
         _currentStep.value = _currentStep.value.copy(
             timers = actualTimers
         )
@@ -297,7 +298,7 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun deleteTimer(index: Int) {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
         actualTimers.removeAt(index)
-        _currentStep.value =  _currentStep.value.copy(
+        _currentStep.value = _currentStep.value.copy(
             timers = actualTimers
         )
     }
@@ -307,7 +308,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         _loading.value = false
     }
 
-    fun setCollectionId(id : String){
+    fun setCollectionId(id: String) {
         collectionId = id
     }
 

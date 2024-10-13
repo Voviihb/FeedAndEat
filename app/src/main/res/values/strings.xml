@@ -155,4 +155,5 @@
     <string name="confirm_save">Confirm save</string>
     <string name="dialog_before_leave">Are you sure you want to leave? All your changes will be lost!</string>
     <string name="confirm_cancel">Confirm cancel</string>
+    <string name="delete_step">Delete step</string>
 </resources>

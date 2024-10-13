@@ -70,6 +70,7 @@ import com.vk_edu.feed_and_eat.common.graphics.DarkText
 import com.vk_edu.feed_and_eat.common.graphics.LightText
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedTextInput
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
+import com.vk_edu.feed_and_eat.common.graphics.SwipeToDismissItem
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionRoutes
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
@@ -218,349 +219,15 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(viewModel.currentStep.value.timers?.size ?: 0) { index ->
-                    val timerState = viewModel.currentStep.value.timers?.get(index)
-                    if (timerState != null) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .background(
-                                    if (index % 2 == 0)
-                                        colorResource(R.color.light_cyan)
-                                    else
-                                        colorResource(R.color.white)
-                                )
-                                .padding(horizontal = 6.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                RadioButton(
-                                    selected = timerState.type == TimerType.CONSTANT.str,
-                                    colors = RadioButtonColors(
-                                        colorResource(R.color.black), colorResource(R.color.black),
-                                        colorResource(R.color.black), colorResource(R.color.black)
-                                    ),
-                                    modifier = Modifier.size(20.dp),
-                                    onClick = { viewModel.changeTimerType(index) }
-                                )
-                                ClickableText(
-                                    text = AnnotatedString(stringResource(R.string.constant)),
-                                    style = TextStyle(
-                                        fontSize = ExtraSmallText,
-                                        color = colorResource(R.color.black),
-                                        fontWeight = if (timerState.type == TimerType.CONSTANT.str) FontWeight.Bold else FontWeight.Normal
-                                    ),
-                                    onClick = { viewModel.changeTimerType(index) }
-                                )
-                            }
-
-                            if (timerState.type == TimerType.CONSTANT.str) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    var hours by remember { mutableStateOf("") }
-                                    var minutes by remember { mutableStateOf("") }
-
-
-                                    TextField(
-                                        value = hours,
-                                        textStyle = TextStyle(
-                                            fontSize = ExtraSmallText,
-                                            color = colorResource(R.color.black)
-                                        ),
-                                        placeholder = {
-                                            LightText(
-                                                text = stringResource(R.string.h_hours),
-                                                fontSize = ExtraSmallText,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        },
-                                        singleLine = true,
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            errorContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent,
-                                            errorIndicatorColor = colorResource(R.color.red),
-                                            focusedTextColor = colorResource(R.color.black),
-                                            unfocusedTextColor = colorResource(R.color.black),
-                                            disabledTextColor = colorResource(R.color.black),
-                                            cursorColor = colorResource(R.color.black),
-                                            errorCursorColor = colorResource(R.color.red)
-                                        ),
-                                        modifier = Modifier
-                                            .requiredHeight(64.dp)
-                                            .requiredWidth(52.dp),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = { value ->
-                                            hours = value
-                                            viewModel.changeTimerNum(
-                                                index,
-                                                hours,
-                                                minutes
-                                            )
-                                        }
-                                    )
-                                    BoldText(text = ":", fontSize = ExtraSmallText)
-                                    TextField(
-                                        value = minutes,
-                                        textStyle = TextStyle(
-                                            fontSize = ExtraSmallText,
-                                            color = colorResource(R.color.black)
-                                        ),
-                                        placeholder = {
-                                            LightText(
-                                                text = stringResource(R.string.m_minutes),
-                                                fontSize = ExtraSmallText,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        },
-                                        singleLine = true,
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            errorContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent,
-                                            errorIndicatorColor = colorResource(R.color.red),
-                                            focusedTextColor = colorResource(R.color.black),
-                                            unfocusedTextColor = colorResource(R.color.black),
-                                            disabledTextColor = colorResource(R.color.black),
-                                            cursorColor = colorResource(R.color.black),
-                                            errorCursorColor = colorResource(R.color.red)
-                                        ),
-                                        modifier = Modifier
-                                            .requiredHeight(64.dp)
-                                            .requiredWidth(52.dp),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = { value ->
-                                            minutes = value
-                                            viewModel.changeTimerNum(
-                                                index,
-                                                hours,
-                                                minutes
-                                            )
-                                        }
-                                    )
-                                }
-                            } else {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    var hours1 by remember { mutableStateOf("") }
-                                    var minutes1 by remember { mutableStateOf("") }
-                                    var hours2 by remember { mutableStateOf("") }
-                                    var minutes2 by remember { mutableStateOf("") }
-
-                                    TextField(
-                                        value = hours1,
-                                        textStyle = TextStyle(
-                                            fontSize = ExtraSmallText,
-                                            color = colorResource(R.color.black)
-                                        ),
-                                        placeholder = {
-                                            LightText(
-                                                text = stringResource(R.string.h_hours),
-                                                fontSize = ExtraSmallText,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        },
-                                        singleLine = true,
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            errorContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent,
-                                            errorIndicatorColor = colorResource(R.color.red),
-                                            focusedTextColor = colorResource(R.color.black),
-                                            unfocusedTextColor = colorResource(R.color.black),
-                                            disabledTextColor = colorResource(R.color.black),
-                                            cursorColor = colorResource(R.color.black),
-                                            errorCursorColor = colorResource(R.color.red)
-                                        ),
-                                        modifier = Modifier
-                                            .requiredHeight(64.dp)
-                                            .requiredWidth(52.dp),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = { value ->
-                                            hours1 = value
-                                            viewModel.changeTimerNum1(
-                                                index,
-                                                hours1,
-                                                minutes1
-                                            )
-                                        }
-                                    )
-                                    BoldText(text = ":", fontSize = ExtraSmallText)
-                                    TextField(
-                                        value = minutes1,
-                                        textStyle = TextStyle(
-                                            fontSize = ExtraSmallText,
-                                            color = colorResource(R.color.black)
-                                        ),
-                                        placeholder = {
-                                            LightText(
-                                                text = stringResource(R.string.m_minutes),
-                                                fontSize = ExtraSmallText,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        },
-                                        singleLine = true,
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            errorContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent,
-                                            errorIndicatorColor = colorResource(R.color.red),
-                                            focusedTextColor = colorResource(R.color.black),
-                                            unfocusedTextColor = colorResource(R.color.black),
-                                            disabledTextColor = colorResource(R.color.black),
-                                            cursorColor = colorResource(R.color.black),
-                                            errorCursorColor = colorResource(R.color.red)
-                                        ),
-                                        modifier = Modifier
-                                            .requiredHeight(64.dp)
-                                            .requiredWidth(52.dp),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = { value ->
-                                            minutes1 = value
-                                            viewModel.changeTimerNum1(
-                                                index,
-                                                hours1,
-                                                minutes1
-                                            )
-                                        }
-                                    )
-
-                                    BoldText(text = "-", fontSize = ExtraSmallText)
-
-                                    TextField(
-                                        value = hours2,
-                                        textStyle = TextStyle(
-                                            fontSize = ExtraSmallText,
-                                            color = colorResource(R.color.black)
-                                        ),
-                                        placeholder = {
-                                            LightText(
-                                                text = stringResource(R.string.h_hours),
-                                                fontSize = ExtraSmallText,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        },
-                                        singleLine = true,
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            errorContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent,
-                                            errorIndicatorColor = colorResource(R.color.red),
-                                            focusedTextColor = colorResource(R.color.black),
-                                            unfocusedTextColor = colorResource(R.color.black),
-                                            disabledTextColor = colorResource(R.color.black),
-                                            cursorColor = colorResource(R.color.black),
-                                            errorCursorColor = colorResource(R.color.red)
-                                        ),
-                                        modifier = Modifier
-                                            .requiredHeight(64.dp)
-                                            .requiredWidth(52.dp),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = { value ->
-                                            hours2 = value
-                                            viewModel.changeTimerNum2(
-                                                index,
-                                                hours2,
-                                                minutes2
-                                            )
-                                        }
-                                    )
-                                    BoldText(text = ":", fontSize = ExtraSmallText)
-                                    TextField(
-                                        value = minutes2,
-                                        textStyle = TextStyle(
-                                            fontSize = ExtraSmallText,
-                                            color = colorResource(R.color.black)
-                                        ),
-                                        placeholder = {
-                                            LightText(
-                                                text = stringResource(R.string.m_minutes),
-                                                fontSize = ExtraSmallText,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        },
-                                        singleLine = true,
-                                        colors = TextFieldDefaults.colors(
-                                            unfocusedContainerColor = Color.Transparent,
-                                            focusedContainerColor = Color.Transparent,
-                                            errorContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            disabledIndicatorColor = Color.Transparent,
-                                            errorIndicatorColor = colorResource(R.color.red),
-                                            focusedTextColor = colorResource(R.color.black),
-                                            unfocusedTextColor = colorResource(R.color.black),
-                                            disabledTextColor = colorResource(R.color.black),
-                                            cursorColor = colorResource(R.color.black),
-                                            errorCursorColor = colorResource(R.color.red)
-                                        ),
-                                        modifier = Modifier
-                                            .requiredHeight(64.dp)
-                                            .requiredWidth(52.dp),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        onValueChange = { value ->
-                                            minutes2 = value
-                                            viewModel.changeTimerNum2(
-                                                index,
-                                                hours2,
-                                                minutes2
-                                            )
-                                        }
-                                    )
-
-                                }
-                            }
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                ClickableText(
-                                    text = AnnotatedString(stringResource(R.string.ranged)),
-                                    style = TextStyle(
-                                        fontSize = ExtraSmallText,
-                                        color = colorResource(R.color.black),
-                                        fontWeight = if (timerState.type == TimerType.RANGE.str) FontWeight.Bold else FontWeight.Normal
-                                    ),
-                                    onClick = { viewModel.changeTimerType(index) }
-                                )
-                                RadioButton(
-                                    selected = timerState.type == TimerType.RANGE.str,
-                                    colors = RadioButtonColors(
-                                        colorResource(R.color.black), colorResource(R.color.black),
-                                        colorResource(R.color.black), colorResource(R.color.black)
-                                    ),
-                                    modifier = Modifier.size(20.dp),
-                                    onClick = { viewModel.changeTimerType(index) }
-                                )
-                            }
-
-                        }
-                    }
+                items(
+                    count = viewModel.currentStep.value.timers?.size ?: 0
+                ) { index ->
+                    SwipeToDismissItem(item = index,
+                        onDismissed = {
+                            viewModel.deleteTimer(index)
+                        },
+                        content = { TimerItem(index = index, viewModel = viewModel) }
+                    )
                 }
                 item {
                     Box(
@@ -623,7 +290,7 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
                 }
             )
             Box(modifier = Modifier.weight(1f)) {
-                if (viewModel.currentStepIndex.value < viewModel.steps.value.size - 1)
+                if (viewModel.currentStepIndex.value < viewModel.steps.value.size - 1) {
                     OutlinedThemeButton(
                         text = stringResource(R.string.go_to_next),
                         fontSize = SmallText,
@@ -635,6 +302,21 @@ fun ButtonsBlock(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modif
                             viewModel.goToNextStep()
                         }
                     )
+                } else if (viewModel.steps.value.size > 1 &&
+                    viewModel.currentStepIndex.value == viewModel.steps.value.size - 1
+                ) {
+                    OutlinedThemeButton(
+                        text = stringResource(R.string.delete_step),
+                        fontSize = SmallText,
+                        modifier = Modifier
+                            .height(32.dp)
+                            .fillMaxWidth()
+                            .padding(4.dp, 0.dp, 0.dp, 0.dp),
+                        onClick = {
+                            viewModel.deleteCurrentStep()
+                        }
+                    )
+                }
             }
         }
 
@@ -818,6 +500,352 @@ fun WindowCancelDialog(
                         RoundedCornerShape(24.dp)
                     )
             )
+        }
+    }
+}
+
+@Composable
+fun TimerItem(index: Int, viewModel: NewRecipeScreenViewModel) {
+    val timerState = viewModel.currentStep.value.timers?.get(index)
+    if (timerState != null) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(
+                    if (index % 2 == 0)
+                        colorResource(R.color.light_cyan)
+                    else
+                        colorResource(R.color.white)
+                )
+                .padding(horizontal = 6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                RadioButton(
+                    selected = timerState.type == TimerType.CONSTANT.str,
+                    colors = RadioButtonColors(
+                        colorResource(R.color.black), colorResource(R.color.black),
+                        colorResource(R.color.black), colorResource(R.color.black)
+                    ),
+                    modifier = Modifier.size(20.dp),
+                    onClick = { viewModel.changeTimerType(index) }
+                )
+                ClickableText(
+                    text = AnnotatedString(stringResource(R.string.constant)),
+                    style = TextStyle(
+                        fontSize = ExtraSmallText,
+                        color = colorResource(R.color.black),
+                        fontWeight = if (timerState.type == TimerType.CONSTANT.str) FontWeight.Bold else FontWeight.Normal
+                    ),
+                    onClick = { viewModel.changeTimerType(index) }
+                )
+            }
+
+            if (timerState.type == TimerType.CONSTANT.str) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    var hours by remember { mutableStateOf("") }
+                    var minutes by remember { mutableStateOf("") }
+
+
+                    TextField(
+                        value = hours,
+                        textStyle = TextStyle(
+                            fontSize = ExtraSmallText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = stringResource(R.string.h_hours),
+                                fontSize = ExtraSmallText,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = colorResource(R.color.red),
+                            focusedTextColor = colorResource(R.color.black),
+                            unfocusedTextColor = colorResource(R.color.black),
+                            disabledTextColor = colorResource(R.color.black),
+                            cursorColor = colorResource(R.color.black),
+                            errorCursorColor = colorResource(R.color.red)
+                        ),
+                        modifier = Modifier
+                            .requiredHeight(64.dp)
+                            .requiredWidth(52.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { value ->
+                            hours = value
+                            viewModel.changeTimerNum(
+                                index,
+                                hours,
+                                minutes
+                            )
+                        }
+                    )
+                    BoldText(text = ":", fontSize = ExtraSmallText)
+                    TextField(
+                        value = minutes,
+                        textStyle = TextStyle(
+                            fontSize = ExtraSmallText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = stringResource(R.string.m_minutes),
+                                fontSize = ExtraSmallText,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = colorResource(R.color.red),
+                            focusedTextColor = colorResource(R.color.black),
+                            unfocusedTextColor = colorResource(R.color.black),
+                            disabledTextColor = colorResource(R.color.black),
+                            cursorColor = colorResource(R.color.black),
+                            errorCursorColor = colorResource(R.color.red)
+                        ),
+                        modifier = Modifier
+                            .requiredHeight(64.dp)
+                            .requiredWidth(52.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { value ->
+                            minutes = value
+                            viewModel.changeTimerNum(
+                                index,
+                                hours,
+                                minutes
+                            )
+                        }
+                    )
+                }
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    var hours1 by remember { mutableStateOf("") }
+                    var minutes1 by remember { mutableStateOf("") }
+                    var hours2 by remember { mutableStateOf("") }
+                    var minutes2 by remember { mutableStateOf("") }
+
+                    TextField(
+                        value = hours1,
+                        textStyle = TextStyle(
+                            fontSize = ExtraSmallText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = stringResource(R.string.h_hours),
+                                fontSize = ExtraSmallText,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = colorResource(R.color.red),
+                            focusedTextColor = colorResource(R.color.black),
+                            unfocusedTextColor = colorResource(R.color.black),
+                            disabledTextColor = colorResource(R.color.black),
+                            cursorColor = colorResource(R.color.black),
+                            errorCursorColor = colorResource(R.color.red)
+                        ),
+                        modifier = Modifier
+                            .requiredHeight(64.dp)
+                            .requiredWidth(52.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { value ->
+                            hours1 = value
+                            viewModel.changeTimerNum1(
+                                index,
+                                hours1,
+                                minutes1
+                            )
+                        }
+                    )
+                    BoldText(text = ":", fontSize = ExtraSmallText)
+                    TextField(
+                        value = minutes1,
+                        textStyle = TextStyle(
+                            fontSize = ExtraSmallText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = stringResource(R.string.m_minutes),
+                                fontSize = ExtraSmallText,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = colorResource(R.color.red),
+                            focusedTextColor = colorResource(R.color.black),
+                            unfocusedTextColor = colorResource(R.color.black),
+                            disabledTextColor = colorResource(R.color.black),
+                            cursorColor = colorResource(R.color.black),
+                            errorCursorColor = colorResource(R.color.red)
+                        ),
+                        modifier = Modifier
+                            .requiredHeight(64.dp)
+                            .requiredWidth(52.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { value ->
+                            minutes1 = value
+                            viewModel.changeTimerNum1(
+                                index,
+                                hours1,
+                                minutes1
+                            )
+                        }
+                    )
+
+                    BoldText(text = "-", fontSize = ExtraSmallText)
+
+                    TextField(
+                        value = hours2,
+                        textStyle = TextStyle(
+                            fontSize = ExtraSmallText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = stringResource(R.string.h_hours),
+                                fontSize = ExtraSmallText,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = colorResource(R.color.red),
+                            focusedTextColor = colorResource(R.color.black),
+                            unfocusedTextColor = colorResource(R.color.black),
+                            disabledTextColor = colorResource(R.color.black),
+                            cursorColor = colorResource(R.color.black),
+                            errorCursorColor = colorResource(R.color.red)
+                        ),
+                        modifier = Modifier
+                            .requiredHeight(64.dp)
+                            .requiredWidth(52.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { value ->
+                            hours2 = value
+                            viewModel.changeTimerNum2(
+                                index,
+                                hours2,
+                                minutes2
+                            )
+                        }
+                    )
+                    BoldText(text = ":", fontSize = ExtraSmallText)
+                    TextField(
+                        value = minutes2,
+                        textStyle = TextStyle(
+                            fontSize = ExtraSmallText,
+                            color = colorResource(R.color.black)
+                        ),
+                        placeholder = {
+                            LightText(
+                                text = stringResource(R.string.m_minutes),
+                                fontSize = ExtraSmallText,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            errorContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = colorResource(R.color.red),
+                            focusedTextColor = colorResource(R.color.black),
+                            unfocusedTextColor = colorResource(R.color.black),
+                            disabledTextColor = colorResource(R.color.black),
+                            cursorColor = colorResource(R.color.black),
+                            errorCursorColor = colorResource(R.color.red)
+                        ),
+                        modifier = Modifier
+                            .requiredHeight(64.dp)
+                            .requiredWidth(52.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { value ->
+                            minutes2 = value
+                            viewModel.changeTimerNum2(
+                                index,
+                                hours2,
+                                minutes2
+                            )
+                        }
+                    )
+
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                ClickableText(
+                    text = AnnotatedString(stringResource(R.string.ranged)),
+                    style = TextStyle(
+                        fontSize = ExtraSmallText,
+                        color = colorResource(R.color.black),
+                        fontWeight = if (timerState.type == TimerType.RANGE.str) FontWeight.Bold else FontWeight.Normal
+                    ),
+                    onClick = { viewModel.changeTimerType(index) }
+                )
+                RadioButton(
+                    selected = timerState.type == TimerType.RANGE.str,
+                    colors = RadioButtonColors(
+                        colorResource(R.color.black), colorResource(R.color.black),
+                        colorResource(R.color.black), colorResource(R.color.black)
+                    ),
+                    modifier = Modifier.size(20.dp),
+                    onClick = { viewModel.changeTimerType(index) }
+                )
+            }
+
         }
     }
 }
