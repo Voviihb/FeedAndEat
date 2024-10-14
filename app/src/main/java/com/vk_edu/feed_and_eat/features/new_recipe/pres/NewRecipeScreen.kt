@@ -515,15 +515,20 @@ fun WindowCancelDialog(
 @Composable
 fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewModel) {
     if (timerState != null) {
+        var showError by remember { mutableStateOf(false) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
                 .background(
-                    if (index % 2 == 0)
-                        colorResource(R.color.light_cyan)
-                    else
-                        colorResource(R.color.white)
+                    if (!showError) {
+                        if (index % 2 == 0)
+                            colorResource(R.color.light_cyan)
+                        else
+                            colorResource(R.color.white)
+                    } else {
+                        colorResource(R.color.red)
+                    }
                 )
                 .padding(horizontal = 6.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -554,16 +559,27 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
             }
 
             if (timerState.type == TimerType.CONSTANT.str) {
+                val totalMinutes = timerState.number
+                val hours = totalMinutes?.floorDiv(60) ?: ""
+                val minutes = totalMinutes?.rem(60) ?: ""
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    var hours by remember { mutableStateOf("") }
-                    var minutes by remember { mutableStateOf("") }
+                    var hoursInput by remember { mutableStateOf(hours.toString().padStart(2, '0')) }
+                    var minutesInput by remember {
+                        mutableStateOf(
+                            minutes.toString().padStart(2, '0')
+                        )
+                    }
 
+                    val isValid =
+                        (hoursInput.toIntOrNull() ?: 0) in 1..23 || (minutesInput.toIntOrNull()
+                            ?: 0) in 1..59
+                    showError = !isValid
 
                     TextField(
-                        value = hours,
+                        value = hoursInput,
                         textStyle = TextStyle(
                             fontSize = ExtraSmallText,
                             color = colorResource(R.color.black)
@@ -583,7 +599,7 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = colorResource(R.color.red),
+                            errorIndicatorColor = Color.Transparent,
                             focusedTextColor = colorResource(R.color.black),
                             unfocusedTextColor = colorResource(R.color.black),
                             disabledTextColor = colorResource(R.color.black),
@@ -595,17 +611,17 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             .requiredWidth(52.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = { value ->
-                            hours = value
+                            hoursInput = value
                             viewModel.changeTimerNum(
                                 index,
-                                hours,
-                                minutes
+                                hoursInput,
+                                minutesInput
                             )
                         }
                     )
                     BoldText(text = ":", fontSize = ExtraSmallText)
                     TextField(
-                        value = minutes,
+                        value = minutesInput,
                         textStyle = TextStyle(
                             fontSize = ExtraSmallText,
                             color = colorResource(R.color.black)
@@ -637,27 +653,60 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             .requiredWidth(52.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = { value ->
-                            minutes = value
+                            minutesInput = value
                             viewModel.changeTimerNum(
                                 index,
-                                hours,
-                                minutes
+                                hoursInput,
+                                minutesInput
                             )
                         }
                     )
                 }
             } else {
+                val totalMinutes1 = timerState.lowerLimit
+                val totalMinutes2 = timerState.upperLimit
+                val hours1 = totalMinutes1?.floorDiv(60) ?: ""
+                val minutes1 = totalMinutes1?.rem(60) ?: ""
+                val hours2 = totalMinutes2?.floorDiv(60) ?: ""
+                val minutes2 = totalMinutes2?.rem(60) ?: ""
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    var hours1 by remember { mutableStateOf("") }
-                    var minutes1 by remember { mutableStateOf("") }
-                    var hours2 by remember { mutableStateOf("") }
-                    var minutes2 by remember { mutableStateOf("") }
+                    var hours1Input by remember {
+                        mutableStateOf(
+                            hours1.toString().padStart(2, '0')
+                        )
+                    }
+                    var minutes1Input by remember {
+                        mutableStateOf(
+                            minutes1.toString().padStart(2, '0')
+                        )
+                    }
+                    var hours2Input by remember {
+                        mutableStateOf(
+                            hours2.toString().padStart(2, '0')
+                        )
+                    }
+                    var minutes2Input by remember {
+                        mutableStateOf(
+                            minutes2.toString().padStart(2, '0')
+                        )
+                    }
+
+                    val isValid =
+                        ((hours1Input.toIntOrNull() ?: 0) in 1..23
+                                || (minutes1Input.toIntOrNull() ?: 0) in 1..59)
+                                && ((hours2Input.toIntOrNull() ?: 0) in 1..23
+                                || (minutes2Input.toIntOrNull() ?: 0) in 1..59)
+                                && ((hours1Input.toIntOrNull() ?: 0) < (hours2Input.toIntOrNull()
+                            ?: 0)
+                                || (minutes1Input.toIntOrNull() ?: 0) < (minutes2Input.toIntOrNull()
+                            ?: 0))
+                    showError = !isValid
 
                     TextField(
-                        value = hours1,
+                        value = hours1Input,
                         textStyle = TextStyle(
                             fontSize = ExtraSmallText,
                             color = colorResource(R.color.black)
@@ -689,17 +738,17 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             .requiredWidth(52.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = { value ->
-                            hours1 = value
+                            hours1Input = value
                             viewModel.changeTimerNum1(
                                 index,
-                                hours1,
-                                minutes1
+                                hours1Input,
+                                minutes1Input
                             )
                         }
                     )
                     BoldText(text = ":", fontSize = ExtraSmallText)
                     TextField(
-                        value = minutes1,
+                        value = minutes1Input,
                         textStyle = TextStyle(
                             fontSize = ExtraSmallText,
                             color = colorResource(R.color.black)
@@ -731,11 +780,11 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             .requiredWidth(52.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = { value ->
-                            minutes1 = value
+                            minutes1Input = value
                             viewModel.changeTimerNum1(
                                 index,
-                                hours1,
-                                minutes1
+                                hours1Input,
+                                minutes1Input
                             )
                         }
                     )
@@ -743,7 +792,7 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                     BoldText(text = "-", fontSize = ExtraSmallText)
 
                     TextField(
-                        value = hours2,
+                        value = hours2Input,
                         textStyle = TextStyle(
                             fontSize = ExtraSmallText,
                             color = colorResource(R.color.black)
@@ -775,17 +824,17 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             .requiredWidth(52.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = { value ->
-                            hours2 = value
+                            hours2Input = value
                             viewModel.changeTimerNum2(
                                 index,
-                                hours2,
-                                minutes2
+                                hours2Input,
+                                minutes2Input
                             )
                         }
                     )
                     BoldText(text = ":", fontSize = ExtraSmallText)
                     TextField(
-                        value = minutes2,
+                        value = minutes2Input,
                         textStyle = TextStyle(
                             fontSize = ExtraSmallText,
                             color = colorResource(R.color.black)
@@ -817,11 +866,11 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                             .requiredWidth(52.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = { value ->
-                            minutes2 = value
+                            minutes2Input = value
                             viewModel.changeTimerNum2(
                                 index,
-                                hours2,
-                                minutes2
+                                hours2Input,
+                                minutes2Input
                             )
                         }
                     )
