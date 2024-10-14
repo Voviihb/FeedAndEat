@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -72,6 +73,7 @@ import com.vk_edu.feed_and_eat.common.graphics.OutlinedTextInput
 import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
 import com.vk_edu.feed_and_eat.common.graphics.SwipeToDismissItem
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionRoutes
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
@@ -219,14 +221,20 @@ fun MainPart(viewModel: NewRecipeScreenViewModel, modifier: Modifier = Modifier)
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(
-                    count = viewModel.currentStep.value.timers?.size ?: 0
-                ) { index ->
-                    SwipeToDismissItem(item = index,
+                itemsIndexed(
+                    items = viewModel.currentStep.value.timers ?: emptyList(),
+                    key = { _, timer -> timer.id }) { index, timer ->
+                    SwipeToDismissItem(item = timer,
                         onDismissed = {
-                            viewModel.deleteTimer(index)
+                            viewModel.deleteTimer(timer)
                         },
-                        content = { TimerItem(index = index, viewModel = viewModel) }
+                        content = {
+                            TimerItem(
+                                index = index,
+                                timerState = timer,
+                                viewModel = viewModel
+                            )
+                        }
                     )
                 }
                 item {
@@ -505,8 +513,7 @@ fun WindowCancelDialog(
 }
 
 @Composable
-fun TimerItem(index: Int, viewModel: NewRecipeScreenViewModel) {
-    val timerState = viewModel.currentStep.value.timers?.get(index)
+fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewModel) {
     if (timerState != null) {
         Row(
             modifier = Modifier

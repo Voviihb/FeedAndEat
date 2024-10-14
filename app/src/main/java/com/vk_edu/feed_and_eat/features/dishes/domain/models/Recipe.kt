@@ -2,6 +2,7 @@ package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
 import com.google.firebase.firestore.IgnoreExtraProperties
 import java.util.Date
+import java.util.UUID
 
 @IgnoreExtraProperties
 data class Ingredient(
@@ -54,7 +55,8 @@ data class Timer(
     val type: String = "",
     val lowerLimit: Int? = null,
     val upperLimit: Int? = null,
-    val number: Int? = null
+    val number: Int? = null,
+    val id: String = UUID.randomUUID().toString()
 )
 
 @IgnoreExtraProperties

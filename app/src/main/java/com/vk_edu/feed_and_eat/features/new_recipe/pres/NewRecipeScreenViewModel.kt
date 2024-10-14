@@ -295,11 +295,12 @@ class NewRecipeScreenViewModel @Inject constructor(
         )
     }
 
-    fun deleteTimer(index: Int) {
+    fun deleteTimer(timer: Timer) {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
-        actualTimers.removeAt(index)
+        actualTimers.removeIf { timer.id == it.id }
+
         _currentStep.value = _currentStep.value.copy(
-            timers = actualTimers
+            timers = actualTimers.toList()
         )
     }
 
