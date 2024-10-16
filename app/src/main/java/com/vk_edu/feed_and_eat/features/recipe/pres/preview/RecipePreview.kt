@@ -359,7 +359,7 @@ fun RecipeInfo(
                     DarkText(
                         text = (energyData[i] ?: "-").toString() + " " + if (i != 0) stringResource(
                             id = R.string.gramm
-                        ) else "kCal",
+                        ) else stringResource(id = R.string.kcal),
                         fontSize = MediumText
                     )
                 }

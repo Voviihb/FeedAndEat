@@ -473,35 +473,35 @@ fun WindowDialog(
                             NutritionInputField(
                                 label = stringResource(id = R.string.calories_data),
                                 value = nutrients.Calories.toString(),
-                                placeholder = "kCal"
+                                placeholder = stringResource(id = R.string.kcal)
                             ) {
                                 viewModel.changeNutrient(Nutrient.CALORIES, it)
                             }
                             NutritionInputField(
                                 label = stringResource(id = R.string.fats_data),
                                 value = nutrients.Fat.toString(),
-                                placeholder = "g"
+                                placeholder = stringResource(id = R.string.gramm)
                             ) {
                                 viewModel.changeNutrient(Nutrient.FAT, it)
                             }
                             NutritionInputField(
                                 label = stringResource(id = R.string.proteins_data),
                                 value = nutrients.Protein.toString(),
-                                placeholder = "g"
+                                placeholder = stringResource(id = R.string.gramm)
                             ) {
                                 viewModel.changeNutrient(Nutrient.PROTEIN, it)
                             }
                             NutritionInputField(
                                 label = stringResource(id = R.string.carbons_data),
                                 value = nutrients.Carbohydrates.toString(),
-                                placeholder = "g"
+                                placeholder = stringResource(id = R.string.gramm)
                             ) {
                                 viewModel.changeNutrient(Nutrient.CARBOHYDRATES, it)
                             }
                             NutritionInputField(
                                 label = stringResource(id = R.string.sugar_data),
                                 value = nutrients.Sugar.toString(),
-                                placeholder = "g"
+                                placeholder = stringResource(id = R.string.gramm)
                             ) {
                                 viewModel.changeNutrient(Nutrient.SUGAR, it)
                             }
