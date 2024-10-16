@@ -151,7 +151,7 @@
     <string name="go_to_next">Go to next</string>
     <string name="save_recipe">Save recipe</string>
     <string name="cancel_creation">Cancel creation</string>
-    <string name="alert_msg_new_recipe">Choose tags for your recipe (if you want) and confirm saving recipe</string>
+    <string name="alert_msg_new_recipe">Choose tags for your recipe:</string>
     <string name="confirm_save">Confirm save</string>
     <string name="dialog_before_leave">Are you sure you want to leave? All your changes will be lost!</string>
     <string name="confirm_cancel">Confirm cancel</string>

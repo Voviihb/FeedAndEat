@@ -74,6 +74,7 @@ import com.vk_edu.feed_and_eat.common.graphics.OutlinedThemeButton
 import com.vk_edu.feed_and_eat.common.graphics.SwipeToDismissItem
 import com.vk_edu.feed_and_eat.features.collection.pres.CollectionRoutes
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
+import com.vk_edu.feed_and_eat.features.search.pres.Nutrient
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
@@ -362,6 +363,8 @@ fun WindowDialog(
     collectionId: String
 ) {
     if (viewModel.activeWindowDialog.value) {
+        val nutrients by viewModel.nutrients
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
@@ -375,73 +378,132 @@ fun WindowDialog(
                     )
                 },
                 text = {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp)
-                            .background(colorResource(R.color.white_cyan), RoundedCornerShape(8.dp))
-                            .border(
-                                1.dp,
-                                colorResource(R.color.medium_cyan),
-                                RoundedCornerShape(8.dp)
-                            )
-                            .clip(RoundedCornerShape(8.dp))
-                            .verticalScroll(rememberScrollState())
+                            .height(400.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        FlowRow(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(8.dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .background(
+                                    colorResource(R.color.white_cyan),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    colorResource(R.color.medium_cyan),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .clip(RoundedCornerShape(8.dp))
+                                .verticalScroll(rememberScrollState()),
                         ) {
-                            val localDensity = LocalDensity.current
-                            for (index in 0 until viewModel.tags.value.size) {
-                                var rowHeightDp by remember { mutableStateOf(100.dp) }
-                                Card(
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = CardColors(
-                                        colorResource(R.color.white), colorResource(R.color.white),
-                                        colorResource(R.color.white), colorResource(R.color.white)
-                                    ),
-                                    modifier = Modifier.height(rowHeightDp),
-                                    onClick = { viewModel.tagCheckingChanged(index) }
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.padding(8.dp, 4.dp)
+                            FlowRow(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                val localDensity = LocalDensity.current
+                                for (index in 0 until viewModel.tags.value.size) {
+                                    var rowHeightDp by remember { mutableStateOf(100.dp) }
+                                    Card(
+                                        shape = RoundedCornerShape(8.dp),
+                                        colors = CardColors(
+                                            colorResource(R.color.white),
+                                            colorResource(R.color.white),
+                                            colorResource(R.color.white),
+                                            colorResource(R.color.white)
+                                        ),
+                                        modifier = Modifier.height(rowHeightDp),
+                                        onClick = { viewModel.tagCheckingChanged(index) }
                                     ) {
-                                        Checkbox(
-                                            checked = viewModel.tags.value[index].ckecked,
-                                            colors = CheckboxColors(
-                                                colorResource(R.color.black),
-                                                colorResource(R.color.black),
-                                                colorResource(R.color.white),
-                                                colorResource(R.color.white),
-                                                colorResource(R.color.white),
-                                                colorResource(R.color.white),
-                                                colorResource(R.color.white),
-                                                colorResource(R.color.black),
-                                                colorResource(R.color.black),
-                                                colorResource(R.color.black),
-                                                colorResource(R.color.black),
-                                                colorResource(R.color.black)
-                                            ),
-                                            modifier = Modifier.size(16.dp),
-                                            onCheckedChange = { viewModel.tagCheckingChanged(index) }
-                                        )
-                                        DarkText(
-                                            text = viewModel.tags.value[index].name,
-                                            fontSize = SmallText,
-                                            modifier = Modifier
-                                                .onGloballyPositioned { coordinates ->
-                                                    val rowHeightDpCurrent =
-                                                        with(localDensity) { coordinates.size.height.toDp() } + 8.dp
-                                                    if (rowHeightDp == 100.dp)
-                                                        rowHeightDp = rowHeightDpCurrent
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.padding(8.dp, 4.dp)
+                                        ) {
+                                            Checkbox(
+                                                checked = viewModel.tags.value[index].ckecked,
+                                                colors = CheckboxColors(
+                                                    colorResource(R.color.black),
+                                                    colorResource(R.color.black),
+                                                    colorResource(R.color.white),
+                                                    colorResource(R.color.white),
+                                                    colorResource(R.color.white),
+                                                    colorResource(R.color.white),
+                                                    colorResource(R.color.white),
+                                                    colorResource(R.color.black),
+                                                    colorResource(R.color.black),
+                                                    colorResource(R.color.black),
+                                                    colorResource(R.color.black),
+                                                    colorResource(R.color.black)
+                                                ),
+                                                modifier = Modifier.size(16.dp),
+                                                onCheckedChange = {
+                                                    viewModel.tagCheckingChanged(
+                                                        index
+                                                    )
                                                 }
-                                        )
+                                            )
+                                            DarkText(
+                                                text = viewModel.tags.value[index].name,
+                                                fontSize = SmallText,
+                                                modifier = Modifier
+                                                    .onGloballyPositioned { coordinates ->
+                                                        val rowHeightDpCurrent =
+                                                            with(localDensity) { coordinates.size.height.toDp() } + 8.dp
+                                                        if (rowHeightDp == 100.dp)
+                                                            rowHeightDp = rowHeightDpCurrent
+                                                    }
+                                            )
+                                        }
                                     }
                                 }
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            NutritionInputField(
+                                label = stringResource(id = R.string.calories_data),
+                                value = nutrients.Calories.toString(),
+                                placeholder = "kCal"
+                            ) {
+                                viewModel.changeNutrient(Nutrient.CALORIES, it)
+                            }
+                            NutritionInputField(
+                                label = stringResource(id = R.string.fats_data),
+                                value = nutrients.Fat.toString(),
+                                placeholder = "g"
+                            ) {
+                                viewModel.changeNutrient(Nutrient.FAT, it)
+                            }
+                            NutritionInputField(
+                                label = stringResource(id = R.string.proteins_data),
+                                value = nutrients.Protein.toString(),
+                                placeholder = "g"
+                            ) {
+                                viewModel.changeNutrient(Nutrient.PROTEIN, it)
+                            }
+                            NutritionInputField(
+                                label = stringResource(id = R.string.carbons_data),
+                                value = nutrients.Carbohydrates.toString(),
+                                placeholder = "g"
+                            ) {
+                                viewModel.changeNutrient(Nutrient.CARBOHYDRATES, it)
+                            }
+                            NutritionInputField(
+                                label = stringResource(id = R.string.sugar_data),
+                                value = nutrients.Sugar.toString(),
+                                placeholder = "g"
+                            ) {
+                                viewModel.changeNutrient(Nutrient.SUGAR, it)
                             }
                         }
                     }
@@ -509,6 +571,36 @@ fun WindowCancelDialog(
                     )
             )
         }
+    }
+}
+
+@Composable
+fun NutritionInputField(
+    label: String,
+    value: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        DarkText(text = label, fontSize = MediumText)
+        OutlinedTextInput(
+            modifier = Modifier
+                .height(48.dp)
+                .width(100.dp),
+            text = value,
+            fontSize = ExtraSmallText,
+            placeholderText = placeholder,
+            onValueChange = { input ->
+                if (input.all { it.isDigit() || it == '.' }) {
+                    onValueChange(input)
+                }
+                onValueChange(input)
+            }
+        )
     }
 }
 
@@ -901,7 +993,6 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                     onClick = { viewModel.changeTimerType(index) }
                 )
             }
-
         }
     }
 }

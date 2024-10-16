@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
+import com.vk_edu.feed_and_eat.features.search.pres.Nutrient
 import com.vk_edu.feed_and_eat.features.search.pres.TagChecking
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +41,9 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     private val _tags = mutableStateOf(listOf<TagChecking>())
     val tags: State<List<TagChecking>> = _tags
+
+    private val _nutrients = mutableStateOf(Nutrients(0.0, 0.0, 0.0, 0.0, 0.0))
+    val nutrients: State<Nutrients> = _nutrients
 
     private val _activeWindowDialog = mutableStateOf(false)
     val activeWindowDialog: State<Boolean> = _activeWindowDialog
@@ -302,6 +307,25 @@ class NewRecipeScreenViewModel @Inject constructor(
         _currentStep.value = _currentStep.value.copy(
             timers = actualTimers.toList()
         )
+    }
+
+    fun changeNutrient(nutrient: Nutrient, value: String) {
+        when (nutrient) {
+            Nutrient.CALORIES -> _nutrients.value =
+                _nutrients.value.copy(Calories = value.toDouble())
+
+            Nutrient.SUGAR -> _nutrients.value =
+                _nutrients.value.copy(Sugar = value.toDouble())
+
+            Nutrient.CARBOHYDRATES -> _nutrients.value =
+                _nutrients.value.copy(Carbohydrates = value.toDouble())
+
+            Nutrient.FAT -> _nutrients.value =
+                _nutrients.value.copy(Fat = value.toDouble())
+
+            Nutrient.PROTEIN -> _nutrients.value =
+                _nutrients.value.copy(Protein = value.toDouble())
+        }
     }
 
     private fun onError(message: Exception?) {
