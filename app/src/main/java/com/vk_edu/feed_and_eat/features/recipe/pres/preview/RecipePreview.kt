@@ -283,11 +283,11 @@ fun RecipeInfo(
         R.string.sugar_data
     ).map { stringResource(id = it) }
     val energyData = listOf(
-        recipe.nutrients.Calories,
-        recipe.nutrients.Sugar,
-        recipe.nutrients.Protein,
-        recipe.nutrients.Fat,
-        recipe.nutrients.Carbohydrates
+        recipe.nutrients.calories,
+        recipe.nutrients.sugar,
+        recipe.nutrients.protein,
+        recipe.nutrients.fat,
+        recipe.nutrients.carbohydrates
     )
 
     Column(

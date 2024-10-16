@@ -113,11 +113,12 @@ class NewRecipeScreenViewModel @Inject constructor(
                 val user = _authRepo.getUserId()
                 if (user != null) {
                     _newRecipeRepo.addNewRecipe(
-                        user,
-                        _name.value,
-                        _imagePath.value,
-                        newSteps,
-                        _tags.value.filter { it.ckecked }.map { it.name }
+                        user = user,
+                        name = _name.value,
+                        imagePath = _imagePath.value,
+                        instructions = newSteps,
+                        tags = _tags.value.filter { it.ckecked }.map { it.name },
+                        nutrients = _nutrients.value
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
@@ -129,10 +130,10 @@ class NewRecipeScreenViewModel @Inject constructor(
                                             is Response.Loading -> _loading.value = true
                                             is Response.Success -> {
                                                 _recipesRepo.addRecipeToUserCollection(
-                                                    user,
-                                                    collectionId,
-                                                    recipeId,
-                                                    response1.data?.image
+                                                    userId = user,
+                                                    collectionId = collectionId,
+                                                    recipeId = recipeId,
+                                                    image = response1.data?.image
                                                 ).collect { response2 ->
                                                     when (response2) {
                                                         is Response.Loading -> {}
@@ -312,19 +313,19 @@ class NewRecipeScreenViewModel @Inject constructor(
     fun changeNutrient(nutrient: Nutrient, value: String) {
         when (nutrient) {
             Nutrient.CALORIES -> _nutrients.value =
-                _nutrients.value.copy(Calories = value.toDouble())
+                _nutrients.value.copy(calories = value.toDouble())
 
             Nutrient.SUGAR -> _nutrients.value =
-                _nutrients.value.copy(Sugar = value.toDouble())
+                _nutrients.value.copy(sugar = value.toDouble())
 
             Nutrient.CARBOHYDRATES -> _nutrients.value =
-                _nutrients.value.copy(Carbohydrates = value.toDouble())
+                _nutrients.value.copy(carbohydrates = value.toDouble())
 
             Nutrient.FAT -> _nutrients.value =
-                _nutrients.value.copy(Fat = value.toDouble())
+                _nutrients.value.copy(fat = value.toDouble())
 
             Nutrient.PROTEIN -> _nutrients.value =
-                _nutrients.value.copy(Protein = value.toDouble())
+                _nutrients.value.copy(protein = value.toDouble())
         }
     }
 
