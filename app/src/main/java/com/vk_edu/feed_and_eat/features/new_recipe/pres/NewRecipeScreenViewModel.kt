@@ -122,7 +122,8 @@ class NewRecipeScreenViewModel @Inject constructor(
                         imagePath = _imagePath.value,
                         instructions = newSteps,
                         tags = _tags.value.filter { it.ckecked }.map { it.name },
-                        nutrients = _nutrients.value
+                        nutrients = _nutrients.value,
+                        servings = _servings.value
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true

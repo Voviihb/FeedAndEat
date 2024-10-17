@@ -1042,7 +1042,7 @@ fun ServingsDropdown(
             .height(48.dp)
             .clickable { expanded = true }
             .background(
-                colorResource(id = R.color.white),
+                colorResource(id = R.color.white_cyan),
                 RoundedCornerShape(8.dp)
             )
             .border(

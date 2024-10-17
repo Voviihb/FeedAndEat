@@ -32,7 +32,8 @@ class NewRecipeRepoImpl @Inject constructor(
         imagePath: Uri?,
         instructions: List<Instruction>,
         tags: List<String>?,
-        nutrients: Nutrients?
+        nutrients: Nutrients?,
+        servings: Servings?
     ): Flow<Response<String?>> = repoTryCatchBlock {
         val document = db.collection(RECIPES_COLLECTION).document()
         val docId = document.id
@@ -55,7 +56,7 @@ class NewRecipeRepoImpl @Inject constructor(
             "user" to user,
             "created" to Date(Timestamp(System.currentTimeMillis()).time),
             "nutrients" to nutrientsData,
-            "servings" to Servings(amount = 1, weight = 0),
+            "servings" to (servings ?: Servings(amount = 1, weight = 0)),
             "ingredients" to listOf<Ingredient>(),
             "author" to 0,
             "reviews" to listOf<Review>(),
