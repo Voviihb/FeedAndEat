@@ -3,6 +3,7 @@ package com.vk_edu.feed_and_eat.features.new_recipe.repository
 import android.net.Uri
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +14,7 @@ interface NewRecipeRepository {
         imagePath: Uri?,
         instructions: List<Instruction>,
         tags: List<String>?,
-        nutrients: Nutrients?
+        nutrients: Nutrients?,
+        servings: Servings?
     ): Flow<Response<String?>>
 }

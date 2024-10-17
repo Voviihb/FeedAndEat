@@ -1,6 +1,7 @@
 package com.vk_edu.feed_and_eat.common.graphics
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -18,7 +19,8 @@ fun OutlinedTextInput(
     placeholderText: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions()
 ) {
     OutlinedTextField(
         value = text,
@@ -41,6 +43,7 @@ fun OutlinedTextInput(
             errorCursorColor = colorResource(R.color.black)
         ),
         modifier = modifier,
-        onValueChange = onValueChange
+        onValueChange = onValueChange,
+        keyboardOptions = keyboardOptions
     )
 }

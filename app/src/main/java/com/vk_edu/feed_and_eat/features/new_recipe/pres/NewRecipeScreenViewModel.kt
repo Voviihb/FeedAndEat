@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
@@ -44,6 +45,9 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     private val _nutrients = mutableStateOf(Nutrients(0.0, 0.0, 0.0, 0.0, 0.0))
     val nutrients: State<Nutrients> = _nutrients
+
+    private val _servings = mutableStateOf(Servings(1, 0))
+    val servings: State<Servings> = _servings
 
     private val _activeWindowDialog = mutableStateOf(false)
     val activeWindowDialog: State<Boolean> = _activeWindowDialog
@@ -118,7 +122,8 @@ class NewRecipeScreenViewModel @Inject constructor(
                         imagePath = _imagePath.value,
                         instructions = newSteps,
                         tags = _tags.value.filter { it.ckecked }.map { it.name },
-                        nutrients = _nutrients.value
+                        nutrients = _nutrients.value,
+                        servings = _servings.value
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
@@ -327,6 +332,18 @@ class NewRecipeScreenViewModel @Inject constructor(
             Nutrient.PROTEIN -> _nutrients.value =
                 _nutrients.value.copy(protein = value.toDouble())
         }
+    }
+
+    fun changeServingsAmount(value: String) {
+        _servings.value = _servings.value.copy(
+            amount = value.toInt()
+        )
+    }
+
+    fun changeServingsWeight(value: String) {
+        _servings.value = _servings.value.copy(
+            weight = value.toIntOrNull()
+        )
     }
 
     private fun onError(message: Exception?) {

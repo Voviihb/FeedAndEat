@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -381,7 +384,8 @@ fun WindowDialog(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(400.dp),
+                            .height(420.dp)
+                            .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Box(
@@ -465,9 +469,7 @@ fun WindowDialog(
                         }
 
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState()),
+                            modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             NutritionInputField(
@@ -506,6 +508,35 @@ fun WindowDialog(
                                 viewModel.changeNutrient(Nutrient.SUGAR, it)
                             }
                         }
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                DarkText(
+                                    text = stringResource(R.string.servings),
+                                    fontSize = MediumText
+                                )
+                                ServingsDropdown(
+                                    selectedServings = viewModel.servings.value.amount ?: 0
+                                ) {
+                                    viewModel.changeServingsAmount(it.toString())
+                                }
+                            }
+
+                            NutritionInputField(
+                                label = stringResource(R.string.weight),
+                                value = (viewModel.servings.value.weight ?: 0).toString(),
+                                placeholder = stringResource(id = R.string.gramm)
+                            ) {
+                                viewModel.changeServingsWeight(it)
+                            }
+                        }
+
                     }
                 },
                 confirmButton = {
@@ -590,7 +621,7 @@ fun NutritionInputField(
         OutlinedTextInput(
             modifier = Modifier
                 .height(48.dp)
-                .width(100.dp),
+                .width(104.dp),
             text = value,
             fontSize = ExtraSmallText,
             placeholderText = placeholder,
@@ -598,8 +629,8 @@ fun NutritionInputField(
                 if (input.all { it.isDigit() || it == '.' }) {
                     onValueChange(input)
                 }
-                onValueChange(input)
-            }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
 }
@@ -991,6 +1022,53 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                     ),
                     modifier = Modifier.size(20.dp),
                     onClick = { viewModel.changeTimerType(index) }
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ServingsDropdown(
+    selectedServings: Int,
+    onServingsSelected: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .width(104.dp)
+            .height(48.dp)
+            .clickable { expanded = true }
+            .background(
+                colorResource(id = R.color.white_cyan),
+                RoundedCornerShape(8.dp)
+            )
+            .border(
+                2.dp,
+                colorResource(id = R.color.light_cyan),
+                RoundedCornerShape(8.dp)
+            )
+            .clip(RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        DarkText(
+            text = stringResource(R.string.amount_servings, selectedServings),
+            fontSize = SmallText
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            (1..10).forEach { servings ->
+                DropdownMenuItem(
+                    text = { LightText(text = servings.toString(), fontSize = MediumText) },
+                    onClick = {
+                        onServingsSelected(servings)
+                        expanded = false
+                    }
                 )
             }
         }
