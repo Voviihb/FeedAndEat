@@ -36,7 +36,7 @@ class LoginScreenViewModelTest {
     fun setUp() {
         repo = mockk()
         prefs = mockk()
-        viewModel = LoginScreenViewModel(repo, prefs)
+        viewModel = LoginScreenViewModel(_authRepo = repo, _preferencesManager = prefs)
     }
 
     @Test
