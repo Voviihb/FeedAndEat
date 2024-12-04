@@ -4,7 +4,7 @@
 
 <p align="center">
    <img alt="Android version" src="https://img.shields.io/badge/Android-8.0%2B-brightgreen?style=flat&logo=android">
-   <img alt="App version" src="https://img.shields.io/badge/App_version-v1.0_(Alpha)-8A2BE2?style=flat">
+   <img alt="App version" src="https://img.shields.io/badge/App_version-v1.1_(Alpha)-8A2BE2?style=flat">
 
 </p>
 
