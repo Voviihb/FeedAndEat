@@ -12,25 +12,18 @@ import com.vk_edu.feed_and_eat.R
 
 
 @Composable
-fun LightText(text: String, fontSize: TextUnit, textAlign: TextAlign = TextAlign.Left, modifier: Modifier = Modifier) {
+fun LightText(
+    text: String,
+    fontSize: TextUnit,
+    textAlign: TextAlign = TextAlign.Left,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = text,
         fontSize = fontSize,
         color = colorResource(R.color.gray),
         overflow = TextOverflow.Ellipsis,
         maxLines = 2,
-        textAlign = textAlign,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun LightTextNoOverflow(text: String, fontSize: TextUnit, textAlign: TextAlign = TextAlign.Left, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        fontSize = fontSize,
-        color = colorResource(R.color.gray),
-        maxLines = 1,
         textAlign = textAlign,
         modifier = modifier
     )

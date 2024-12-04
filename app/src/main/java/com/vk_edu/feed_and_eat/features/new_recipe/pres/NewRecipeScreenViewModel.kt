@@ -7,10 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
+import com.vk_edu.feed_and_eat.features.search.pres.Nutrient
 import com.vk_edu.feed_and_eat.features.search.pres.TagChecking
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +42,12 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     private val _tags = mutableStateOf(listOf<TagChecking>())
     val tags: State<List<TagChecking>> = _tags
+
+    private val _nutrients = mutableStateOf(Nutrients(0.0, 0.0, 0.0, 0.0, 0.0))
+    val nutrients: State<Nutrients> = _nutrients
+
+    private val _servings = mutableStateOf(Servings(1, 0))
+    val servings: State<Servings> = _servings
 
     private val _activeWindowDialog = mutableStateOf(false)
     val activeWindowDialog: State<Boolean> = _activeWindowDialog
@@ -100,8 +109,7 @@ class NewRecipeScreenViewModel @Inject constructor(
                                         lowerLimit = timer.lowerLimit,
                                         upperLimit = timer.upperLimit
                                     )
-                            }
-                            else
+                            } else
                                 Timer(type = CONSTANT, number = timer.number)
                         }
                     )
@@ -109,42 +117,44 @@ class NewRecipeScreenViewModel @Inject constructor(
                 val user = _authRepo.getUserId()
                 if (user != null) {
                     _newRecipeRepo.addNewRecipe(
-                        user,
-                        _name.value,
-                        _imagePath.value,
-                        newSteps,
-                        _tags.value.filter { it.ckecked }.map { it.name }
+                        user = user,
+                        name = _name.value,
+                        imagePath = _imagePath.value,
+                        instructions = newSteps,
+                        tags = _tags.value.filter { it.ckecked }.map { it.name },
+                        nutrients = _nutrients.value,
+                        servings = _servings.value
                     ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 val recipeId = response.data
                                 if (recipeId != null) {
-                                    _recipesRepo.loadRecipeById(recipeId).collect { response ->
-                                        when (response) {
+                                    _recipesRepo.loadRecipeById(recipeId).collect { response1 ->
+                                        when (response1) {
                                             is Response.Loading -> _loading.value = true
                                             is Response.Success -> {
                                                 _recipesRepo.addRecipeToUserCollection(
-                                                    user,
-                                                    collectionId,
-                                                    recipeId,
-                                                    response.data?.image
-                                                ).collect { response ->
-                                                    when (response) {
-                                                        is Response.Loading -> { }
+                                                    userId = user,
+                                                    collectionId = collectionId,
+                                                    recipeId = recipeId,
+                                                    image = response1.data?.image
+                                                ).collect { response2 ->
+                                                    when (response2) {
+                                                        is Response.Loading -> {}
                                                         is Response.Success -> {
 
                                                         }
 
                                                         is Response.Failure -> {
-                                                            onError(response.e)
+                                                            onError(response2.e)
                                                         }
                                                     }
                                                 }
                                             }
 
                                             is Response.Failure -> {
-                                                onError(response.e)
+                                                onError(response1.e)
                                             }
                                         }
                                     }
@@ -168,7 +178,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         _name.value = newName
     }
 
-    fun changeImagePath(newImagePath:Uri?) {
+    fun changeImagePath(newImagePath: Uri?) {
         _imagePath.value = newImagePath
     }
 
@@ -231,12 +241,14 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     fun addTimer() {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
-        actualTimers.add(Timer(
-            type = CONSTANT,
-            number = 0,
-            lowerLimit = 0,
-            upperLimit = 0
-        ))
+        actualTimers.add(
+            Timer(
+                type = CONSTANT,
+                number = 0,
+                lowerLimit = 0,
+                upperLimit = 0
+            )
+        )
         _currentStep.value = _currentStep.value.copy(
             timers = actualTimers
         )
@@ -294,11 +306,43 @@ class NewRecipeScreenViewModel @Inject constructor(
         )
     }
 
-    fun deleteTimer(index: Int) {
+    fun deleteTimer(timer: Timer) {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
-        actualTimers.removeAt(index)
-        _currentStep.value =  _currentStep.value.copy(
-            timers = actualTimers
+        actualTimers.removeIf { timer.id == it.id }
+
+        _currentStep.value = _currentStep.value.copy(
+            timers = actualTimers.toList()
+        )
+    }
+
+    fun changeNutrient(nutrient: Nutrient, value: String) {
+        when (nutrient) {
+            Nutrient.CALORIES -> _nutrients.value =
+                _nutrients.value.copy(calories = value.toDouble())
+
+            Nutrient.SUGAR -> _nutrients.value =
+                _nutrients.value.copy(sugar = value.toDouble())
+
+            Nutrient.CARBOHYDRATES -> _nutrients.value =
+                _nutrients.value.copy(carbohydrates = value.toDouble())
+
+            Nutrient.FAT -> _nutrients.value =
+                _nutrients.value.copy(fat = value.toDouble())
+
+            Nutrient.PROTEIN -> _nutrients.value =
+                _nutrients.value.copy(protein = value.toDouble())
+        }
+    }
+
+    fun changeServingsAmount(value: String) {
+        _servings.value = _servings.value.copy(
+            amount = value.toInt()
+        )
+    }
+
+    fun changeServingsWeight(value: String) {
+        _servings.value = _servings.value.copy(
+            weight = value.toIntOrNull()
         )
     }
 
@@ -307,7 +351,7 @@ class NewRecipeScreenViewModel @Inject constructor(
         _loading.value = false
     }
 
-    fun setCollectionId(id : String){
+    fun setCollectionId(id: String) {
         collectionId = id
     }
 

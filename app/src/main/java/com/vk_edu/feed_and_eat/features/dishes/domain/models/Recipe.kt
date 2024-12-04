@@ -1,7 +1,9 @@
 package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
 import com.google.firebase.firestore.IgnoreExtraProperties
+import com.google.firebase.firestore.PropertyName
 import java.util.Date
+import java.util.UUID
 
 @IgnoreExtraProperties
 data class Ingredient(
@@ -18,11 +20,11 @@ data class Instruction(
 
 @IgnoreExtraProperties
 data class Nutrients(
-    val Calories: Double? = null,
-    val Sugar: Double? = null,
-    val Protein: Double? = null,
-    val Fat: Double? = null,
-    val Carbohydrates: Double? = null
+    @PropertyName("Calories") val calories: Double? = null,
+    @PropertyName("Sugar") val sugar: Double? = null,
+    @PropertyName("Protein") val protein: Double? = null,
+    @PropertyName("Fat") val fat: Double? = null,
+    @PropertyName("Carbohydrates") val carbohydrates: Double? = null
 )
 
 @IgnoreExtraProperties
@@ -54,7 +56,8 @@ data class Timer(
     val type: String = "",
     val lowerLimit: Int? = null,
     val upperLimit: Int? = null,
-    val number: Int? = null
+    val number: Int? = null,
+    val id: String = UUID.randomUUID().toString()
 )
 
 @IgnoreExtraProperties
@@ -62,3 +65,14 @@ data class Review(
     val author: String = "",
     val mark: Double = 0.0
 )
+
+
+fun serializeNutrients(nutrients: Nutrients): Map<String, Any?> {
+    return mapOf(
+        "Calories" to nutrients.calories,
+        "Sugar" to nutrients.sugar,
+        "Protein" to nutrients.protein,
+        "Fat" to nutrients.fat,
+        "Carbohydrates" to nutrients.carbohydrates
+    )
+}
