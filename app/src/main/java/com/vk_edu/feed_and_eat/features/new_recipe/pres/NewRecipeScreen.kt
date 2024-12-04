@@ -81,7 +81,7 @@ import com.vk_edu.feed_and_eat.features.search.pres.Nutrient
 import com.vk_edu.feed_and_eat.ui.theme.ExtraSmallText
 import com.vk_edu.feed_and_eat.ui.theme.MediumText
 import com.vk_edu.feed_and_eat.ui.theme.SmallText
-
+import com.vk_edu.feed_and_eat.ui.theme.SmallestText
 
 @Composable
 fun NewRecipeScreen(
@@ -659,7 +659,8 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.padding(horizontal = 2.dp)
             ) {
                 RadioButton(
                     selected = timerState.type == TimerType.CONSTANT.str,
@@ -673,7 +674,7 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
                 ClickableText(
                     text = AnnotatedString(stringResource(R.string.constant)),
                     style = TextStyle(
-                        fontSize = ExtraSmallText,
+                        fontSize = SmallestText,
                         color = colorResource(R.color.black),
                         fontWeight = if (timerState.type == TimerType.CONSTANT.str) FontWeight.Bold else FontWeight.Normal
                     ),
@@ -1003,12 +1004,13 @@ fun TimerItem(index: Int, timerState: Timer?, viewModel: NewRecipeScreenViewMode
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.padding(horizontal = 2.dp)
             ) {
                 ClickableText(
                     text = AnnotatedString(stringResource(R.string.ranged)),
                     style = TextStyle(
-                        fontSize = ExtraSmallText,
+                        fontSize = SmallestText,
                         color = colorResource(R.color.black),
                         fontWeight = if (timerState.type == TimerType.RANGE.str) FontWeight.Bold else FontWeight.Normal
                     ),
