@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CongratulationsScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl,
+    private val _authRepo: AuthRepository,
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
     private val _reviewState = mutableStateOf(Review("", 0.0))
@@ -83,7 +83,7 @@ class CongratulationsScreenViewModel @Inject constructor(
     }
 
     fun loadOldReview(recipe: Recipe): Review? {
-        val user = _authRepo.getUserId()
+        val user = _authRepo.getCurrentUserId()
         if (recipe.id != null && user != null) {
             authorChanged(user)
             currentReview =

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl,
+    private val _authRepo: AuthRepository,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _loginFormState = mutableStateOf(LoginForm("", ""))
@@ -30,18 +30,15 @@ class LoginScreenViewModel @Inject constructor(
     fun loginWithEmail(navigateToRoute: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                _authRepo.firebaseSignIn(
+                _authRepo.signIn(
                     _loginFormState.value.email,
                     _loginFormState.value.password
                 ).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
                         is Response.Success -> {
-                            val currentUserId = _authRepo.getUserId()
-                            if (currentUserId != null) {
-                                writeUserId(_preferencesManager, currentUserId)
-                                navigateToRoute(BottomScreen.HomeScreen.route)
-                            }
+                            // Успешный вход - переходим на главный экран
+                            navigateToRoute(BottomScreen.HomeScreen.route)
                         }
                         is Response.Failure -> onError(response.e)
                     }
@@ -56,29 +53,7 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     fun signInAnonymously(navigateToRoute: (String) -> Unit) {
-        viewModelScope.launch {
-            try {
-                _authRepo.firebaseSignInAnonymously()
-                .collect { response ->
-                    when (response) {
-                        is Response.Loading -> _loading.value = true
-                        is Response.Success -> {
-                            val currentUserId = _authRepo.getUserId()
-                            if (currentUserId != null) {
-                                writeUserId(_preferencesManager, currentUserId)
-                                navigateToRoute(BottomScreen.HomeScreen.route)
-                            }
-                        }
-                        is Response.Failure -> onError(response.e)
-                    }
-                }
-
-            } catch (e: Exception) {
-                onError(e)
-            }
-            _loading.value = false
-        }
-
+        // Анонимный вход не поддерживается в backend-версии
     }
 
 

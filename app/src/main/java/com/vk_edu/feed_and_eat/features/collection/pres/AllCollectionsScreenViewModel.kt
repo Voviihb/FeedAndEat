@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class AllCollectionsScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl,
     private val _usersRepo: UsersRepoImpl,
-    private val _authRepo: AuthRepoImpl
+    private val _authRepo: AuthRepository
 ) : ViewModel() {
     private val _activeWindowDialog = mutableStateOf(false)
     val activeWindowDialog : State<Boolean> = _activeWindowDialog
@@ -35,7 +35,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
     fun loadAllUserCollections() {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
+                val user = _authRepo.getCurrentUserId()
                 if (user != null) {
                     _usersRepo.getUserCollections(userId = user).collect { response ->
                         when (response) {
@@ -63,7 +63,7 @@ class AllCollectionsScreenViewModel @Inject constructor(
     fun createNewUserCollection(name: String) {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getUserId()
+                val userId = _authRepo.getCurrentUserId()
                 if (userId != null) {
                     _recipesRepo.createNewCollection().collect { response ->
                         when (response) {

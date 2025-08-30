@@ -8,7 +8,7 @@ import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataM
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipesScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl,
+    private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepoImpl,
     private val _recipesRepo: RecipesRepoImpl
 ) : ViewModel() {
@@ -91,12 +91,12 @@ class RecipesScreenViewModel @Inject constructor(
         _collectionErrorMessage.value = null
     }
 
-    fun isUserAuthenticated() = _authRepo.isUserAuthenticatedInFirebase()
+    fun isUserAuthenticated() = _authRepo.isAuthorized()
 
     fun loadCollections() {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getUserId()
+                val userId = _authRepo.getCurrentUserId()
                 if (userId != null) {
                     _usersRepo.getUserCollections(userId).collect { response ->
                         when (response) {
@@ -124,7 +124,7 @@ class RecipesScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
+                val user = _authRepo.getCurrentUserId()
                 if (user != null) {
                     _recipesRepo.addRecipeToUserCollection(
                         user,
@@ -159,7 +159,7 @@ class RecipesScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, id: String, image : String) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
+                val user = _authRepo.getCurrentUserId()
                 if (user != null) {
                     _recipesRepo.addRecipeToUserCollection(
                         user,
@@ -215,7 +215,7 @@ class RecipesScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var collectionsData = listOf<CollectionDataModel>()
-                val user = _authRepo.getUserId()
+                val user = _authRepo.getCurrentUserId()
                 if (user != null) {
                     _usersRepo.getUserCollections(userId = user).collect { response ->
                         when (response) {

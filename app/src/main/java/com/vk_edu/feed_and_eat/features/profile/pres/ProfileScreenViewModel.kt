@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.login.pres.removeUserId
 import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl,
+    private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepoImpl,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class ProfileScreenViewModel @Inject constructor(
     fun loadProfileInfo() {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getUserId()
+                val userId = _authRepo.getCurrentUserId()
                 if (userId != null) {
                     _usersRepo.getUserData(userId).collect { response ->
                         when (response) {
@@ -51,9 +51,9 @@ class ProfileScreenViewModel @Inject constructor(
                         }
                     }
                 }
-                var nickname = _authRepo.getUserLogin()
+                var nickname = _authRepo.getCurrentUsername()
                 if (nickname == "") nickname = null
-                var email = _authRepo.getUserEmail()
+                var email = _authRepo.getCurrentEmail()
                 if (email == "") email = null
                 _profileState.value = _profileState.value.copy(
                     nickname = nickname,
@@ -92,7 +92,7 @@ class ProfileScreenViewModel @Inject constructor(
     fun updateUserProfile() {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getUserId()
+                val userId = _authRepo.getCurrentUserId()
                 if (userId != null) {
                     _usersRepo.updateUserData(
                         userId,

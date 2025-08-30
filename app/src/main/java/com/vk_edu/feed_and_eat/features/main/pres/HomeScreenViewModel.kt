@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepoImpl,
-    private val _authRepo: AuthRepoImpl,
+    private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepoImpl
 ) : ViewModel() {
     private val _largeCardData = mutableStateOf(RecipeCard())
@@ -223,7 +223,7 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var collectionsData = listOf<CollectionDataModel>()
-                val user = _authRepo.getUserId()
+                val user = _authRepo.getCurrentUserId()
                 if (user != null) {
                     currentUser = user
                     _usersRepo.getUserCollections(userId = user).collect { response ->
@@ -274,7 +274,7 @@ class HomeScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
+                val user = _authRepo.getCurrentUserId()
                 if (user != null) {
                     _recipesRepo.addRecipeToUserCollection(
                         user,
@@ -328,7 +328,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun checkUserChanged() {
-        val user = _authRepo.getUserId()
+        val user = _authRepo.getCurrentUserId()
         if (currentUser != null && currentUser != user) {
             getFavouriteRecipeIds()
         }

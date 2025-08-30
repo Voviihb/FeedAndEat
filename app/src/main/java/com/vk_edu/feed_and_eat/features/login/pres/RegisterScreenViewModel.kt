@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl,
+    private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepoImpl,
     private val _recipesRepo: RecipesRepoImpl,
     private val _preferencesManager: PreferencesManager
@@ -37,7 +37,7 @@ class RegisterScreenViewModel @Inject constructor(
         viewModelScope.launch {
             if (_registerFormState.value.password == _registerFormState.value.passwordControl) {
                 try {
-                    _authRepo.firebaseSignUp(
+                    _authRepo.signUp(
                         _registerFormState.value.email,
                         _registerFormState.value.password,
                         _registerFormState.value.login
@@ -45,12 +45,9 @@ class RegisterScreenViewModel @Inject constructor(
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
-                                val currentUserId = _authRepo.getUserId()
-                                if (currentUserId != null) {
-                                    writeUserId(_preferencesManager, currentUserId)
-                                    saveUserData()
-                                    navigateToRoute(BottomScreen.HomeScreen.route)
-                                }
+                                // Успешная регистрация - переходим на главный экран
+                                saveUserData()
+                                navigateToRoute(BottomScreen.HomeScreen.route)
                             }
 
                             is Response.Failure -> onError(response.e)
@@ -71,46 +68,8 @@ class RegisterScreenViewModel @Inject constructor(
 
     private fun saveUserData() {
         viewModelScope.launch {
-            try {
-                val userId = _authRepo.getUserId()
-                var favouritesCollectionId = ""
-                _recipesRepo.createNewCollection().collect { response ->
-                    when (response) {
-                        is Response.Loading -> _loading.value = true
-                        is Response.Success -> {
-                            favouritesCollectionId = response.data
-                        }
-
-                        is Response.Failure -> onError(response.e)
-                    }
-                }
-                if (userId != null) {
-                    val data = UserModel(
-                        userId = userId,
-                        collectionsIdList = listOf(
-                            CollectionDataModel(
-                                id = favouritesCollectionId,
-                                name = FAVOURITES
-                            )
-                        )
-                    )
-                    _usersRepo.saveUserData(userId, data).collect { response ->
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
-                                /* TODO add success flow */
-                            }
-
-                            is Response.Failure -> {
-                                onError(response.e)
-                            }
-                        }
-                    }
-                }
-
-            } catch (e: Exception) {
-                onError(e)
-            }
+            // Временно пропускаем создание коллекций при регистрации
+            // TODO: реализовать после создания RecipesRepoBackendImpl
             _loading.value = false
         }
     }
