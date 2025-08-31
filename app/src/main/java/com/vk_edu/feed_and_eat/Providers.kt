@@ -8,11 +8,14 @@ import com.vk_edu.feed_and_eat.features.login.data.AuthRepoBackendImpl
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoBackendImpl
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoBackendImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.vk_edu.feed_and_eat.network.api.UsersApi
+import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -43,4 +46,11 @@ object AppProviders {
         usersApi: UsersApi,
         @ApplicationContext context: Context
     ): UsersRepository = UsersRepoBackendImpl(usersApi, context)
+
+    @Provides
+    @Singleton
+    fun provideRecipesRepository(
+        recipesApi: RecipesApi,
+        @ApplicationContext context: Context
+    ): RecipesRepository = RecipesRepoBackendImpl(recipesApi, context)
 }

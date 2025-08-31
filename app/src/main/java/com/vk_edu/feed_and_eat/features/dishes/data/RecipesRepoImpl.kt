@@ -20,6 +20,7 @@ import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
@@ -161,6 +162,18 @@ class RecipesRepoImpl @Inject constructor(
             startDocument = snapshot.documents.ifEmpty { null }?.get(0),
             endDocument = snapshot.documents.ifEmpty { null }?.get(snapshot.size() - 1)
         )
+    }.flowOn(Dispatchers.IO)
+
+    override fun loadSearchRecipes(
+        filters: SearchFilters,
+        type: Type?,
+        offset: Int,
+        limit: Int
+    ): Flow<Response<PaginationResult>> = flow {
+        // Firebase не поддерживает offset напрямую, используем старый метод
+        loadSearchRecipes(filters, type, null).collect { response ->
+            emit(response)
+        }
     }.flowOn(Dispatchers.IO)
 
     override fun loadTags(): Flow<Response<List<Tag>>> = repoTryCatchBlock {

@@ -5,20 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl,
+    private val _recipesRepo: RecipesRepository,
     private val _authRepo: AuthRepository,
-    private val _usersRepo: UsersRepoImpl
+    private val _usersRepo: UsersRepository
 ) : ViewModel() {
     private val _largeCardData = mutableStateOf(RecipeCard())
     val largeCardData: State<RecipeCard> = _largeCardData
@@ -63,8 +63,12 @@ class HomeScreenViewModel @Inject constructor(
             try {
                 _recipesRepo.loadDailyRecipe().collect { response ->
                     when (response) {
-                        is Response.Loading -> _loading.value = true
+                        is Response.Loading -> {
+                            android.util.Log.d("HomeViewModel", "Loading daily recipe...")
+                            _loading.value = true
+                        }
                         is Response.Success -> {
+                            android.util.Log.d("HomeViewModel", "Daily recipe loaded: ${response.data?.name}")
                             if (response.data != null) {
                                 val fullRecipe = response.data
                                 _largeCardData.value = RecipeCard(
@@ -76,18 +80,23 @@ class HomeScreenViewModel @Inject constructor(
                                     rating = fullRecipe.rating,
                                     cooked = fullRecipe.cooked
                                 )
+                                android.util.Log.d("HomeViewModel", "Large card data set: ${_largeCardData.value.name}")
                             }
+                            _loading.value = false
                         }
 
                         is Response.Failure -> {
+                            android.util.Log.e("HomeViewModel", "Failed to load daily recipe", response.e)
                             onError(response.e)
+                            _loading.value = false
                         }
                     }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("HomeViewModel", "Exception in getLargeCardData", e)
                 onError(e)
+                _loading.value = false
             }
-            _loading.value = false
         }
     }
 
@@ -96,8 +105,12 @@ class HomeScreenViewModel @Inject constructor(
             try {
                 _recipesRepo.loadTopRatingRecipes().collect { response ->
                     when (response) {
-                        is Response.Loading -> _loading.value = true
+                        is Response.Loading -> {
+                            android.util.Log.d("HomeViewModel", "Loading top rating recipes...")
+                            _loading.value = true
+                        }
                         is Response.Success -> {
+                            android.util.Log.d("HomeViewModel", "Top rating recipes loaded: ${response.data.size} recipes")
                             _cardsDataOfRow1.value = response.data.map { fullRecipe ->
                                 RecipeCard(
                                     recipeId = fullRecipe.id ?: "",
@@ -109,17 +122,22 @@ class HomeScreenViewModel @Inject constructor(
                                     cooked = fullRecipe.cooked
                                 )
                             }
+                            android.util.Log.d("HomeViewModel", "Row1 cards set: ${_cardsDataOfRow1.value.size} cards")
+                            _loading.value = false
                         }
 
                         is Response.Failure -> {
+                            android.util.Log.e("HomeViewModel", "Failed to load top rating recipes", response.e)
                             onError(response.e)
+                            _loading.value = false
                         }
                     }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("HomeViewModel", "Exception in getCardsDataOfRow1", e)
                 onError(e)
+                _loading.value = false
             }
-            _loading.value = false
         }
     }
 

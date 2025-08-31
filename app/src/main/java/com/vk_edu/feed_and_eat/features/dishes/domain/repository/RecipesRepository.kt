@@ -30,6 +30,13 @@ interface RecipesRepository {
         documentSnapshot: DocumentSnapshot?
     ): Flow<Response<PaginationResult>>
 
+    fun loadSearchRecipes(
+        filters: SearchFilters,
+        type: Type?,
+        offset: Int,
+        limit: Int = 20
+    ): Flow<Response<PaginationResult>>
+
     fun loadTags(): Flow<Response<List<Tag>>>
 
     fun loadCollectionRecipesId(id: String): Flow<Response<CollectionRecipes?>>

@@ -9,12 +9,12 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -25,9 +25,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl,
+    private val _recipesRepo: RecipesRepository,
     private val _authRepo: AuthRepository,
-    private val _usersRepo: UsersRepoImpl
+    private val _usersRepo: UsersRepository
 ) : ViewModel() {
     val cardsDataPager: Flow<PagingData<RecipeCard>> = Pager(PagingConfig(pageSize = LIMIT)) {
         SearchPagingSource(::searchRecipes, LIMIT)
@@ -292,12 +292,13 @@ class SearchScreenViewModel @Inject constructor(
 
     private suspend fun searchRecipes(pagePointer: PagePointer): CardsAndSnapshots {
         val result = viewModelScope.async {
-            var result = CardsAndSnapshots(listOf(), null, null)
+            var result = CardsAndSnapshots(listOf())
             try {
                 _recipesRepo.loadSearchRecipes(
                     searchFilters,
                     if (refreshFlag) null else pagePointer.type,
-                    pagePointer.documentSnapshot
+                    pagePointer.offset,
+                    20
                 ).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
@@ -315,7 +316,9 @@ class SearchScreenViewModel @Inject constructor(
                                     )
                                 },
                                 response.data.startDocument,
-                                response.data.endDocument
+                                response.data.endDocument,
+                                response.data.currentOffset,
+                                response.data.hasMore
                             )
                         }
 

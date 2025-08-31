@@ -11,19 +11,19 @@ class SearchPagingSource(
 ): PagingSource<PagePointer, RecipeCard>() {
     override suspend fun load(params: LoadParams<PagePointer>): LoadResult<PagePointer, RecipeCard> {
         return try {
-            val page = params.key ?: PagePointer(null, 1, null)
+            val page = params.key ?: PagePointer(null, 1, null, 0)
             val response = searchRecipes(page)
 
             LoadResult.Page(
                 data = response.cards,
-                prevKey = if (page.number <= 1 || response.firstDocument == null)
+                prevKey = if (page.number <= 1)
                     null
                 else
-                    PagePointer(Type.EXCLUDED_LAST, page.number - 1, response.firstDocument),
-                nextKey = if (response.cards.size < limit || response.lastDocument == null)
+                    PagePointer(Type.EXCLUDED_LAST, page.number - 1, null, maxOf(0, response.currentOffset - limit)),
+                nextKey = if (!response.hasMore)
                     null
                 else
-                    PagePointer(Type.EXCLUDED_FIRST, page.number + 1, response.lastDocument)
+                    PagePointer(Type.EXCLUDED_FIRST, page.number + 1, null, response.currentOffset + limit)
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -33,10 +33,10 @@ class SearchPagingSource(
     override fun getRefreshKey(state: PagingState<PagePointer, RecipeCard>): PagePointer? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.let {
-                PagePointer(Type.INCLUDED_FIRST, it.number + 1, it.documentSnapshot)
+                PagePointer(Type.INCLUDED_FIRST, it.number + 1, null, it.offset)
             }
             ?: state.closestPageToPosition(anchorPosition)?.nextKey?.let {
-                PagePointer(Type.INCLUDED_LAST, it.number - 1, it.documentSnapshot)
+                PagePointer(Type.INCLUDED_LAST, it.number - 1, null, it.offset)
             }
         }
     }

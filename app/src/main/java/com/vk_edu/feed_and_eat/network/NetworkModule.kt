@@ -5,6 +5,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.network.api.AuthApi
 import com.vk_edu.feed_and_eat.network.api.UsersApi
+import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -88,4 +89,9 @@ object NetworkModule {
     @Singleton
     fun provideUsersApi(retrofit: Retrofit): UsersApi =
         retrofit.create(UsersApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRecipesApi(retrofit: Retrofit): RecipesApi =
+        retrofit.create(RecipesApi::class.java)
 }
