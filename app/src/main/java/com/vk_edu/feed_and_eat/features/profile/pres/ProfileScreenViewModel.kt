@@ -10,8 +10,9 @@ import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.login.pres.removeUserId
 import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
+import com.vk_edu.feed_and_eat.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,10 +20,19 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepository,
-    private val _usersRepo: UsersRepoImpl,
+    private val _usersRepo: UsersRepository,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
-    private val _profileState = mutableStateOf(Profile(null, null, null, ""))
+
+    private fun makeFullUrl(relativeUrl: String?): String? {
+        if (relativeUrl == null) return null
+        return if (relativeUrl.startsWith("http")) {
+            relativeUrl
+        } else {
+            BuildConfig.API_BASE_URL.trimEnd('/') + relativeUrl
+        }
+    }
+    private val _profileState = mutableStateOf(Profile(null, null, null, "", false, "light"))
     val profileState: State<Profile> = _profileState
 
     private var _user = UserModel()
@@ -40,27 +50,23 @@ class ProfileScreenViewModel @Inject constructor(
     fun loadProfileInfo() {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getCurrentUserId()
-                if (userId != null) {
-                    _usersRepo.getUserData(userId).collect { response ->
+                _usersRepo.getUserData("").collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
-                            is Response.Success -> _user = response.data ?: UserModel()
-
+                            is Response.Success -> {
+                                _user = response.data ?: UserModel()
+                                _profileState.value = _profileState.value.copy(
+                                    nickname = _user.username,
+                                    email = _user.email,
+                                    avatar = _user.avatarUrl,
+                                    aboutMe = _user.aboutMeData ?: "",
+                                    isPrivate = _user.isProfilePrivate,
+                                    theme = _user.themeSettings
+                                )
+                            }
                             is Response.Failure -> onError(response.e)
                         }
                     }
-                }
-                var nickname = _authRepo.getCurrentUsername()
-                if (nickname == "") nickname = null
-                var email = _authRepo.getCurrentEmail()
-                if (email == "") email = null
-                _profileState.value = _profileState.value.copy(
-                    nickname = nickname,
-                    email = email,
-                    avatar = _user.avatarUrl,
-                    aboutMe = _user.aboutMeData ?: ""
-                )
             } catch (e: Exception) {
                 onError(e)
             }
@@ -92,25 +98,37 @@ class ProfileScreenViewModel @Inject constructor(
     fun updateUserProfile() {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getCurrentUserId()
-                if (userId != null) {
-                    _usersRepo.updateUserData(
-                        userId,
-                        profileState.value,
-                        imagePath = imagePath.value
-                    )
-                        .collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    /* TODO add success flow */
-                                }
-
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
+                _usersRepo.updateUserData(
+                    "", // API определит пользователя по токену
+                    profileState.value,
+                    imagePath = imagePath.value
+                ).collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            val userDto = response.data
+                            if (userDto != null) {
+                                _user = UserModel(
+                                    userId = userDto.id,
+                                    email = userDto.email,
+                                    username = userDto.username,
+                                    avatarUrl = userDto.avatarUrl,
+                                    aboutMeData = userDto.aboutMe,
+                                    isProfilePrivate = userDto.isProfilePrivate,
+                                    themeSettings = userDto.themeSettings
+                                )
+                                _profileState.value = _profileState.value.copy(
+                                    avatar = makeFullUrl(userDto.avatarUrl),
+                                    aboutMe = userDto.aboutMe ?: "",
+                                    isPrivate = userDto.isProfilePrivate,
+                                    theme = userDto.themeSettings
+                                )
                             }
                         }
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 onError(e)

@@ -4,6 +4,7 @@ import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.network.api.AuthApi
+import com.vk_edu.feed_and_eat.network.api.UsersApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -82,4 +83,9 @@ object NetworkModule {
     @Singleton
     fun provideAuthApi(retrofit: Retrofit): AuthApi =
         retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUsersApi(retrofit: Retrofit): UsersApi =
+        retrofit.create(UsersApi::class.java)
 }

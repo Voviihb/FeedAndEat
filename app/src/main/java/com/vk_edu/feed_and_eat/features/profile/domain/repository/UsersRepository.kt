@@ -5,6 +5,7 @@ import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataM
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.pres.Profile
+import com.vk_edu.feed_and_eat.network.dto.UserDto
 import kotlinx.coroutines.flow.Flow
 
 interface UsersRepository {
@@ -12,9 +13,9 @@ interface UsersRepository {
 
     fun getUserCollections(userId: String): Flow<Response<List<CollectionDataModel>?>>
 
-    fun saveUserData(userId: String, userData: UserModel): Flow<Response<Void>>
+    fun saveUserData(userId: String, userData: UserModel): Flow<Response<UserDto>>
 
-    fun updateUserData(userId: String, userData: Profile, imagePath: Uri?): Flow<Response<Void>>
+    fun updateUserData(userId: String, userData: Profile, imagePath: Uri?): Flow<Response<UserDto>>
 
     fun addNewUserCollection(userId: String, collection: CollectionDataModel): Flow<Response<Void>>
 

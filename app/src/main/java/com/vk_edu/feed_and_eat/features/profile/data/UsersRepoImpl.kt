@@ -11,6 +11,7 @@ import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import com.vk_edu.feed_and_eat.features.profile.pres.Profile
+import com.vk_edu.feed_and_eat.network.dto.UserDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -47,8 +48,19 @@ class UsersRepoImpl @Inject constructor(
     override fun saveUserData(
         userId: String,
         userData: UserModel
-    ): Flow<Response<Void>> = repoTryCatchBlock {
+    ): Flow<Response<UserDto>> = repoTryCatchBlock {
         db.collection(USERS_COLLECTION).document(userId).set(userData).await()
+
+        UserDto(
+            id = userData.userId,
+            email = userData.email,
+            username = userData.username,
+            isActive = true,
+            avatarUrl = userData.avatarUrl,
+            aboutMe = userData.aboutMeData,
+            isProfilePrivate = userData.isProfilePrivate,
+            themeSettings = userData.themeSettings
+        )
     }.flowOn(Dispatchers.IO)
 
     /**
@@ -59,7 +71,7 @@ class UsersRepoImpl @Inject constructor(
         userId: String,
         userData: Profile,
         imagePath: Uri?
-    ): Flow<Response<Void>> = repoTryCatchBlock {
+    ): Flow<Response<UserDto>> = repoTryCatchBlock {
         var imageUrl: String? = userData.avatar
         if (imagePath != null) {
             val imgRef = storage.getReference(USERS_AVATARS).child(userId)
@@ -73,6 +85,17 @@ class UsersRepoImpl @Inject constructor(
             ABOUT_ME_VALUE to userData.aboutMe,
         )
         db.collection(USERS_COLLECTION).document(userId).update(data).await()
+
+        UserDto(
+            id = userId,
+            email = "",
+            username = "",
+            isActive = true,
+            avatarUrl = imageUrl,
+            aboutMe = userData.aboutMe,
+            isProfilePrivate = userData.isPrivate,
+            themeSettings = userData.theme
+        )
     }.flowOn(Dispatchers.IO)
 
     /**

@@ -6,10 +6,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.vk_edu.feed_and_eat.features.login.data.AuthRepoBackendImpl
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
+import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoBackendImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.vk_edu.feed_and_eat.network.api.UsersApi
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -33,4 +36,11 @@ object AppProviders {
     @Provides
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideUsersRepository(
+        usersApi: UsersApi,
+        @ApplicationContext context: Context
+    ): UsersRepository = UsersRepoBackendImpl(usersApi, context)
 }
