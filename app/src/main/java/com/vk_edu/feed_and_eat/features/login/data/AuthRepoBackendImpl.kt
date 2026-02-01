@@ -31,7 +31,7 @@ class AuthRepoBackendImpl @Inject constructor(
 
     override fun signUp(email: String, password: String, username: String): Flow<Response<Unit>> =
         repoTryCatchBlock {
-            val res = api.register(RegisterBody(email, username, password))
+            val res = api.register(RegisterBody(email, password, username))
             tokenStorage.saveTokens(res.access, res.refresh ?: "")
         }.flowOn(Dispatchers.IO)
 
