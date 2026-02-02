@@ -241,30 +241,30 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var collectionsData = listOf<CollectionDataModel>()
-                val user = _authRepo.getCurrentUserId()
-                if (user != null) {
-                    currentUser = user
-                    _usersRepo.getUserCollections(userId = user).collect { response ->
+                android.util.Log.d("HomeViewModel", "Loading user collections...")
+                _usersRepo.getUserCollections().collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 if (response.data != null) {
                                     collectionsData = response.data
+                                    android.util.Log.d("HomeViewModel", "Collections loaded: ${response.data.map { it.name }}")
                                 }
                             }
 
                             is Response.Failure -> {
+                                android.util.Log.e("HomeViewModel", "Failed to load collections", response.e)
                                 onError(response.e)
                             }
                         }
                     }
 
-                    val favouritesId = collectionsData.filter {
-                        it.name == FAVOURITES
-                    }[0].id
-                    _favouritesCollectionId.value = favouritesId
+                val favouritesCollection = collectionsData.find { it.name == FAVOURITES }
+                val favouritesId = favouritesCollection?.id
+                _favouritesCollectionId.value = favouritesId
+                android.util.Log.d("HomeViewModel", "Found favourites collection: $favouritesId")
 
-                    if (favouritesId != null) {
+                if (favouritesId != null) {
                         _recipesRepo.loadCollectionRecipesId(id = favouritesId)
                             .collect { response ->
                                 when (response) {
@@ -272,17 +272,21 @@ class HomeScreenViewModel @Inject constructor(
                                     is Response.Success -> {
                                         if (response.data != null) {
                                             _favouriteRecipeIds.value = response.data.recipeIds
+                                            android.util.Log.d("HomeViewModel", "Loaded favourite recipe IDs: ${response.data.recipeIds}")
                                         }
                                     }
 
                                     is Response.Failure -> {
+                                        android.util.Log.e("HomeViewModel", "Failed to load favourite recipes", response.e)
                                         onError(response.e)
                                     }
                                 }
                             }
-                    }
+                } else {
+                    android.util.Log.w("HomeViewModel", "No Избранное collection found!")
                 }
             } catch (e: Exception) {
+                android.util.Log.e("HomeViewModel", "Exception in getFavouriteRecipeIds", e)
                 onError(e)
             }
             _loading.value = false
@@ -292,30 +296,32 @@ class HomeScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getCurrentUserId()
-                if (user != null) {
-                    _recipesRepo.addRecipeToUserCollection(
-                        user,
+                android.util.Log.d("HomeViewModel", "Adding recipe ${recipe.recipeId} to collection $collectionId")
+                _recipesRepo.addRecipeToUserCollection(
                         collectionId,
                         recipe.recipeId,
                         recipe.image
                     ).collect { response ->
                         when (response) {
-                            is Response.Loading -> {}
+                            is Response.Loading -> {
+                                android.util.Log.d("HomeViewModel", "Adding to collection - Loading...")
+                            }
                             is Response.Success -> {
+                                android.util.Log.d("HomeViewModel", "Successfully added to collection!")
                                 val favouriteIds = _favouriteRecipeIds.value.toMutableList()
                                 favouriteIds.add(recipe.recipeId)
                                 _favouriteRecipeIds.value = favouriteIds
                             }
 
                             is Response.Failure -> {
+                                android.util.Log.e("HomeViewModel", "Failed to add to collection", response.e)
                                 onError(response.e)
                             }
                         }
                     }
-                }
 
             } catch (e: Exception) {
+                android.util.Log.e("HomeViewModel", "Exception in addRecipeToUserCollection", e)
                 onError(e)
             }
         }
@@ -362,6 +368,6 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val FAVOURITES = "Favourites"
+        private const val FAVOURITES = "Избранное"
     }
 }

@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,8 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepository,
-    private val _usersRepo: UsersRepoImpl,
-    private val _recipesRepo: RecipesRepoImpl,
+    private val _usersRepo: UsersRepository,
+    private val _recipesRepo: RecipesRepository,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
@@ -108,6 +108,6 @@ class RegisterScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val FAVOURITES = "Favourites"
+        private const val FAVOURITES = "Избранное"
     }
 }

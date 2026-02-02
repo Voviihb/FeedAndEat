@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.Flow
 interface UsersRepository {
     fun getUserData(userId: String): Flow<Response<UserModel?>>
 
-    fun getUserCollections(userId: String): Flow<Response<List<CollectionDataModel>?>>
+    fun getUserCollections(): Flow<Response<List<CollectionDataModel>?>>
 
     fun saveUserData(userId: String, userData: UserModel): Flow<Response<UserDto>>
 
-    fun updateUserData(userId: String, userData: Profile, imagePath: Uri?): Flow<Response<UserDto>>
+    fun updateUserData(userData: Profile, imagePath: Uri?): Flow<Response<UserDto>>
 
-    fun addNewUserCollection(userId: String, collection: CollectionDataModel): Flow<Response<Void>>
+    fun addNewUserCollection(collection: CollectionDataModel): Flow<Response<Void>>
 
 }

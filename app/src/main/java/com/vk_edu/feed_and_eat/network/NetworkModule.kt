@@ -6,6 +6,7 @@ import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.network.api.AuthApi
 import com.vk_edu.feed_and_eat.network.api.UsersApi
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
+import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.firstOrNull
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    @OptIn(ExperimentalSerializationApi::class)
     @Provides
     @Singleton
     fun provideJson(): Json = Json {
@@ -94,4 +96,9 @@ object NetworkModule {
     @Singleton
     fun provideRecipesApi(retrofit: Retrofit): RecipesApi =
         retrofit.create(RecipesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCollectionsApi(retrofit: Retrofit): CollectionsApi =
+        retrofit.create(CollectionsApi::class.java)
 }

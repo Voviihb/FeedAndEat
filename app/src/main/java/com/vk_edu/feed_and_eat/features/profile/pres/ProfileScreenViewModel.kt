@@ -99,7 +99,6 @@ class ProfileScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _usersRepo.updateUserData(
-                    "", // API определит пользователя по токену
                     profileState.value,
                     imagePath = imagePath.value
                 ).collect { response ->

@@ -19,6 +19,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
+import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
 import com.vk_edu.feed_and_eat.network.dto.IngredientDto
 import com.vk_edu.feed_and_eat.network.dto.InstructionDto
 import com.vk_edu.feed_and_eat.network.dto.NutrientsDto
@@ -39,6 +40,7 @@ import javax.inject.Singleton
 @Singleton
 class RecipesRepoBackendImpl @Inject constructor(
     private val recipesApi: RecipesApi,
+    private val collectionsApi: CollectionsApi,
     private val context: Context,
 ) : RecipesRepository {
 
@@ -247,22 +249,21 @@ class RecipesRepoBackendImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun loadCollectionRecipesId(id: String): Flow<Response<CollectionRecipes?>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
-        null
+        val collectionDto = collectionsApi.getCollection(id)
+        CollectionRecipes(recipeIds = collectionDto.recipeIds)
     }.flowOn(Dispatchers.IO)
 
     override fun loadCollectionRecipesCards(id: String): Flow<Response<List<Recipe>?>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
-        emptyList<Recipe>()
+        val recipesDto = collectionsApi.getCollectionRecipes(id)
+        recipesDto.map { dto -> convertDtoToRecipe(dto) }
     }.flowOn(Dispatchers.IO)
 
     override fun addRecipeToUserCollection(
-        userId: String,
         collectionId: String,
         recipeId: String,
         image: String?,
     ): Flow<Response<Void>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
+        collectionsApi.addRecipeToCollection(collectionId, recipeId)
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 
@@ -270,7 +271,7 @@ class RecipesRepoBackendImpl @Inject constructor(
         collectionId: String,
         recipeId: String,
     ): Flow<Response<Void>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
+        collectionsApi.removeRecipeFromCollection(collectionId, recipeId)
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 

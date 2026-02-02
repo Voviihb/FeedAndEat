@@ -44,7 +44,6 @@ interface RecipesRepository {
     fun loadCollectionRecipesCards(id: String): Flow<Response<List<Recipe>?>>
 
     fun addRecipeToUserCollection(
-        userId: String,
         collectionId: String,
         recipeId: String,
         image: String? = null

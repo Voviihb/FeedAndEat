@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CongratulationsScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepository,
-    private val _recipesRepo: RecipesRepoImpl
+    private val _recipesRepo: RecipesRepository
 ) : ViewModel() {
     private val _reviewState = mutableStateOf(Review("", 0.0))
     val reviewState: State<Review> = _reviewState

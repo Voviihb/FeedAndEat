@@ -12,6 +12,8 @@ import com.vk_edu.feed_and_eat.features.profile.pres.Profile
 import com.vk_edu.feed_and_eat.network.api.UsersApi
 import com.vk_edu.feed_and_eat.network.dto.ProfileUpdateDto
 import com.vk_edu.feed_and_eat.network.dto.UserDto
+import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
+import com.vk_edu.feed_and_eat.features.network.dto.CreateCollectionBody
 import com.vk_edu.feed_and_eat.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +28,7 @@ import javax.inject.Singleton
 @Singleton
 class UsersRepoBackendImpl @Inject constructor(
     private val usersApi: UsersApi,
+    private val collectionsApi: CollectionsApi,
     private val context: Context
 ) : UsersRepository {
 
@@ -57,9 +60,15 @@ class UsersRepoBackendImpl @Inject constructor(
         )
     }.flowOn(Dispatchers.IO)
 
-    override fun getUserCollections(userId: String): Flow<Response<List<CollectionDataModel>?>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
-        emptyList<CollectionDataModel>()
+    override fun getUserCollections(): Flow<Response<List<CollectionDataModel>?>> = repoTryCatchBlock {
+        val collectionsDto = collectionsApi.getMyCollections()
+        collectionsDto.map { dto ->
+            CollectionDataModel(
+                id = dto.id,
+                name = dto.name,
+                picture = dto.pictureUrl?.let { makeFullUrl(it) }
+            )
+        }
     }.flowOn(Dispatchers.IO)
 
     override fun saveUserData(userId: String, userData: UserModel): Flow<Response<UserDto>> = repoTryCatchBlock {
@@ -72,7 +81,7 @@ class UsersRepoBackendImpl @Inject constructor(
         usersApi.updateMyProfile(updateDto)
     }.flowOn(Dispatchers.IO)
 
-    override fun updateUserData(userId: String, userData: Profile, imagePath: Uri?): Flow<Response<UserDto>> = repoTryCatchBlock {
+    override fun updateUserData(userData: Profile, imagePath: Uri?): Flow<Response<UserDto>> = repoTryCatchBlock {
         var resultUserDto: UserDto
         
         // Сначала загружаем аватар, если есть
@@ -105,8 +114,8 @@ class UsersRepoBackendImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     @Suppress("UNCHECKED_CAST")
-    override fun addNewUserCollection(userId: String, collection: CollectionDataModel): Flow<Response<Void>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
+    override fun addNewUserCollection(collection: CollectionDataModel): Flow<Response<Void>> = repoTryCatchBlock {
+        collectionsApi.createCollection(CreateCollectionBody(name = collection.name))
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 }

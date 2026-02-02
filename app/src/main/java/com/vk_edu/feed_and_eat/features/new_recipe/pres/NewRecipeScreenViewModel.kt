@@ -5,7 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewRecipeScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl,
+    private val _recipesRepo: RecipesRepository,
     private val _authRepo: AuthRepository,
     private val _newRecipeRepo: NewRecipeRepoImpl
 ) : ViewModel() {
@@ -135,7 +135,6 @@ class NewRecipeScreenViewModel @Inject constructor(
                                             is Response.Loading -> _loading.value = true
                                             is Response.Success -> {
                                                 _recipesRepo.addRecipeToUserCollection(
-                                                    userId = user,
                                                     collectionId = collectionId,
                                                     recipeId = recipeId,
                                                     image = response1.data?.image
