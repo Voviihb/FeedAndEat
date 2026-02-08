@@ -1,6 +1,6 @@
 package com.vk_edu.feed_and_eat.network.api
 
-import com.vk_edu.feed_and_eat.network.dto.RecipeCreateDto
+import com.vk_edu.feed_and_eat.features.network.dto.CreateRecipeDto
 import com.vk_edu.feed_and_eat.network.dto.RecipeDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -14,8 +14,8 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RecipesApi {
-    @POST("recipes")
-    suspend fun createRecipe(@Body recipe: RecipeCreateDto): RecipeDto
+    @POST("recipes/")
+    suspend fun createRecipe(@Body recipe: CreateRecipeDto): RecipeDto
 
     @GET("recipes/{recipe_id}")
     suspend fun getRecipe(@Path("recipe_id") recipeId: String): RecipeDto
@@ -23,7 +23,7 @@ interface RecipesApi {
     @PUT("recipes/{recipe_id}")
     suspend fun updateRecipe(
         @Path("recipe_id") recipeId: String,
-        @Body recipe: RecipeCreateDto
+        @Body recipe: CreateRecipeDto
     ): RecipeDto
 
     @DELETE("recipes/{recipe_id}")

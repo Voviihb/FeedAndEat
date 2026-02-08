@@ -7,6 +7,7 @@ import com.vk_edu.feed_and_eat.network.api.AuthApi
 import com.vk_edu.feed_and_eat.network.api.UsersApi
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
+import com.vk_edu.feed_and_eat.features.network.api.TagsApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,4 +102,9 @@ object NetworkModule {
     @Singleton
     fun provideCollectionsApi(retrofit: Retrofit): CollectionsApi =
         retrofit.create(CollectionsApi::class.java)
+    
+    @Provides
+    @Singleton
+    fun provideTagsApi(retrofit: Retrofit): TagsApi =
+        retrofit.create(TagsApi::class.java)
 }

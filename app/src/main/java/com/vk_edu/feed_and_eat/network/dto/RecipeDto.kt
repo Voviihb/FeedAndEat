@@ -1,23 +1,27 @@
 package com.vk_edu.feed_and_eat.network.dto
 
+import android.annotation.SuppressLint
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class InstructionDto(
     val paragraph: String,
     val timers: List<TimerDto>? = null
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class TimerDto(
     val type: String = "",
-    @SerialName("lower_limit") val lowerLimit: Int? = null,
-    @SerialName("upper_limit") val upperLimit: Int? = null,
+    val lowerLimit: Int? = null,
+    val upperLimit: Int? = null,
     val number: Int? = null,
     val id: String? = null
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class IngredientDto(
     val name: String,
@@ -25,6 +29,7 @@ data class IngredientDto(
     val unit: String
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class NutrientsDto(
     @SerialName("Calories") val calories: Double? = null,
@@ -34,12 +39,14 @@ data class NutrientsDto(
     @SerialName("Carbohydrates") val carbohydrates: Double? = null
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class ServingsDto(
     val amount: Int? = null,
     val weight: Int? = null
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class RecipeDto(
     val id: String,
@@ -48,7 +55,7 @@ data class RecipeDto(
     @SerialName("image_url") val imageUrl: String? = null,
     val instructions: List<InstructionDto>,
     val servings: ServingsDto? = null,
-    val ingredients: List<IngredientDto>,
+    val ingredients: List<IngredientDto>? = null,
     val tags: List<String>? = null,
     val nutrients: NutrientsDto? = null,
     val rating: Double = 0.0,
@@ -56,17 +63,19 @@ data class RecipeDto(
     @SerialName("created_at") val createdAt: String
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class RecipeCreateDto(
     val name: String,
     @SerialName("image_url") val imageUrl: String? = null,
     val instructions: List<InstructionDto>,
     val servings: ServingsDto? = null,
-    val ingredients: List<IngredientDto>,
+    val ingredients: List<IngredientDto>? = null,
     val tags: List<String>? = null,
     val nutrients: NutrientsDto? = null
 )
 
+@SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class SearchParamsDto(
     val q: String? = null,

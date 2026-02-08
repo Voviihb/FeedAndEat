@@ -101,6 +101,7 @@ class SearchScreenViewModel @Inject constructor(
                     }
                 )
 
+                setRefreshFlag()
                 _reloadData.value = true
             } catch (e: Exception) {
                 onError(e)
@@ -143,6 +144,7 @@ class SearchScreenViewModel @Inject constructor(
                         ?.toDouble() ?: 10e9
                 )
 
+                setRefreshFlag()
                 _reloadData.value = true
             } catch (e: Exception) {
                 onError(e)
@@ -303,7 +305,7 @@ class SearchScreenViewModel @Inject constructor(
                 _recipesRepo.loadSearchRecipes(
                     searchFilters,
                     if (refreshFlag) null else pagePointer.type,
-                    pagePointer.offset,
+                    if (refreshFlag) 0 else pagePointer.offset,
                     20
                 ).collect { response ->
                     when (response) {
@@ -321,9 +323,7 @@ class SearchScreenViewModel @Inject constructor(
                                         cooked = fullRecipe.cooked
                                     )
                                 },
-                                response.data.startDocument,
-                                response.data.endDocument,
-                                response.data.currentOffset,
+                                if (refreshFlag) 0 else response.data.currentOffset,
                                 response.data.hasMore
                             )
                         }

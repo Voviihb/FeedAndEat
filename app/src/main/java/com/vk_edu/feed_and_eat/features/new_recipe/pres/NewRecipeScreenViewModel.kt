@@ -12,7 +12,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoImpl
+import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
 import com.vk_edu.feed_and_eat.features.search.pres.Nutrient
 import com.vk_edu.feed_and_eat.features.search.pres.TagChecking
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class NewRecipeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepository,
     private val _authRepo: AuthRepository,
-    private val _newRecipeRepo: NewRecipeRepoImpl
+    private val _newRecipeRepo: NewRecipeRepository
 ) : ViewModel() {
     private val _name = mutableStateOf("")
     val name: State<String> = _name
@@ -99,32 +99,47 @@ class NewRecipeScreenViewModel @Inject constructor(
                                     Timer(
                                         type = RANGE,
                                         lowerLimit = timer.upperLimit,
-                                        upperLimit = timer.lowerLimit
+                                        upperLimit = timer.lowerLimit,
+                                        number = null,
+                                        id = timer.id
                                     )
                                 else if (timer.lowerLimit == timer.upperLimit)
-                                    Timer(type = CONSTANT, number = timer.upperLimit)
+                                    Timer(
+                                        type = CONSTANT, 
+                                        number = timer.upperLimit,
+                                        lowerLimit = null,
+                                        upperLimit = null,
+                                        id = timer.id
+                                    )
                                 else
                                     Timer(
                                         type = RANGE,
                                         lowerLimit = timer.lowerLimit,
-                                        upperLimit = timer.upperLimit
+                                        upperLimit = timer.upperLimit,
+                                        number = null,
+                                        id = timer.id
                                     )
                             } else
-                                Timer(type = CONSTANT, number = timer.number)
+                                Timer(
+                                    type = CONSTANT, 
+                                    number = timer.number,
+                                    lowerLimit = null,
+                                    upperLimit = null,
+                                    id = timer.id
+                                )
                         }
                     )
                 }
-                val user = _authRepo.getCurrentUserId()
-                if (user != null) {
-                    _newRecipeRepo.addNewRecipe(
-                        user = user,
-                        name = _name.value,
-                        imagePath = _imagePath.value,
-                        instructions = newSteps,
-                        tags = _tags.value.filter { it.ckecked }.map { it.name },
-                        nutrients = _nutrients.value,
-                        servings = _servings.value
-                    ).collect { response ->
+
+                _newRecipeRepo.addNewRecipe(
+                    user = "",
+                    name = _name.value,
+                    imagePath = _imagePath.value,
+                    instructions = newSteps,
+                    tags = _tags.value.filter { it.ckecked }.map { it.name },
+                    nutrients = _nutrients.value,
+                    servings = _servings.value
+                ).collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
@@ -165,7 +180,6 @@ class NewRecipeScreenViewModel @Inject constructor(
                             }
                         }
                     }
-                }
             } catch (e: Exception) {
                 onError(e)
             }
@@ -243,9 +257,9 @@ class NewRecipeScreenViewModel @Inject constructor(
         actualTimers.add(
             Timer(
                 type = CONSTANT,
-                number = 0,
-                lowerLimit = 0,
-                upperLimit = 0
+                number = 5,
+                lowerLimit = null,
+                upperLimit = null
             )
         )
         _currentStep.value = _currentStep.value.copy(
@@ -255,9 +269,24 @@ class NewRecipeScreenViewModel @Inject constructor(
 
     fun changeTimerType(index: Int) {
         val actualTimers = _currentStep.value.timers?.toMutableList() ?: mutableListOf()
-        actualTimers[index] = actualTimers[index].copy(
-            type = if (actualTimers[index].type == CONSTANT) RANGE else CONSTANT
-        )
+        val currentTimer = actualTimers[index]
+        actualTimers[index] = if (currentTimer.type == CONSTANT) {
+            Timer(
+                type = RANGE,
+                number = null,
+                lowerLimit = 5,
+                upperLimit = 10,
+                id = currentTimer.id
+            )
+        } else {
+            Timer(
+                type = CONSTANT,
+                number = 5,
+                lowerLimit = null,
+                upperLimit = null,
+                id = currentTimer.id
+            )
+        }
         _currentStep.value = _currentStep.value.copy(
             timers = actualTimers
         )

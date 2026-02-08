@@ -1,7 +1,6 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
 import android.content.Context
-import com.google.firebase.firestore.DocumentSnapshot
 import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionRecipes
@@ -20,6 +19,7 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesReposito
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
+import com.vk_edu.feed_and_eat.features.network.api.TagsApi
 import com.vk_edu.feed_and_eat.network.dto.IngredientDto
 import com.vk_edu.feed_and_eat.network.dto.InstructionDto
 import com.vk_edu.feed_and_eat.network.dto.NutrientsDto
@@ -41,6 +41,7 @@ import javax.inject.Singleton
 class RecipesRepoBackendImpl @Inject constructor(
     private val recipesApi: RecipesApi,
     private val collectionsApi: CollectionsApi,
+    private val tagsApi: TagsApi,
     private val context: Context,
 ) : RecipesRepository {
 
@@ -75,13 +76,23 @@ class RecipesRepoBackendImpl @Inject constructor(
                     Instruction(
                         paragraph = instructionDto.paragraph,
                         timers = instructionDto.timers?.map { timerDto ->
-                            Timer(
-                                type = timerDto.type,
-                                lowerLimit = timerDto.lowerLimit,
-                                upperLimit = timerDto.upperLimit,
-                                number = timerDto.number,
-                                id = timerDto.id ?: UUID.randomUUID().toString()
-                            )
+                            if (timerDto.type == "constant") {
+                                Timer(
+                                    type = timerDto.type,
+                                    number = timerDto.number ?: 5,
+                                    lowerLimit = null,
+                                    upperLimit = null,
+                                    id = timerDto.id ?: UUID.randomUUID().toString()
+                                )
+                            } else {
+                                Timer(
+                                    type = timerDto.type,
+                                    number = null,
+                                    lowerLimit = timerDto.lowerLimit ?: 1,
+                                    upperLimit = timerDto.upperLimit ?: 5,
+                                    id = timerDto.id ?: UUID.randomUUID().toString()
+                                )
+                            }
                         }
                     )
                 },
@@ -91,13 +102,13 @@ class RecipesRepoBackendImpl @Inject constructor(
                         weight = servingsDto.weight
                     )
                 },
-                ingredients = dto.ingredients.map { ingredientDto ->
+                ingredients = dto.ingredients?.map { ingredientDto ->
                     Ingredient(
                         name = ingredientDto.name,
                         amount = ingredientDto.amount,
                         unit = ingredientDto.unit
                     )
-                },
+                } ?: emptyList(),
                 tags = dto.tags,
                 nutrients = dto.nutrients?.let { nutrientsDto ->
                     Nutrients(
@@ -116,9 +127,6 @@ class RecipesRepoBackendImpl @Inject constructor(
                 created = createdDate
             )
         } catch (e: Exception) {
-            // Логируем ошибку конвертации
-            android.util.Log.e("RecipesRepo", "Error converting DTO to Recipe: ${dto.name}", e)
-            // Возвращаем базовый рецепт с минимальными данными
             return Recipe(
                 id = dto.id,
                 name = dto.name,
@@ -169,44 +177,6 @@ class RecipesRepoBackendImpl @Inject constructor(
         recipes.map { convertDtoToRecipe(it) }
     }.flowOn(Dispatchers.IO)
 
-    override fun loadSearchRecipes(
-        filters: SearchFilters,
-        type: Type?,
-        documentSnapshot: DocumentSnapshot?,
-    ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
-        // Для совместимости с Firebase - используем offset = 0
-        val offset = 0
-
-        val recipes = recipesApi.searchRecipes(
-            query = filters.startsWith.takeIf { it.isNotBlank() },
-            caloriesMin = filters.caloriesMin.takeIf { it > 0.0 },
-            caloriesMax = filters.caloriesMax.takeIf { it < 10e9 },
-            proteinMin = filters.proteinMin.takeIf { it > 0.0 },
-            proteinMax = filters.proteinMax.takeIf { it < 10e9 },
-            fatMin = filters.fatMin.takeIf { it > 0.0 },
-            fatMax = filters.fatMax.takeIf { it < 10e9 },
-            carbsMin = filters.carbohydratesMin.takeIf { it > 0.0 },
-            carbsMax = filters.carbohydratesMax.takeIf { it < 10e9 },
-            sugarMin = filters.sugarMin.takeIf { it > 0.0 },
-            sugarMax = filters.sugarMax.takeIf { it < 10e9 },
-            tags = filters.tags.takeIf { it.isNotEmpty() },
-            sort = when (type?.name) {
-                "RATING" -> "rating"
-                "POPULARITY" -> "popularity"
-                else -> "new"
-            },
-            limit = 20,
-            offset = offset
-        )
-
-        PaginationResult(
-            recipes = recipes.map { convertDtoToRecipe(it) },
-            startDocument = null,
-            endDocument = null,
-            currentOffset = offset,
-            hasMore = recipes.size >= 20 // Если получили полную страницу, возможно есть еще
-        )
-    }.flowOn(Dispatchers.IO)
 
     override fun loadSearchRecipes(
         filters: SearchFilters,
@@ -214,6 +184,7 @@ class RecipesRepoBackendImpl @Inject constructor(
         offset: Int,
         limit: Int
     ): Flow<Response<PaginationResult>> = repoTryCatchBlock {
+        // Запрашиваем на один элемент больше, чтобы точно знать, есть ли еще данные
         val recipes = recipesApi.searchRecipes(
             query = filters.startsWith.takeIf { it.isNotBlank() },
             caloriesMin = filters.caloriesMin.takeIf { it > 0.0 },
@@ -232,20 +203,25 @@ class RecipesRepoBackendImpl @Inject constructor(
                 "POPULARITY" -> "popularity"
                 else -> "new"
             },
-            limit = limit,
+            limit = limit + 1, // Запрашиваем на 1 больше
             offset = offset
         )
 
+        val hasMore = recipes.size > limit
+        val actualRecipes = if (hasMore) recipes.take(limit) else recipes
+
         PaginationResult(
-            recipes = recipes.map { convertDtoToRecipe(it) },
+            recipes = actualRecipes.map { convertDtoToRecipe(it) },
             currentOffset = offset,
-            hasMore = recipes.size >= limit // Если получили полную страницу, возможно есть еще
+            hasMore = hasMore
         )
     }.flowOn(Dispatchers.IO)
 
     override fun loadTags(): Flow<Response<List<Tag>>> = repoTryCatchBlock {
-        // TODO: реализовать получение тегов с backend
-        emptyList<Tag>()
+        val tagsDto = tagsApi.getTags()
+        tagsDto.map { tagDto ->
+            Tag(name = tagDto.name)
+        }
     }.flowOn(Dispatchers.IO)
 
     override fun loadCollectionRecipesId(id: String): Flow<Response<CollectionRecipes?>> = repoTryCatchBlock {

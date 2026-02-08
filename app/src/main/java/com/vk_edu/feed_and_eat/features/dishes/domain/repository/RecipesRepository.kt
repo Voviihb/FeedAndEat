@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.domain.repository
 
-import com.google.firebase.firestore.DocumentSnapshot
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionRecipes
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.PaginationResult
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
@@ -24,11 +23,6 @@ interface RecipesRepository {
 
     fun loadBreakfastRecipes(): Flow<Response<List<Recipe>>>
 
-    fun loadSearchRecipes(
-        filters: SearchFilters,
-        type: Type?,
-        documentSnapshot: DocumentSnapshot?
-    ): Flow<Response<PaginationResult>>
 
     fun loadSearchRecipes(
         filters: SearchFilters,

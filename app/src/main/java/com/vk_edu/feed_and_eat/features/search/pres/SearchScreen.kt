@@ -228,7 +228,6 @@ fun CardsGrid(
     val cardsData = viewModel.cardsDataPager.collectAsLazyPagingItems()
     if (viewModel.reloadData.value) {
         runBlocking { gridState.scrollToItem(0) }
-        viewModel.setRefreshFlag()
         cardsData.refresh()
         viewModel.reloadDataFinished()
     }
