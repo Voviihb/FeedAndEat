@@ -10,7 +10,6 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
-import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
 import com.vk_edu.feed_and_eat.features.search.pres.Nutrient
@@ -22,7 +21,6 @@ import javax.inject.Inject
 @HiltViewModel
 class NewRecipeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepository,
-    private val _authRepo: AuthRepository,
     private val _newRecipeRepo: NewRecipeRepository
 ) : ViewModel() {
     private val _name = mutableStateOf("")

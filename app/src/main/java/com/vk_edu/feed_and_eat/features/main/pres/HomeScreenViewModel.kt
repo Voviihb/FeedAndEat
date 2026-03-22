@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepository,
-    private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepository
 ) : ViewModel() {
     private val _largeCardData = mutableStateOf(RecipeCard())
@@ -40,8 +38,6 @@ class HomeScreenViewModel @Inject constructor(
 
     private val _favouritesCollectionId = mutableStateOf<String?>(null)
     val favouritesCollectionId: State<String?> = _favouritesCollectionId
-
-    private var currentUser: String? = null
 
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -348,13 +344,6 @@ class HomeScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 onError(e)
             }
-        }
-    }
-
-    fun checkUserChanged() {
-        val user = _authRepo.getCurrentUserId()
-        if (currentUser != null && currentUser != user) {
-            getFavouriteRecipeIds()
         }
     }
 

@@ -1,6 +1,5 @@
 package com.vk_edu.feed_and_eat.features.dishes.data
 
-import android.content.Context
 import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.CollectionRecipes
@@ -38,7 +37,6 @@ class RecipesRepoBackendImpl @Inject constructor(
     private val recipesApi: RecipesApi,
     private val collectionsApi: CollectionsApi,
     private val tagsApi: TagsApi,
-    private val context: Context,
 ) : RecipesRepository {
 
     private fun makeFullUrl(relativeUrl: String?): String? {
@@ -234,18 +232,16 @@ class RecipesRepoBackendImpl @Inject constructor(
         collectionId: String,
         recipeId: String,
         image: String?,
-    ): Flow<Response<Void>> = repoTryCatchBlock {
+    ): Flow<Response<Unit>> = repoTryCatchBlock {
         collectionsApi.addRecipeToCollection(collectionId, recipeId)
-        Unit
-    }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
+    }.flowOn(Dispatchers.IO)
 
     override fun removeRecipeFromUserCollection(
         collectionId: String,
         recipeId: String,
-    ): Flow<Response<Void>> = repoTryCatchBlock {
+    ): Flow<Response<Unit>> = repoTryCatchBlock {
         collectionsApi.removeRecipeFromCollection(collectionId, recipeId)
-        Unit
-    }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
+    }.flowOn(Dispatchers.IO)
 
     override fun loadMyReviewOnRecipe(id: String): Flow<Response<Review?>> = repoTryCatchBlock {
         val reviewDto = try {
@@ -256,7 +252,7 @@ class RecipesRepoBackendImpl @Inject constructor(
         reviewDto?.let { Review(author = it.userId, mark = it.mark) }
     }.flowOn(Dispatchers.IO)
 
-    override fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>> = repoTryCatchBlock {
+    override fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Unit>> = repoTryCatchBlock {
         try {
             recipesApi.addReview(id, ReviewCreateDto(mark = review.mark))
         } catch (e: HttpException) {
@@ -268,19 +264,18 @@ class RecipesRepoBackendImpl @Inject constructor(
             }
         }
         Unit
-    }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
+    }.flowOn(Dispatchers.IO)
 
     override fun updateReviewOnRecipe(
         id: String,
         oldReview: Review,
         newReview: Review,
-    ): Flow<Response<Void>> = repoTryCatchBlock {
+    ): Flow<Response<Unit>> = repoTryCatchBlock {
         recipesApi.updateMyReview(id, ReviewCreateDto(mark = newReview.mark))
         Unit
-    }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
+    }.flowOn(Dispatchers.IO)
 
-    override fun incrementCookedCounter(id: String): Flow<Response<Void>> = repoTryCatchBlock {
+    override fun incrementCookedCounter(id: String): Flow<Response<Unit>> = repoTryCatchBlock {
         recipesApi.incrementCookedCounter(id)
-        Unit
-    }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
+    }.flowOn(Dispatchers.IO)
 }

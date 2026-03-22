@@ -84,7 +84,6 @@ fun NavGraph(
             viewModel.changeBottomDestination(BottomScreen.CollectionOverviewScreen.route)
             CollectionScreen(
                 navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
                 navigateNoState = navigateNoState,
             )
         }

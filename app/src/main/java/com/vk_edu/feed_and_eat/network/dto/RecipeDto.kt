@@ -79,34 +79,3 @@ data class RecipeDto(
     @SerialName("created_at") val createdAt: String
 )
 
-@SuppressLint("UnsafeOptInUsageError")
-@Serializable
-data class RecipeCreateDto(
-    val name: String,
-    @SerialName("image_url") val imageUrl: String? = null,
-    val instructions: List<InstructionDto>,
-    val servings: ServingsDto? = null,
-    val ingredients: List<IngredientDto>? = null,
-    val tags: List<String>? = null,
-    val nutrients: NutrientsDto? = null
-)
-
-@SuppressLint("UnsafeOptInUsageError")
-@Serializable
-data class SearchParamsDto(
-    val q: String? = null,
-    @SerialName("calories_min") val caloriesMin: Double? = null,
-    @SerialName("calories_max") val caloriesMax: Double? = null,
-    @SerialName("protein_min") val proteinMin: Double? = null,
-    @SerialName("protein_max") val proteinMax: Double? = null,
-    @SerialName("fat_min") val fatMin: Double? = null,
-    @SerialName("fat_max") val fatMax: Double? = null,
-    @SerialName("carbs_min") val carbsMin: Double? = null,
-    @SerialName("carbs_max") val carbsMax: Double? = null,
-    @SerialName("sugar_min") val sugarMin: Double? = null,
-    @SerialName("sugar_max") val sugarMax: Double? = null,
-    val tags: List<String>? = null,
-    val sort: String = "new",
-    val limit: Int = 20,
-    val offset: Int = 0
-)

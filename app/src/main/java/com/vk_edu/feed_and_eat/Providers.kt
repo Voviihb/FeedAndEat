@@ -49,8 +49,7 @@ object AppProviders {
         recipesApi: RecipesApi,
         collectionsApi: CollectionsApi,
         tagsApi: TagsApi,
-        @ApplicationContext context: Context
-    ): RecipesRepository = RecipesRepoBackendImpl(recipesApi, collectionsApi, tagsApi, context)
+    ): RecipesRepository = RecipesRepoBackendImpl(recipesApi, collectionsApi, tagsApi)
     
     @Provides
     @Singleton

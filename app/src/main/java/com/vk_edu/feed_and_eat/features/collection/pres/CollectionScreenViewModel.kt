@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +17,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CollectionScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepository,
-    private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepository
 ) : ViewModel() {
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())

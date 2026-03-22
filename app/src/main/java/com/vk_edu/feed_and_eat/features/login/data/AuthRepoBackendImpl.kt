@@ -9,9 +9,6 @@ import com.vk_edu.feed_and_eat.network.api.AuthApi
 import com.vk_edu.feed_and_eat.network.api.RegisterBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

@@ -26,10 +26,8 @@ class CongratulationsScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private var isReviewUpdated = false
     private var currentReview: Review? = null
     private var loadReviewJob: Job? = null
-
 
     fun saveReview(recipe: Recipe) {
         viewModelScope.launch {
@@ -44,10 +42,7 @@ class CongratulationsScreenViewModel @Inject constructor(
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
                                         currentReview = _reviewState.value
-                                        isReviewUpdated = true
-                                        /* TODO add success flow */
                                     }
-
                                     is Response.Failure -> {
                                         onError(response.e)
                                     }
@@ -58,25 +53,19 @@ class CongratulationsScreenViewModel @Inject constructor(
                             id = recipe.id,
                             oldReview = currentReview!!,
                             newReview = _reviewState.value
-                        )
-                            .collect { response ->
-                                when (response) {
-                                    is Response.Loading -> _loading.value = true
-                                    is Response.Success -> {
-                                        currentReview = _reviewState.value
-                                        isReviewUpdated = true
-                                        /* TODO add success flow */
-                                    }
-
-                                    is Response.Failure -> {
-                                        onError(response.e)
-                                    }
+                        ).collect { response ->
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
+                                    currentReview = _reviewState.value
+                                }
+                                is Response.Failure -> {
+                                    onError(response.e)
                                 }
                             }
+                        }
                     }
                 }
-
-
             } catch (e: Exception) {
                 onError(e)
             }
@@ -101,7 +90,7 @@ class CongratulationsScreenViewModel @Inject constructor(
                                 }
                             }
                             is Response.Failure -> {
-                                // Нет отзыва — это нормально, просто игнорируем
+                                // Нет отзыва — это нормально
                                 currentReview = null
                             }
                         }
@@ -122,10 +111,7 @@ class CongratulationsScreenViewModel @Inject constructor(
                         .collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    /* TODO add success flow */
-                                }
-
+                                is Response.Success -> { /* счётчик обновлён */ }
                                 is Response.Failure -> onError(response.e)
                             }
                         }
@@ -134,19 +120,12 @@ class CongratulationsScreenViewModel @Inject constructor(
                 onError(e)
             }
             _loading.value = false
-
         }
     }
 
     fun markChanged(value: Float) {
         _reviewState.value = _reviewState.value.copy(
             mark = value.toDouble()
-        )
-    }
-
-    private fun authorChanged(value: String) {
-        _reviewState.value = _reviewState.value.copy(
-            author = value
         )
     }
 

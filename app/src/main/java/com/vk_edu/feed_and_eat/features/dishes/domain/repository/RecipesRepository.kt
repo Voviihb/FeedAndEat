@@ -41,18 +41,18 @@ interface RecipesRepository {
         collectionId: String,
         recipeId: String,
         image: String? = null
-    ): Flow<Response<Void>>
+    ): Flow<Response<Unit>>
 
     fun removeRecipeFromUserCollection(
         collectionId: String,
         recipeId: String,
-    ): Flow<Response<Void>>
+    ): Flow<Response<Unit>>
 
     fun loadMyReviewOnRecipe(id: String): Flow<Response<Review?>>
 
-    fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>>
+    fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Unit>>
 
-    fun updateReviewOnRecipe(id: String, oldReview: Review, newReview: Review): Flow<Response<Void>>
+    fun updateReviewOnRecipe(id: String, oldReview: Review, newReview: Review): Flow<Response<Unit>>
 
-    fun incrementCookedCounter(id: String): Flow<Response<Void>>
+    fun incrementCookedCounter(id: String): Flow<Response<Unit>>
 }
