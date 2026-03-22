@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +25,8 @@ fun RecipeScreen(
     viewModel: RecipesScreenViewModel = hiltViewModel()
 ) {
     viewModel.loadRecipeById(id)
-    if (viewModel.isUserAuthenticated()){
+    val isAuthenticated by viewModel.isUserAuthenticated().collectAsState(initial = false)
+    if (isAuthenticated){
         viewModel.loadCollections()
     }
 
@@ -66,7 +69,8 @@ fun RecipeScreen(
     viewModel: RecipesScreenViewModel = hiltViewModel()
 ) {
     viewModel.loadRecipeById(id)
-    if (viewModel.isUserAuthenticated()){
+    val isAuthenticated by viewModel.isUserAuthenticated().collectAsState(initial = false)
+    if (isAuthenticated){
         viewModel.loadCollections()
     }
 
@@ -108,7 +112,8 @@ fun RecipeWithoutNavBar(
     viewModel: RecipesScreenViewModel = hiltViewModel()
 ){
     viewModel.loadRecipeById(id)
-    if (viewModel.isUserAuthenticated()){
+    val isAuthenticated by viewModel.isUserAuthenticated().collectAsState(initial = false)
+    if (isAuthenticated){
         viewModel.loadCollections()
     }
 

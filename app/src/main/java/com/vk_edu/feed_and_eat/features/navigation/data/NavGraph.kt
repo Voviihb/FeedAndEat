@@ -64,7 +64,7 @@ fun NavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = viewModel.getStartDestination(),
+        startDestination = viewModel.startDestination.value,
         modifier = Modifier.padding(0.dp)
     ) {
         composable(BottomScreen.HomeScreen.route) {
@@ -84,7 +84,6 @@ fun NavGraph(
             viewModel.changeBottomDestination(BottomScreen.CollectionOverviewScreen.route)
             CollectionScreen(
                 navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
                 navigateNoState = navigateNoState,
             )
         }

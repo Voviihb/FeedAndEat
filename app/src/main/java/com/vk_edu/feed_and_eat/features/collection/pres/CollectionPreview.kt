@@ -42,7 +42,6 @@ import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 @Composable
 fun CollectionPreview(
-    navigateToRoute: (String) -> Unit,
     navigateToCollection: (String) -> Unit,
     id : String,
     viewModel: CollectionScreenViewModel
@@ -61,7 +60,6 @@ fun CollectionPreview(
             else
                 CardsGrid(
                     viewModel = viewModel,
-                    navigateToRoute = navigateToRoute,
                     navigateToCollection = navigateToCollection,
                     id = id
                 )
@@ -73,7 +71,6 @@ fun CollectionPreview(
 @Composable
 fun CardsGrid(
     viewModel: CollectionScreenViewModel,
-    navigateToRoute: (String) -> Unit,
     navigateToCollection: (String) -> Unit,
     id : String,
     modifier: Modifier = Modifier

@@ -1,25 +1,17 @@
 package com.vk_edu.feed_and_eat.features.login.domain.repository
 
-import com.google.firebase.auth.AuthResult
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
-    fun isUserAuthenticatedInFirebase(): Boolean
+    /** Проверка: есть ли сейчас access-токен */
+    fun isAuthorized(): Flow<Boolean>
 
-    fun getUserLogin(): String?
+    fun getCurrentUsername(): String?
+    fun getCurrentUserId(): String?
+    fun getCurrentEmail(): String?
 
-    fun getUserId(): String?
-
-    fun getUserEmail(): String?
-
-    fun firebaseSignInAnonymously(): Flow<Response<AuthResult>>
-
-    fun firebaseSignUp(email: String, password: String, login: String): Flow<Response<Void?>>
-
-    fun firebaseSignIn(email: String, password: String): Flow<Response<AuthResult>>
-
+    fun signUp(email: String, password: String, username: String): Flow<Response<Unit>>
+    fun signIn(email: String, password: String): Flow<Response<Unit>>
     fun signOut(): Flow<Response<Unit>>
-
-    fun getFirebaseAuthState(): Flow<Boolean>
 }

@@ -5,11 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,9 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CollectionScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl,
-    private val _authRepo: AuthRepoImpl,
-    private val _usersRepo: UsersRepoImpl
+    private val _recipesRepo: RecipesRepository,
+    private val _usersRepo: UsersRepository
 ) : ViewModel() {
     private val _cardsData = mutableStateOf(listOf<RecipeCard>())
     var cardsData: State<List<RecipeCard>> = _cardsData
@@ -80,46 +78,41 @@ class CollectionScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var collectionsData = listOf<CollectionDataModel>()
-                val user = _authRepo.getUserId()
-                if (user != null) {
-                    _usersRepo.getUserCollections(userId = user).collect { response ->
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
-                                if (response.data != null) {
-                                    collectionsData = response.data
-                                }
-                            }
-
-                            is Response.Failure -> {
-                                onError(response.e)
+                _usersRepo.getUserCollections().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+                        is Response.Success -> {
+                            if (response.data != null) {
+                                collectionsData = response.data
                             }
                         }
+
+                        is Response.Failure -> {
+                            onError(response.e)
+                        }
                     }
+                }
 
-                    val favouritesId =
-                        collectionsData.filter { it.name == FAVOURITES }[0].id
-                    _favouritesCollectionId.value = favouritesId
+                val favouritesCollection = collectionsData.find { it.name == FAVOURITES }
+                val favouritesId = favouritesCollection?.id
+                _favouritesCollectionId.value = favouritesId
 
-                    if (favouritesId != null) {
-                        _recipesRepo.loadCollectionRecipesId(id = favouritesId)
-                            .collect { response ->
-                                when (response) {
-                                    is Response.Loading -> _loading.value = true
-                                    is Response.Success -> {
-                                        if (response.data != null) {
-                                            _favouriteRecipeIds.value = response.data.recipeIds
-                                        }
-                                    }
-
-                                    is Response.Failure -> {
-                                        onError(response.e)
+                if (favouritesId != null) {
+                    _recipesRepo.loadCollectionRecipesId(id = favouritesId)
+                        .collect { response ->
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
+                                    if (response.data != null) {
+                                        _favouriteRecipeIds.value = response.data.recipeIds
                                     }
                                 }
+
+                                is Response.Failure -> {
+                                    onError(response.e)
+                                }
                             }
-                    }
-
-
+                        }
                 }
 
             } catch (e: Exception) {
@@ -132,25 +125,21 @@ class CollectionScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
-                if (user != null) {
-                    _recipesRepo.addRecipeToUserCollection(
-                        user,
-                        collectionId,
-                        recipe.recipeId,
-                        recipe.image
-                    ).collect { response ->
-                        when (response) {
-                            is Response.Loading -> { }
-                            is Response.Success -> {
-                                val favouriteIds = _favouriteRecipeIds.value.toMutableList()
-                                favouriteIds.add(recipe.recipeId)
-                                _favouriteRecipeIds.value = favouriteIds
-                            }
+                _recipesRepo.addRecipeToUserCollection(
+                    collectionId,
+                    recipe.recipeId,
+                    recipe.image
+                ).collect { response ->
+                    when (response) {
+                        is Response.Loading -> { }
+                        is Response.Success -> {
+                            val favouriteIds = _favouriteRecipeIds.value.toMutableList()
+                            favouriteIds.add(recipe.recipeId)
+                            _favouriteRecipeIds.value = favouriteIds
+                        }
 
-                            is Response.Failure -> {
-                                onError(response.e)
-                            }
+                        is Response.Failure -> {
+                            onError(response.e)
                         }
                     }
                 }
@@ -195,6 +184,6 @@ class CollectionScreenViewModel @Inject constructor(
     }
 
     companion object {
-        private const val FAVOURITES = "Favourites"
+        private const val FAVOURITES = "Избранное"
     }
 }

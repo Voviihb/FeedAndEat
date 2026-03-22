@@ -1,9 +1,8 @@
 package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
-import com.google.firebase.firestore.DocumentSnapshot
-
 data class PaginationResult(
     val recipes: List<Recipe>,
-    val startDocument: DocumentSnapshot?,
-    val endDocument: DocumentSnapshot?
+    val currentOffset: Int = 0,
+    val hasMore: Boolean = false,
+    val totalCount: Int? = null
 )

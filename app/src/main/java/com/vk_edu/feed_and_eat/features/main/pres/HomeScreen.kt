@@ -22,7 +22,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,10 +66,6 @@ fun HomeScreen(
             )
         }
     ) { padding ->
-        LaunchedEffect(key1 = Unit) {
-            viewModel.checkUserChanged()
-        }
-
         if (viewModel.loading.value)
             Box(
                 modifier = Modifier

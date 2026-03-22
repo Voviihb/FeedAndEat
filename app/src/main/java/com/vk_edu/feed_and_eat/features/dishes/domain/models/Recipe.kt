@@ -1,33 +1,27 @@
 package com.vk_edu.feed_and_eat.features.dishes.domain.models
 
-import com.google.firebase.firestore.IgnoreExtraProperties
-import com.google.firebase.firestore.PropertyName
 import java.util.Date
 import java.util.UUID
 
-@IgnoreExtraProperties
 data class Ingredient(
     val name: String = "",
     val amount: Double = 0.0,
     val unit: String = ""
 )
 
-@IgnoreExtraProperties
 data class Instruction(
     val paragraph: String = "",
     val timers: List<Timer>? = null
 )
 
-@IgnoreExtraProperties
 data class Nutrients(
-    @PropertyName("Calories") val calories: Double? = null,
-    @PropertyName("Sugar") val sugar: Double? = null,
-    @PropertyName("Protein") val protein: Double? = null,
-    @PropertyName("Fat") val fat: Double? = null,
-    @PropertyName("Carbohydrates") val carbohydrates: Double? = null
+    val calories: Double? = null,
+    val sugar: Double? = null,
+    val protein: Double? = null,
+    val fat: Double? = null,
+    val carbohydrates: Double? = null
 )
 
-@IgnoreExtraProperties
 data class Recipe(
     val id: String? = null,
     val name: String = "",
@@ -45,13 +39,11 @@ data class Recipe(
     val created: Date? = null
 )
 
-@IgnoreExtraProperties
 data class Servings(
     val amount: Int? = null,
     val weight: Int? = null
 )
 
-@IgnoreExtraProperties
 data class Timer(
     val type: String = "",
     val lowerLimit: Int? = null,
@@ -60,7 +52,6 @@ data class Timer(
     val id: String = UUID.randomUUID().toString()
 )
 
-@IgnoreExtraProperties
 data class Review(
     val author: String = "",
     val mark: Double = 0.0

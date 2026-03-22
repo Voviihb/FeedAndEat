@@ -5,10 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,9 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllCollectionsScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl,
-    private val _usersRepo: UsersRepoImpl,
-    private val _authRepo: AuthRepoImpl
+    private val _usersRepo: UsersRepository
 ) : ViewModel() {
     private val _activeWindowDialog = mutableStateOf(false)
     val activeWindowDialog : State<Boolean> = _activeWindowDialog
@@ -35,23 +31,26 @@ class AllCollectionsScreenViewModel @Inject constructor(
     fun loadAllUserCollections() {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
-                if (user != null) {
-                    _usersRepo.getUserCollections(userId = user).collect { response ->
+                android.util.Log.d("AllCollectionsViewModel", "Loading user collections...")
+                _usersRepo.getUserCollections().collect { response ->
                         when (response) {
-                            is Response.Loading -> _loading.value = true
+                            is Response.Loading -> {
+                                android.util.Log.d("AllCollectionsViewModel", "Loading...")
+                                _loading.value = true
+                            }
                             is Response.Success -> {
+                                android.util.Log.d("AllCollectionsViewModel", "Collections loaded: ${response.data?.size ?: 0}")
                                 if (response.data != null) {
                                     _collectionsData.value = response.data
                                 }
                             }
 
                             is Response.Failure -> {
+                                android.util.Log.e("AllCollectionsViewModel", "Failed to load collections", response.e)
                                 onError(response.e)
                             }
                         }
                     }
-                }
 
             } catch (e: Exception) {
                 onError(e)
@@ -63,38 +62,31 @@ class AllCollectionsScreenViewModel @Inject constructor(
     fun createNewUserCollection(name: String) {
         viewModelScope.launch {
             try {
-                val userId = _authRepo.getUserId()
-                if (userId != null) {
-                    _recipesRepo.createNewCollection().collect { response ->
-                        when (response) {
-                            is Response.Loading -> _loading.value = true
-                            is Response.Success -> {
-                                val newCollectionId = response.data
-                                _usersRepo.addNewUserCollection(
-                                    userId = userId,
-                                    collection = CollectionDataModel(
-                                        id = newCollectionId,
-                                        name = name,
-                                        picture = null
-                                    )
-                                ).collect { response ->
-                                    when (response) {
-                                        is Response.Loading -> _loading.value = true
-                                        is Response.Success -> {
-                                            loadAllUserCollections()
-                                        }
-
-                                        is Response.Failure -> onError(response.e)
-                                    }
-                                }
-                            }
-
-                            is Response.Failure -> onError(response.e)
+                android.util.Log.d("AllCollectionsViewModel", "Creating collection: $name")
+                _usersRepo.addNewUserCollection(
+                    collection = CollectionDataModel(
+                        name = name,
+                        picture = null
+                    )
+                ).collect { response ->
+                    when (response) {
+                        is Response.Loading -> {
+                            android.util.Log.d("AllCollectionsViewModel", "Creating collection - Loading...")
+                            _loading.value = true
+                        }
+                        is Response.Success -> {
+                            android.util.Log.d("AllCollectionsViewModel", "Collection created successfully!")
+                            loadAllUserCollections() // Перезагружаем список
+                        }
+                        is Response.Failure -> {
+                            android.util.Log.e("AllCollectionsViewModel", "Failed to create collection", response.e)
+                            onError(response.e)
                         }
                     }
                 }
 
             } catch (e: Exception) {
+                android.util.Log.e("AllCollectionsViewModel", "Exception in createNewUserCollection", e)
                 onError(e)
             }
             _loading.value = false
