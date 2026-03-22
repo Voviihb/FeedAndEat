@@ -48,6 +48,22 @@ data class ServingsDto(
 
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
+data class ReviewDto(
+    val id: String,
+    @SerialName("recipe_id") val recipeId: String,
+    @SerialName("user_id") val userId: String,
+    val mark: Double,
+    @SerialName("created_at") val createdAt: String
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
+data class ReviewCreateDto(
+    val mark: Double
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
 data class RecipeDto(
     val id: String,
     @SerialName("user_id") val userId: String,

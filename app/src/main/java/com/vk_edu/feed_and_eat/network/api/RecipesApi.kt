@@ -2,6 +2,8 @@ package com.vk_edu.feed_and_eat.network.api
 
 import com.vk_edu.feed_and_eat.features.network.dto.CreateRecipeDto
 import com.vk_edu.feed_and_eat.network.dto.RecipeDto
+import com.vk_edu.feed_and_eat.network.dto.ReviewCreateDto
+import com.vk_edu.feed_and_eat.network.dto.ReviewDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -82,4 +84,25 @@ interface RecipesApi {
 
     @POST("recipes/{recipe_id}/cooked")
     suspend fun incrementCookedCounter(@Path("recipe_id") recipeId: String)
+
+    @GET("recipes/{recipe_id}/reviews")
+    suspend fun getRecipeReviews(@Path("recipe_id") recipeId: String): List<ReviewDto>
+
+    @GET("recipes/{recipe_id}/reviews/my")
+    suspend fun getMyReview(@Path("recipe_id") recipeId: String): ReviewDto?
+
+    @POST("recipes/{recipe_id}/reviews")
+    suspend fun addReview(
+        @Path("recipe_id") recipeId: String,
+        @Body review: ReviewCreateDto
+    ): ReviewDto
+
+    @PUT("recipes/{recipe_id}/reviews/my")
+    suspend fun updateMyReview(
+        @Path("recipe_id") recipeId: String,
+        @Body review: ReviewCreateDto
+    ): ReviewDto
+
+    @DELETE("recipes/{recipe_id}/reviews/my")
+    suspend fun deleteMyReview(@Path("recipe_id") recipeId: String)
 }

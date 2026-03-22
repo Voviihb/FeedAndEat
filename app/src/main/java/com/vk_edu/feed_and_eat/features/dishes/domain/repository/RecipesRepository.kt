@@ -48,7 +48,7 @@ interface RecipesRepository {
         recipeId: String,
     ): Flow<Response<Void>>
 
-    fun createNewCollection(): Flow<Response<String>>
+    fun loadMyReviewOnRecipe(id: String): Flow<Response<Review?>>
 
     fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>>
 

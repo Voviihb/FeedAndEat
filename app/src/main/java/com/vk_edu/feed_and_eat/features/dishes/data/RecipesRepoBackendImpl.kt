@@ -17,19 +17,15 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Timer
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Type
 import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
 import com.vk_edu.feed_and_eat.features.network.api.TagsApi
-import com.vk_edu.feed_and_eat.network.dto.IngredientDto
-import com.vk_edu.feed_and_eat.network.dto.InstructionDto
-import com.vk_edu.feed_and_eat.network.dto.NutrientsDto
+import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import com.vk_edu.feed_and_eat.network.dto.RecipeDto
-import com.vk_edu.feed_and_eat.network.dto.ServingsDto
-import com.vk_edu.feed_and_eat.network.dto.TimerDto
+import com.vk_edu.feed_and_eat.network.dto.ReviewCreateDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import retrofit2.HttpException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -119,11 +115,11 @@ class RecipesRepoBackendImpl @Inject constructor(
                         carbohydrates = nutrientsDto.carbohydrates
                     )
                 } ?: Nutrients(),
-                author = 0, // TODO: получать информацию об авторе
+                author = 0,
                 user = dto.userId,
                 rating = dto.rating,
                 cooked = dto.cooked,
-                reviews = null, // TODO: реализовать отзывы
+                reviews = null, // отзывы загружаются отдельно через loadMyReviewOnRecipe
                 created = createdDate
             )
         } catch (e: Exception) {
@@ -251,13 +247,26 @@ class RecipesRepoBackendImpl @Inject constructor(
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 
-    override fun createNewCollection(): Flow<Response<String>> = repoTryCatchBlock {
-        // TODO: реализовать после миграции коллекций
-        ""
+    override fun loadMyReviewOnRecipe(id: String): Flow<Response<Review?>> = repoTryCatchBlock {
+        val reviewDto = try {
+            recipesApi.getMyReview(id)
+        } catch (e: Exception) {
+            null
+        }
+        reviewDto?.let { Review(author = it.userId, mark = it.mark) }
     }.flowOn(Dispatchers.IO)
 
     override fun addNewReviewOnRecipe(id: String, review: Review): Flow<Response<Void>> = repoTryCatchBlock {
-        // TODO: реализовать систему отзывов
+        try {
+            recipesApi.addReview(id, ReviewCreateDto(mark = review.mark))
+        } catch (e: HttpException) {
+            if (e.code() == 409) {
+                // Отзыв уже существует — обновляем через PUT
+                recipesApi.updateMyReview(id, ReviewCreateDto(mark = review.mark))
+            } else {
+                throw e
+            }
+        }
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 
@@ -266,7 +275,7 @@ class RecipesRepoBackendImpl @Inject constructor(
         oldReview: Review,
         newReview: Review,
     ): Flow<Response<Void>> = repoTryCatchBlock {
-        // TODO: реализовать систему отзывов
+        recipesApi.updateMyReview(id, ReviewCreateDto(mark = newReview.mark))
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 
