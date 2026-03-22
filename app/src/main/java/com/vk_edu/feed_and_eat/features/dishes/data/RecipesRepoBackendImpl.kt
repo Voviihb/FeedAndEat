@@ -192,9 +192,9 @@ class RecipesRepoBackendImpl @Inject constructor(
             sugarMin = filters.sugarMin.takeIf { it > 0.0 },
             sugarMax = filters.sugarMax.takeIf { it < 10e9 },
             tags = filters.tags.takeIf { it.isNotEmpty() },
-            sort = when (type?.name) {
-                "RATING" -> "rating"
-                "POPULARITY" -> "popularity"
+            sort = when (filters.sort) {
+                1 -> "rating"
+                2 -> "popularity"
                 else -> "new"
             },
             limit = limit + 1, // Запрашиваем на 1 больше
