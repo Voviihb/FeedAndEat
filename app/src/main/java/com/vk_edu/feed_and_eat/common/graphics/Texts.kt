@@ -16,6 +16,7 @@ fun LightText(
     text: String,
     fontSize: TextUnit,
     textAlign: TextAlign = TextAlign.Left,
+    maxLines: Int = 2,
     modifier: Modifier = Modifier
 ) {
     Text(
@@ -23,20 +24,20 @@ fun LightText(
         fontSize = fontSize,
         color = colorResource(R.color.gray),
         overflow = TextOverflow.Ellipsis,
-        maxLines = 2,
+        maxLines = maxLines,
         textAlign = textAlign,
         modifier = modifier
     )
 }
 
 @Composable
-fun DarkText(text: String, fontSize: TextUnit, modifier: Modifier = Modifier) {
+fun DarkText(text: String, fontSize: TextUnit, maxLines: Int = 2, modifier: Modifier = Modifier) {
     Text(
         text = text,
         fontSize = fontSize,
         color = colorResource(R.color.black),
         overflow = TextOverflow.Ellipsis,
-        maxLines = 2,
+        maxLines = maxLines,
         modifier = modifier
     )
 }
@@ -47,6 +48,7 @@ fun BoldText(
     fontSize: TextUnit,
     lineHeight: TextUnit = TextUnit.Unspecified,
     fixLinesNumber: Boolean = false,
+    maxLines: Int = 2,
     modifier: Modifier = Modifier
 ) {
     Text(
@@ -56,7 +58,7 @@ fun BoldText(
         color = colorResource(R.color.black),
         overflow = TextOverflow.Ellipsis,
         minLines = if (fixLinesNumber) 2 else 1,
-        maxLines = 2,
+        maxLines = maxLines,
         lineHeight = lineHeight,
         modifier = modifier
     )

@@ -75,6 +75,7 @@ fun InProgressScreen(
                     text = stringResource(R.string.default_label),
                     fontSize = MediumText,
                     textAlign = TextAlign.Center,
+                    maxLines = 3,
                     modifier = Modifier.padding(80.dp)
                 )
             else
