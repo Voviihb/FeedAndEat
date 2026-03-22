@@ -2,19 +2,18 @@ package com.vk_edu.feed_and_eat.features.profile.data
 
 import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
+import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.common.code.repoTryCatchBlock
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
+import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
+import com.vk_edu.feed_and_eat.features.network.dto.CreateCollectionBody
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import com.vk_edu.feed_and_eat.features.profile.pres.Profile
 import com.vk_edu.feed_and_eat.network.api.UsersApi
 import com.vk_edu.feed_and_eat.network.dto.ProfileUpdateDto
 import com.vk_edu.feed_and_eat.network.dto.UserDto
-import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
-import com.vk_edu.feed_and_eat.features.network.dto.CreateCollectionBody
-import com.vk_edu.feed_and_eat.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -54,7 +53,7 @@ class UsersRepoBackendImpl @Inject constructor(
             username = userDto.username,
             avatarUrl = makeFullUrl(userDto.avatarUrl),
             aboutMeData = userDto.aboutMe,
-            collectionsIdList = emptyList(), // TODO: получать коллекции отдельно
+            collectionsIdList = emptyList(), // коллекции загружаются отдельно через getUserCollections()
             isProfilePrivate = userDto.isProfilePrivate,
             themeSettings = userDto.themeSettings
         )
@@ -86,16 +85,22 @@ class UsersRepoBackendImpl @Inject constructor(
         
         // Сначала загружаем аватар, если есть
         if (imagePath != null) {
+            val mimeType = context.contentResolver.getType(imagePath) ?: "image/jpeg"
+            val ext = when (mimeType) {
+                "image/png" -> ".png"
+                "image/webp" -> ".webp"
+                else -> ".jpg"
+            }
             val inputStream = context.contentResolver.openInputStream(imagePath)
                 ?: throw IllegalArgumentException("Cannot open input stream for URI")
 
-            val tempFile = File.createTempFile("avatar", ".jpg", context.cacheDir)
+            val tempFile = File.createTempFile("avatar", ext, context.cacheDir)
             tempFile.outputStream().use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
             inputStream.close()
             
-            val requestBody = tempFile.asRequestBody("image/*".toMediaTypeOrNull())
+            val requestBody = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
             val multipartBody = MultipartBody.Part.createFormData("file", tempFile.name, requestBody)
 
             usersApi.uploadAvatar(multipartBody)

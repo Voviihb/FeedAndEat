@@ -7,10 +7,9 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Nutrients
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Servings
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
 import com.vk_edu.feed_and_eat.features.network.dto.CreateRecipeDto
+import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
-import com.vk_edu.feed_and_eat.network.dto.IngredientDto
 import com.vk_edu.feed_and_eat.network.dto.InstructionDto
 import com.vk_edu.feed_and_eat.network.dto.NutrientsDto
 import com.vk_edu.feed_and_eat.network.dto.ServingsDto
@@ -89,8 +88,9 @@ class NewRecipeRepoBackendImpl @Inject constructor(
 
         if (imagePath != null) {
             try {
-                val file = uriToFile(imagePath)
-                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val mimeType = context.contentResolver.getType(imagePath) ?: "image/jpeg"
+                val file = uriToFile(imagePath, mimeType)
+                val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
                 val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
                 recipesApi.uploadRecipeImage(recipeId, body)
@@ -104,11 +104,16 @@ class NewRecipeRepoBackendImpl @Inject constructor(
         recipeId
     }.flowOn(Dispatchers.IO)
     
-    private fun uriToFile(uri: Uri): File {
+    private fun uriToFile(uri: Uri, mimeType: String = "image/jpeg"): File {
         val inputStream = context.contentResolver.openInputStream(uri)
             ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
         
-        val file = File(context.cacheDir, "temp_recipe_image_${System.currentTimeMillis()}.jpg")
+        val ext = when (mimeType) {
+            "image/png" -> ".png"
+            "image/webp" -> ".webp"
+            else -> ".jpg"
+        }
+        val file = File(context.cacheDir, "temp_recipe_image_${System.currentTimeMillis()}$ext")
         val outputStream = FileOutputStream(file)
         
         inputStream.use { input ->

@@ -5,13 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.PreferencesManager
-import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.navigation.pres.BottomScreen
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
-import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +17,6 @@ import javax.inject.Inject
 class RegisterScreenViewModel @Inject constructor(
     private val _authRepo: AuthRepository,
     private val _usersRepo: UsersRepository,
-    private val _recipesRepo: RecipesRepository,
     private val _preferencesManager: PreferencesManager
 ) : ViewModel() {
     private val _registerFormState = mutableStateOf(RegisterForm("", "", "", ""))
@@ -67,11 +63,8 @@ class RegisterScreenViewModel @Inject constructor(
     }
 
     private fun saveUserData() {
-        viewModelScope.launch {
-            // Временно пропускаем создание коллекций при регистрации
-            // TODO: реализовать после создания RecipesRepoBackendImpl
-            _loading.value = false
-        }
+        // Коллекция "Избранное" создаётся автоматически на бэкенде при регистрации (POST /auth/register)
+        _loading.value = false
     }
 
     private fun onError(message: Exception?) {
@@ -105,9 +98,5 @@ class RegisterScreenViewModel @Inject constructor(
         _registerFormState.value = _registerFormState.value.copy(
             passwordControl = value
         )
-    }
-
-    companion object {
-        private const val FAVOURITES = "Избранное"
     }
 }
