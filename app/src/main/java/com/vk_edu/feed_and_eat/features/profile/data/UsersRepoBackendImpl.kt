@@ -11,6 +11,9 @@ import com.vk_edu.feed_and_eat.features.network.dto.CreateCollectionBody
 import com.vk_edu.feed_and_eat.features.profile.domain.models.UserModel
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import com.vk_edu.feed_and_eat.features.profile.pres.Profile
+import com.vk_edu.feed_and_eat.local.CollectionSyncManager
+import com.vk_edu.feed_and_eat.local.LocalCollectionsDataSource
+import com.vk_edu.feed_and_eat.local.NetworkMonitor
 import com.vk_edu.feed_and_eat.network.api.UsersApi
 import com.vk_edu.feed_and_eat.network.dto.ProfileUpdateDto
 import com.vk_edu.feed_and_eat.network.dto.UserDto
@@ -21,6 +24,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,7 +32,10 @@ import javax.inject.Singleton
 class UsersRepoBackendImpl @Inject constructor(
     private val usersApi: UsersApi,
     private val collectionsApi: CollectionsApi,
-    private val context: Context
+    @ApplicationContext private val context: Context,
+    private val localDataSource: LocalCollectionsDataSource,
+    private val syncManager: CollectionSyncManager,
+    private val networkMonitor: NetworkMonitor,
 ) : UsersRepository {
 
     private fun makeFullUrl(relativeUrl: String?): String? {
@@ -60,14 +67,31 @@ class UsersRepoBackendImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun getUserCollections(): Flow<Response<List<CollectionDataModel>?>> = repoTryCatchBlock {
+        if (networkMonitor.isOnlineNow()) {
+            try {
+                syncManager.refreshCollectionsAndRecipesFromRemote()
+            } catch (_: Exception) {
+            }
+        }
+
+        val localCollections = localDataSource.getCollections().map {
+            it.copy(picture = it.picture?.let { pic -> makeFullUrl(pic) })
+        }
+
+        if (localCollections.isNotEmpty()) {
+            return@repoTryCatchBlock localCollections
+        }
+
         val collectionsDto = collectionsApi.getMyCollections()
-        collectionsDto.map { dto ->
+        val mapped = collectionsDto.map { dto ->
             CollectionDataModel(
                 id = dto.id,
                 name = dto.name,
-                picture = dto.pictureUrl?.let { makeFullUrl(it) }
+                picture = dto.pictureUrl?.let { makeFullUrl(it) },
             )
         }
+        localDataSource.replaceCollections(mapped)
+        mapped
     }.flowOn(Dispatchers.IO)
 
     override fun saveUserData(userId: String, userData: UserModel): Flow<Response<UserDto>> = repoTryCatchBlock {
@@ -121,6 +145,9 @@ class UsersRepoBackendImpl @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun addNewUserCollection(collection: CollectionDataModel): Flow<Response<Void>> = repoTryCatchBlock {
         collectionsApi.createCollection(CreateCollectionBody(name = collection.name))
+        if (networkMonitor.isOnlineNow()) {
+            syncManager.refreshCollectionsAndRecipesFromRemote()
+        }
         Unit
     }.flowOn(Dispatchers.IO) as Flow<Response<Void>>
 }

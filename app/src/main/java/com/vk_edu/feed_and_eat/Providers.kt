@@ -14,10 +14,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import com.vk_edu.feed_and_eat.network.api.UsersApi
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
-import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
-import com.vk_edu.feed_and_eat.features.network.api.TagsApi
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -37,19 +34,11 @@ object AppProviders {
 
     @Provides
     @Singleton
-    fun provideUsersRepository(
-        usersApi: UsersApi,
-        collectionsApi: CollectionsApi,
-        @ApplicationContext context: Context
-    ): UsersRepository = UsersRepoBackendImpl(usersApi, collectionsApi, context)
+    fun provideUsersRepository(backendImpl: UsersRepoBackendImpl): UsersRepository = backendImpl
 
     @Provides
     @Singleton
-    fun provideRecipesRepository(
-        recipesApi: RecipesApi,
-        collectionsApi: CollectionsApi,
-        tagsApi: TagsApi,
-    ): RecipesRepository = RecipesRepoBackendImpl(recipesApi, collectionsApi, tagsApi)
+    fun provideRecipesRepository(backendImpl: RecipesRepoBackendImpl): RecipesRepository = backendImpl
     
     @Provides
     @Singleton
