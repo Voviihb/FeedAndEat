@@ -1,7 +1,12 @@
 package com.vk_edu.feed_and_eat.screenshot
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams
@@ -48,7 +53,13 @@ abstract class BaseScreenshotTest {
     ) {
         paparazzi.snapshot(name = name) {
             MaterialTheme {
-                composable()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White),
+                ) {
+                    composable()
+                }
             }
         }
     }
