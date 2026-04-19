@@ -1,0 +1,56 @@
+[
+  {
+    "id": "recipe-002",
+    "user_id": "user-001",
+    "name": "Паста карбонара",
+    "image_url": null,
+    "instructions": [
+      {"paragraph": "Сварить пасту", "timers": null},
+      {"paragraph": "Приготовить соус", "timers": null}
+    ],
+    "servings": {"amount": 2, "weight": 400},
+    "ingredients": [
+      {"name": "Паста", "amount": 200.0, "unit": "г"},
+      {"name": "Бекон", "amount": 100.0, "unit": "г"},
+      {"name": "Яйца", "amount": 2.0, "unit": "шт"}
+    ],
+    "tags": ["паста", "итальянское"],
+    "nutrients": {
+      "Calories": 520.0,
+      "Sugar": 2.0,
+      "Protein": 22.0,
+      "Fat": 18.0,
+      "Carbohydrates": 60.0
+    },
+    "rating": 4.8,
+    "cooked": 128,
+    "created_at": "2024-01-02T00:00:00Z"
+  },
+  {
+    "id": "recipe-003",
+    "user_id": "user-001",
+    "name": "Борщ",
+    "image_url": null,
+    "instructions": [
+      {"paragraph": "Сварить бульон", "timers": null},
+      {"paragraph": "Добавить овощи", "timers": null}
+    ],
+    "servings": {"amount": 4, "weight": 500},
+    "ingredients": [
+      {"name": "Свёкла", "amount": 2.0, "unit": "шт"},
+      {"name": "Капуста", "amount": 300.0, "unit": "г"},
+      {"name": "Говядина", "amount": 500.0, "unit": "г"}
+    ],
+    "tags": ["суп", "русское"],
+    "nutrients": {
+      "Calories": 210.0,
+      "Sugar": 6.0,
+      "Protein": 18.0,
+      "Fat": 8.0,
+      "Carbohydrates": 22.0
+    },
+    "rating": 4.9,
+    "cooked": 312,
+    "created_at": "2024-01-03T00:00:00Z"
+  }
+]
