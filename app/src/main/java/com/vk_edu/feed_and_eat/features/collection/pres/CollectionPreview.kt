@@ -37,52 +37,73 @@ import com.vk_edu.feed_and_eat.common.graphics.LoadingCircular
 import com.vk_edu.feed_and_eat.common.graphics.MediumIcon
 import com.vk_edu.feed_and_eat.common.graphics.RepeatButton
 import com.vk_edu.feed_and_eat.common.graphics.SquareArrowButton
+import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.ui.theme.LargeText
 
 
 @Composable
 fun CollectionPreview(
     navigateToCollection: (String) -> Unit,
-    id : String,
+    id: String,
     viewModel: CollectionScreenViewModel
 ) {
     Scaffold(
         modifier = Modifier
             .background(colorResource(R.color.pale_cyan))
-        ) {padding ->
-            if (viewModel.loading.value)
-                LoadingCircular(Modifier.padding(padding))
-            else if (viewModel.errorMessage.value != null)
-                RepeatButton(onClick = {
-                    viewModel.clearError()
-                    viewModel.collectionRecipes(id)
-                })
-            else
-                CardsGrid(
-                    viewModel = viewModel,
-                    navigateToCollection = navigateToCollection,
-                    id = id
-                )
+    ) { padding ->
+        if (viewModel.loading.value)
+            LoadingCircular(Modifier.padding(padding))
+        else if (viewModel.errorMessage.value != null)
+            RepeatButton(onClick = {
+                viewModel.clearError()
+                viewModel.collectionRecipes(id)
+            })
+        else
+            CardsGrid(
+                viewModel = viewModel,
+                navigateToCollection = navigateToCollection,
+                id = id
+            )
 
-            SquareArrowButton(onClick = { navigateToCollection(CollectionRoutes.AllCollections.route) })
-        }
+        SquareArrowButton(onClick = { navigateToCollection(CollectionRoutes.AllCollections.route) })
     }
+}
 
 @Composable
 fun CardsGrid(
     viewModel: CollectionScreenViewModel,
     navigateToCollection: (String) -> Unit,
-    id : String,
-    modifier: Modifier = Modifier
+    id: String,
+    modifier: Modifier = Modifier,
 ) {
     val userFavourites by viewModel.favouriteRecipeIds
     val favouritesId by viewModel.favouritesCollectionId
 
-    val localDensity = LocalDensity.current
+    CardsGridContent(
+        cards = viewModel.cardsData.value,
+        favouriteRecipeIds = userFavourites,
+        favouritesCollectionId = favouritesId,
+        addToFavourites = viewModel::addRecipeToUserCollection,
+        removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+        collectionId = id,
+        navigateToCollection = navigateToCollection,
+        modifier = modifier,
+    )
+}
 
-    var columnHeightDp by remember {
-        mutableStateOf(0.dp)
-    }
+@Composable
+fun CardsGridContent(
+    cards: List<RecipeCard>,
+    favouriteRecipeIds: List<String>,
+    favouritesCollectionId: String?,
+    addToFavourites: (String, RecipeCard) -> Unit,
+    removeFromFavourites: (String, RecipeCard) -> Unit,
+    collectionId: String,
+    navigateToCollection: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val localDensity = LocalDensity.current
+    var columnHeightDp by remember { mutableStateOf(0.dp) }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -91,14 +112,18 @@ fun CardsGrid(
         contentPadding = PaddingValues(12.dp),
         modifier = modifier.fillMaxSize()
     ) {
-        items(viewModel.cardsData.value) { cardData ->
+        items(cards) { cardData ->
             DishCard(
                 recipeCard = cardData,
-                inFavourites = cardData.recipeId in userFavourites,
-                favouritesCollectionId = favouritesId,
-                addToFavourites = viewModel::addRecipeToUserCollection,
-                removeFromFavourites = viewModel::removeRecipeFromUserCollection,
-                navigateToRoute = { navigateToCollection("${CollectionRoutes.RecipeWithoutNavBar.route}/$id/${cardData.recipeId}") },
+                inFavourites = cardData.recipeId in favouriteRecipeIds,
+                favouritesCollectionId = favouritesCollectionId,
+                addToFavourites = addToFavourites,
+                removeFromFavourites = removeFromFavourites,
+                navigateToRoute = {
+                    navigateToCollection(
+                        "${CollectionRoutes.RecipeWithoutNavBar.route}/$collectionId/${cardData.recipeId}"
+                    )
+                },
                 modifier = Modifier
                     .onGloballyPositioned { coordinates ->
                         columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
@@ -108,7 +133,7 @@ fun CardsGrid(
         item {
             AddDishCard(
                 navigateToRoute = navigateToCollection,
-                collecitonId = id,
+                collecitonId = collectionId,
                 modifier = Modifier.height(if (columnHeightDp > 0.dp) columnHeightDp else 240.dp)
             )
         }
@@ -118,8 +143,8 @@ fun CardsGrid(
 @Composable
 fun AddDishCard(
     navigateToRoute: (String) -> Unit,
-    collecitonId : String,
-    modifier: Modifier = Modifier
+    collecitonId: String,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -136,7 +161,6 @@ fun AddDishCard(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
         ) {
             MediumIcon(
                 painter = painterResource(id = R.drawable.plus),

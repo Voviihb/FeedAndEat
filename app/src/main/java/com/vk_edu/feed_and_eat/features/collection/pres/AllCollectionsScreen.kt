@@ -70,7 +70,7 @@ fun AllCollectionsScreen(
                     contentPadding = PaddingValues(12.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    viewModel.collectionsData.value.forEach {compilation ->
+                    viewModel.collectionsData.value.forEach { compilation ->
                         item {
                             AddDishCard(
                                 compilation = compilation,
@@ -78,16 +78,23 @@ fun AllCollectionsScreen(
                             )
                         }
                     }
-                    item{
+                    item {
                         AddDishCard(
-                            viewModel = viewModel,
+                            onAddClick = { viewModel.openWindowDialog() },
                         )
                     }
                 }
-                WindowDialog(viewModel = viewModel)
+                WindowDialog(
+                    isOpen = viewModel.activeWindowDialog.value,
+                    onDismiss = { viewModel.openWindowDialog() },
+                    onConfirm = { name ->
+                        viewModel.openWindowDialog()
+                        viewModel.createNewUserCollection(name)
+                    },
+                )
             }
-        }
     }
+}
 
 
 @Composable
@@ -121,12 +128,12 @@ fun AddDishCard(
     }
 }
 
+/** Карточка-кнопка для создания новой коллекции */
 @Composable
 fun AddDishCard(
-    viewModel: AllCollectionsScreenViewModel,
-    modifier: Modifier = Modifier
-){
-
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardColors(
@@ -134,15 +141,13 @@ fun AddDishCard(
             colorResource(R.color.white), colorResource(R.color.white)
         ),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(16.dp)),
-        onClick = {
-            viewModel.openWindowDialog()
-        }
+        onClick = onAddClick,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MediumIcon(
-                painter = painterResource(id = R.drawable.plus), 
+                painter = painterResource(id = R.drawable.plus),
                 color = colorResource(id = R.color.dark_cyan),
                 modifier = Modifier
                     .aspectRatio(4f / 3f)
@@ -158,30 +163,35 @@ fun AddDishCard(
     }
 }
 
+/**
+ * Диалог создания новой коллекции.
+ *
+ * @param isOpen      показывать ли диалог
+ * @param onDismiss   вызывается при закрытии без подтверждения
+ * @param onConfirm   вызывается при подтверждении; передаёт введённое имя
+ */
 @Composable
 fun WindowDialog(
-    viewModel: AllCollectionsScreenViewModel,
-){
-    val openDialog by viewModel.activeWindowDialog
-
+    isOpen: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
     var collectionName by rememberSaveable { mutableStateOf("") }
 
-    if (openDialog) {
+    if (isOpen) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxSize()
-        ){
+        ) {
             AlertDialog(
-                onDismissRequest = { viewModel.openWindowDialog() },
+                onDismissRequest = onDismiss,
                 title = { Text(stringResource(id = R.string.input_collection_name)) },
                 text = {
                     TextField(
                         value = collectionName,
-                        onValueChange = {
-                            collectionName = it
-                        },
+                        onValueChange = { collectionName = it },
                         modifier = Modifier
                             .border(2.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(8.dp))
                             .clip(RoundedCornerShape(8.dp))
@@ -195,17 +205,14 @@ fun WindowDialog(
                             colorResource(id = R.color.medium_cyan)
                         ),
                         border = BorderStroke(2.dp, colorResource(id = R.color.medium_cyan)),
-                        onClick = {
-                            viewModel.openWindowDialog()
-                            viewModel.createNewUserCollection(collectionName)
-                        },
+                        onClick = { onConfirm(collectionName) },
                         modifier = Modifier,
                     ) {
                         Text(
                             stringResource(id = R.string.confirm),
                             fontSize = LargeText,
                             modifier = Modifier.padding(4.dp)
-                            )
+                        )
                     }
                 },
                 modifier = Modifier
