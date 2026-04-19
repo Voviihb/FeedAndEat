@@ -33,12 +33,14 @@ import org.junit.Rule
  * Запуск тестов: `./gradlew :app:recordPaparazziDebug` — запись эталонов
  * Проверка:      `./gradlew :app:verifyPaparazziDebug` — сравнение со снимками
  */
-abstract class BaseScreenshotTest {
+abstract class BaseScreenshotTest(
+    renderingMode: SessionParams.RenderingMode = SessionParams.RenderingMode.SHRINK,
+) {
 
     @get:Rule
     val paparazzi = Paparazzi(
         deviceConfig = DeviceConfig.PIXEL_6,
-        renderingMode = SessionParams.RenderingMode.SHRINK,
+        renderingMode = renderingMode,
     )
 
     /**
