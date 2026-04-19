@@ -57,35 +57,69 @@ fun ProfileScreen(
     navigateNoState: (String) -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadProfileInfo()
+    }
+
     Scaffold(
         bottomBar = { GlobalNavigationBar(navigateToRoute, navigateNoState, BottomScreen.ProfileScreen.route) }
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(padding)
-        ) {
-            LaunchedEffect(Unit) {
-                viewModel.loadProfileInfo()
-            }
-            if (viewModel.loading.value) {
-                LoadingCircular()
-            } else {
+        val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            viewModel.imageChanged(uri)
+        }
+
+        ProfileScreenContent(
+            profile = viewModel.profileState.value,
+            loading = viewModel.loading.value,
+            imagePath = viewModel.imagePath.value,
+            onImagePickerRequest = { launcher.launch("image/*") },
+            onAboutMeChange = viewModel::aboutMeChanged,
+            onSave = viewModel::updateUserProfile,
+            onLogout = { viewModel.logout(navigateToRoute) },
+            modifier = Modifier.padding(padding),
+        )
+    }
+}
+
+@Composable
+fun ProfileScreenContent(
+    profile: Profile,
+    loading: Boolean,
+    imagePath: Any?,
+    onImagePickerRequest: () -> Unit,
+    onAboutMeChange: (String) -> Unit,
+    onSave: () -> Unit,
+    onLogout: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        if (loading) {
+            LoadingCircular()
+        } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(12.dp),
+            ) {
+                UserInfoBlock(
+                    profile = profile,
+                    imagePath = imagePath,
+                    onImagePickerRequest = onImagePickerRequest,
+                )
+                AboutMeBlock(
+                    profile = profile,
+                    onAboutMeChange = onAboutMeChange,
+                )
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    UserInfoBlock(viewModel = viewModel, profileInfo = viewModel.profileState.value)
-                    AboutMeBlock(profileInfo = viewModel.profileState.value, viewModel = viewModel)
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        SaveInfoButton(viewModel = viewModel)
-                        LogoutButton(viewModel = viewModel, navigateToRoute = navigateToRoute)
-                    }
+                    SaveInfoButton(onSave = onSave)
+                    LogoutButton(onLogout = onLogout)
                 }
             }
         }
@@ -94,40 +128,29 @@ fun ProfileScreen(
 
 @Composable
 private fun UserInfoBlock(
-    viewModel: ProfileScreenViewModel,
-    profileInfo: Profile,
-    modifier: Modifier = Modifier
+    profile: Profile,
+    imagePath: Any?,
+    onImagePickerRequest: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            viewModel.imageChanged(uri)
-        }
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        if (viewModel.imagePath.value != null) {
-            ProfileImage(
-                link = viewModel.imagePath.value,
-                onClick = { launcher.launch("image/*") })
-        } else if (profileInfo.avatar != null) {
-            ProfileImage(
-                link = profileInfo.avatar,
-                onClick = { launcher.launch("image/*") })
-        } else {
-            DefaultProfileImage(onClick = { launcher.launch("image/*") })
+        when {
+            imagePath != null -> ProfileImage(link = imagePath, onClick = onImagePickerRequest)
+            profile.avatar != null -> ProfileImage(link = profile.avatar, onClick = onImagePickerRequest)
+            else -> DefaultProfileImage(onClick = onImagePickerRequest)
         }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 LightText(text = stringResource(R.string.e_mail), fontSize = LargeText)
                 DarkText(
-                    text = profileInfo.email ?: stringResource(id = R.string.anonymous_user),
+                    text = profile.email ?: stringResource(id = R.string.anonymous_user),
                     fontSize = LargeText
                 )
             }
@@ -137,7 +160,7 @@ private fun UserInfoBlock(
             ) {
                 LightText(text = stringResource(R.string.nickname), fontSize = LargeText)
                 DarkText(
-                    text = profileInfo.nickname ?: stringResource(id = R.string.anonymous_user),
+                    text = profile.nickname ?: stringResource(id = R.string.anonymous_user),
                     fontSize = LargeText
                 )
             }
@@ -147,9 +170,9 @@ private fun UserInfoBlock(
 
 @Composable
 private fun AboutMeBlock(
-    profileInfo: Profile,
-    viewModel: ProfileScreenViewModel,
-    modifier: Modifier = Modifier
+    profile: Profile,
+    onAboutMeChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -164,7 +187,7 @@ private fun AboutMeBlock(
                 .border(1.dp, colorResource(id = R.color.dark_cyan), RoundedCornerShape(12.dp))
         ) {
             TextField(
-                value = profileInfo.aboutMe,
+                value = profile.aboutMe,
                 modifier = Modifier.fillMaxSize(),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = colorResource(id = R.color.white_cyan),
@@ -184,14 +207,17 @@ private fun AboutMeBlock(
                     )
                 },
                 textStyle = TextStyle(fontSize = MediumText),
-                onValueChange = { viewModel.aboutMeChanged(it) }
+                onValueChange = onAboutMeChange,
             )
         }
     }
 }
 
 @Composable
-private fun SaveInfoButton(viewModel: ProfileScreenViewModel, modifier: Modifier = Modifier) {
+private fun SaveInfoButton(
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Button(
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
@@ -202,7 +228,7 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel, modifier: Modifier
         ),
         border = BorderStroke(1.dp, colorResource(id = R.color.dark_cyan)),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(12.dp)),
-        onClick = { viewModel.updateUserProfile() }
+        onClick = onSave,
     ) {
         BoldText(
             text = stringResource(R.string.save_information),
@@ -214,9 +240,8 @@ private fun SaveInfoButton(viewModel: ProfileScreenViewModel, modifier: Modifier
 
 @Composable
 private fun LogoutButton(
-    viewModel: ProfileScreenViewModel,
-    navigateToRoute: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onLogout: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         shape = RoundedCornerShape(12.dp),
@@ -227,9 +252,7 @@ private fun LogoutButton(
             disabledContentColor = colorResource(id = R.color.white)
         ),
         modifier = modifier.shadow(12.dp, RoundedCornerShape(12.dp)),
-        onClick = {
-            viewModel.logout(navigateToRoute)
-        }
+        onClick = onLogout,
     ) {
         Text(
             text = stringResource(R.string.logout),
@@ -241,9 +264,12 @@ private fun LogoutButton(
     }
 }
 
-
 @Composable
-private fun ProfileImage(link: Any?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ProfileImage(
+    link: Any?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     AsyncImage(
         model = ImageRequest
             .Builder(context = LocalContext.current)
@@ -262,7 +288,10 @@ private fun ProfileImage(link: Any?, onClick: () -> Unit, modifier: Modifier = M
 }
 
 @Composable
-private fun DefaultProfileImage(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DefaultProfileImage(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     AsyncImage(
         model = ImageRequest
             .Builder(context = LocalContext.current)
