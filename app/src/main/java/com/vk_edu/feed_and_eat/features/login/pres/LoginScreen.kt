@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,6 +102,7 @@ fun LoginScreenContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .testTag("login_screen")
             .paint(
                 painterResource(id = R.drawable.background_login),
                 contentScale = ContentScale.FillBounds
@@ -228,7 +230,9 @@ private fun EmailField(
             },
             isError = errorMsg != null,
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("login_email_field"),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White,
@@ -292,7 +296,8 @@ private fun PasswordField(
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp),
+                            .padding(bottom = 4.dp)
+                            .testTag("login_error_text"),
                         text = errorMsg.message ?: stringResource(R.string.exception_occured),
                         color = Color.Red
                     )
@@ -326,7 +331,8 @@ private fun PasswordField(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .testTag("login_password_field"),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White,
@@ -360,6 +366,7 @@ private fun LoginButton(loading: Boolean, onClick: () -> Unit) {
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(12.dp)
             )
+            .testTag("login_button")
     ) {
         Column(
             modifier = Modifier

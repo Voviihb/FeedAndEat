@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -98,6 +99,7 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .background(colorResource(R.color.pale_cyan))
                     .padding(padding)
+                    .testTag("home_screen_content")
             ) {
                 SearchCard(navigateToRoute)
 
@@ -177,6 +179,7 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
             ),
             modifier = Modifier
                 .height(52.dp)
+                .testTag("home_search_card")
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
             onClick = {
@@ -260,7 +263,8 @@ fun CardsRow(
         )
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(12.dp, 0.dp)
+            contentPadding = PaddingValues(12.dp, 0.dp),
+            modifier = Modifier.testTag("home_recipes_row_$title")
         ) {
             items(cards) { cardData ->
                 DishCard(
