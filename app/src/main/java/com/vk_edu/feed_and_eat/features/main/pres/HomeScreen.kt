@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +68,17 @@ fun HomeScreen(
             )
         }
     ) { padding ->
-        if (viewModel.loading.value)
+        val loading by viewModel.loading.collectAsState()
+        val errorMessage by viewModel.errorMessage.collectAsState()
+        val largeCardData by viewModel.largeCardData.collectAsState()
+        val favouriteRecipeIds by viewModel.favouriteRecipeIds.collectAsState()
+        val favouritesCollectionId by viewModel.favouritesCollectionId.collectAsState()
+        val cardsDataOfRow1 by viewModel.cardsDataOfRow1.collectAsState()
+        val cardsDataOfRow2 by viewModel.cardsDataOfRow2.collectAsState()
+        val cardsDataOfRow3 by viewModel.cardsDataOfRow3.collectAsState()
+        val cardsDataOfRow4 by viewModel.cardsDataOfRow4.collectAsState()
+
+        if (loading)
             Box(
                 modifier = Modifier
                     .background(colorResource(R.color.pale_cyan))
@@ -76,7 +87,7 @@ fun HomeScreen(
                 SearchCard(navigateToRoute)
                 LoadingCircular()
             }
-        else if (viewModel.errorMessage.value != null)
+        else if (errorMessage != null)
             Box(
                 modifier = Modifier
                     .background(colorResource(R.color.pale_cyan))
@@ -104,9 +115,9 @@ fun HomeScreen(
                 SearchCard(navigateToRoute)
 
                 LargeCard(
-                    cardData = viewModel.largeCardData.value,
-                    inFavourites = viewModel.largeCardData.value.recipeId in viewModel.favouriteRecipeIds.value,
-                    favouritesCollectionId = viewModel.favouritesCollectionId.value,
+                    cardData = largeCardData,
+                    inFavourites = largeCardData.recipeId in favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
                     addToFavourites = viewModel::addRecipeToUserCollection,
                     removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     navigateToRoute = navigateToRoute,
@@ -116,9 +127,9 @@ fun HomeScreen(
                 val localDensity = LocalDensity.current
                 CardsRow(
                     title = stringResource(R.string.title2),
-                    cards = viewModel.cardsDataOfRow1.value,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value,
-                    favouritesCollectionId = viewModel.favouritesCollectionId.value,
+                    cards = cardsDataOfRow1,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
                     addToFavourites = viewModel::addRecipeToUserCollection,
                     removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
@@ -132,9 +143,9 @@ fun HomeScreen(
 
                 CardsRow(
                     title = stringResource(R.string.title3),
-                    cards = viewModel.cardsDataOfRow2.value,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value,
-                    favouritesCollectionId = viewModel.favouritesCollectionId.value,
+                    cards = cardsDataOfRow2,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
                     addToFavourites = viewModel::addRecipeToUserCollection,
                     removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
@@ -143,9 +154,9 @@ fun HomeScreen(
 
                 CardsRow(
                     title = stringResource(R.string.title4),
-                    cards = viewModel.cardsDataOfRow3.value,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value,
-                    favouritesCollectionId = viewModel.favouritesCollectionId.value,
+                    cards = cardsDataOfRow3,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
                     addToFavourites = viewModel::addRecipeToUserCollection,
                     removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
@@ -154,9 +165,9 @@ fun HomeScreen(
 
                 CardsRow(
                     title = stringResource(R.string.title5),
-                    cards = viewModel.cardsDataOfRow4.value,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value,
-                    favouritesCollectionId = viewModel.favouritesCollectionId.value,
+                    cards = cardsDataOfRow4,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
                     addToFavourites = viewModel::addRecipeToUserCollection,
                     removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,

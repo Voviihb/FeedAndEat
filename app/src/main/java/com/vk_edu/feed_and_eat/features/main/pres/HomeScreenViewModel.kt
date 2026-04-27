@@ -1,7 +1,5 @@
 package com.vk_edu.feed_and_eat.features.main.pres
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
@@ -10,6 +8,8 @@ import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,32 +18,32 @@ class HomeScreenViewModel @Inject constructor(
     private val _recipesRepo: RecipesRepository,
     private val _usersRepo: UsersRepository
 ) : ViewModel() {
-    private val _largeCardData = mutableStateOf(RecipeCard())
-    val largeCardData: State<RecipeCard> = _largeCardData
+    private val _largeCardData = MutableStateFlow(RecipeCard())
+    val largeCardData: StateFlow<RecipeCard> = _largeCardData
 
-    private val _cardsDataOfRow1 = mutableStateOf(listOf<RecipeCard>())
-    val cardsDataOfRow1: State<List<RecipeCard>> = _cardsDataOfRow1
+    private val _cardsDataOfRow1 = MutableStateFlow(listOf<RecipeCard>())
+    val cardsDataOfRow1: StateFlow<List<RecipeCard>> = _cardsDataOfRow1
 
-    private val _cardsDataOfRow2 = mutableStateOf(listOf<RecipeCard>())
-    val cardsDataOfRow2: State<List<RecipeCard>> = _cardsDataOfRow2
+    private val _cardsDataOfRow2 = MutableStateFlow(listOf<RecipeCard>())
+    val cardsDataOfRow2: StateFlow<List<RecipeCard>> = _cardsDataOfRow2
 
-    private val _cardsDataOfRow3 = mutableStateOf(listOf<RecipeCard>())
-    val cardsDataOfRow3: State<List<RecipeCard>> = _cardsDataOfRow3
+    private val _cardsDataOfRow3 = MutableStateFlow(listOf<RecipeCard>())
+    val cardsDataOfRow3: StateFlow<List<RecipeCard>> = _cardsDataOfRow3
 
-    private val _cardsDataOfRow4 = mutableStateOf(listOf<RecipeCard>())
-    val cardsDataOfRow4: State<List<RecipeCard>> = _cardsDataOfRow4
+    private val _cardsDataOfRow4 = MutableStateFlow(listOf<RecipeCard>())
+    val cardsDataOfRow4: StateFlow<List<RecipeCard>> = _cardsDataOfRow4
 
-    private val _favouriteRecipeIds = mutableStateOf(listOf<String>())
-    val favouriteRecipeIds: State<List<String>> = _favouriteRecipeIds
+    private val _favouriteRecipeIds = MutableStateFlow(listOf<String>())
+    val favouriteRecipeIds: StateFlow<List<String>> = _favouriteRecipeIds
 
-    private val _favouritesCollectionId = mutableStateOf<String?>(null)
-    val favouritesCollectionId: State<String?> = _favouritesCollectionId
+    private val _favouritesCollectionId = MutableStateFlow<String?>(null)
+    val favouritesCollectionId: StateFlow<String?> = _favouritesCollectionId
 
-    private val _loading = mutableStateOf(false)
-    val loading: State<Boolean> = _loading
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
 
-    private val _errorMessage = mutableStateOf<Exception?>(null)
-    val errorMessage: State<Exception?> = _errorMessage
+    private val _errorMessage = MutableStateFlow<Exception?>(null)
+    val errorMessage: StateFlow<Exception?> = _errorMessage
 
     init {
         getFavouriteRecipeIds()
