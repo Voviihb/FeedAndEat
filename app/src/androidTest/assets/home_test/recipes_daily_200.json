@@ -1,0 +1,27 @@
+{
+  "id": "recipe-001",
+  "user_id": "user-001",
+  "name": "Греческий салат",
+  "image_url": null,
+  "instructions": [
+    {"paragraph": "Нарезать овощи", "timers": null},
+    {"paragraph": "Добавить сыр фета", "timers": null}
+  ],
+  "servings": {"amount": 2, "weight": 300},
+  "ingredients": [
+    {"name": "Томаты", "amount": 2.0, "unit": "шт"},
+    {"name": "Огурцы", "amount": 1.0, "unit": "шт"},
+    {"name": "Фета", "amount": 100.0, "unit": "г"}
+  ],
+  "tags": ["салат", "вегетарианское"],
+  "nutrients": {
+    "Calories": 180.0,
+    "Sugar": 5.0,
+    "Protein": 8.0,
+    "Fat": 12.0,
+    "Carbohydrates": 10.0
+  },
+  "rating": 4.5,
+  "cooked": 42,
+  "created_at": "2024-01-01T00:00:00Z"
+}

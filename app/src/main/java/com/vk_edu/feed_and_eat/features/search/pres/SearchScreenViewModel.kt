@@ -9,12 +9,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.RecipeCard
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.SearchFilters
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
-import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -25,9 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
-    private val _recipesRepo: RecipesRepoImpl,
-    private val _authRepo: AuthRepoImpl,
-    private val _usersRepo: UsersRepoImpl
+    private val _recipesRepo: RecipesRepository,
+    private val _usersRepo: UsersRepository
 ) : ViewModel() {
     val cardsDataPager: Flow<PagingData<RecipeCard>> = Pager(PagingConfig(pageSize = LIMIT)) {
         SearchPagingSource(::searchRecipes, LIMIT)
@@ -101,6 +99,7 @@ class SearchScreenViewModel @Inject constructor(
                     }
                 )
 
+                setRefreshFlag()
                 _reloadData.value = true
             } catch (e: Exception) {
                 onError(e)
@@ -143,6 +142,7 @@ class SearchScreenViewModel @Inject constructor(
                         ?.toDouble() ?: 10e9
                 )
 
+                setRefreshFlag()
                 _reloadData.value = true
             } catch (e: Exception) {
                 onError(e)
@@ -185,48 +185,53 @@ class SearchScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var collectionsData = listOf<CollectionDataModel>()
-                val user = _authRepo.getUserId()
-                if (user != null) {
-                    _usersRepo.getUserCollections(userId = user).collect { response ->
+                android.util.Log.d("SearchViewModel", "Loading user collections...")
+                _usersRepo.getUserCollections().collect { response ->
                         when (response) {
                             is Response.Loading -> _loading.value = true
                             is Response.Success -> {
                                 if (response.data != null) {
                                     collectionsData = response.data
+                                    android.util.Log.d("SearchViewModel", "Collections loaded: ${response.data.map { it.name }}")
                                 }
                             }
 
                             is Response.Failure -> {
-                                onError(response.e)
+                                // 401 при анонимном входе — нормальная ситуация.
+                                // Не вызываем onError(), чтобы не ломать экран поиска.
+                                android.util.Log.w("SearchViewModel", "Failed to load collections (not authorized?)", response.e)
                             }
                         }
                     }
 
-                    val favouritesId =
-                        collectionsData.filter { it.name == FAVOURITES }[0].id
-                    _favouritesCollectionId.value = favouritesId
+                val favouritesCollection = collectionsData.find { it.name == FAVOURITES }
+                val favouritesId = favouritesCollection?.id
+                _favouritesCollectionId.value = favouritesId
+                android.util.Log.d("SearchViewModel", "Found favourites collection: $favouritesId")
 
-                    if (favouritesId != null) {
+                if (favouritesId != null) {
                         _recipesRepo.loadCollectionRecipesId(id = favouritesId).collect { response ->
-                            when (response) {
-                                is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    if (response.data != null) {
-                                        _favouriteRecipeIds.value = response.data.recipeIds
+                                when (response) {
+                                    is Response.Loading -> _loading.value = true
+                                    is Response.Success -> {
+                                        if (response.data != null) {
+                                            _favouriteRecipeIds.value = response.data.recipeIds
+                                            android.util.Log.d("SearchViewModel", "Loaded favourite recipe IDs: ${response.data.recipeIds}")
+                                        }
+                                    }
+
+                                    is Response.Failure -> {
+                                        android.util.Log.e("SearchViewModel", "Failed to load favourite recipes", response.e)
+                                        onError(response.e)
                                     }
                                 }
-
-                                is Response.Failure -> {
-                                    onError(response.e)
-                                }
                             }
-                        }
-                    }
-
-
+                } else {
+                    android.util.Log.w("SearchViewModel", "No Избранное collection found!")
                 }
 
             } catch (e: Exception) {
+                android.util.Log.e("SearchViewModel", "Exception in loadUserFavourites", e)
                 onError(e)
             }
             _loading.value = false
@@ -236,30 +241,32 @@ class SearchScreenViewModel @Inject constructor(
     fun addRecipeToUserCollection(collectionId: String, recipe: RecipeCard) {
         viewModelScope.launch {
             try {
-                val user = _authRepo.getUserId()
-                if (user != null) {
-                    _recipesRepo.addRecipeToUserCollection(
-                        user,
+                android.util.Log.d("SearchViewModel", "Adding recipe ${recipe.recipeId} to collection $collectionId")
+                _recipesRepo.addRecipeToUserCollection(
                         collectionId,
                         recipe.recipeId,
                         recipe.image
                     ).collect { response ->
                         when (response) {
-                            is Response.Loading -> { }
+                            is Response.Loading -> { 
+                                android.util.Log.d("SearchViewModel", "Adding to collection - Loading...")
+                            }
                             is Response.Success -> {
+                                android.util.Log.d("SearchViewModel", "Successfully added to collection!")
                                 val favouriteIds = _favouriteRecipeIds.value.toMutableList()
                                 favouriteIds.add(recipe.recipeId)
                                 _favouriteRecipeIds.value = favouriteIds
                             }
 
                             is Response.Failure -> {
+                                android.util.Log.e("SearchViewModel", "Failed to add to collection", response.e)
                                 onError(response.e)
                             }
                         }
                     }
-                }
 
             } catch (e: Exception) {
+                android.util.Log.e("SearchViewModel", "Exception in addRecipeToUserCollection", e)
                 onError(e)
             }
         }
@@ -292,12 +299,13 @@ class SearchScreenViewModel @Inject constructor(
 
     private suspend fun searchRecipes(pagePointer: PagePointer): CardsAndSnapshots {
         val result = viewModelScope.async {
-            var result = CardsAndSnapshots(listOf(), null, null)
+            var result = CardsAndSnapshots(listOf())
             try {
                 _recipesRepo.loadSearchRecipes(
                     searchFilters,
                     if (refreshFlag) null else pagePointer.type,
-                    pagePointer.documentSnapshot
+                    if (refreshFlag) 0 else pagePointer.offset,
+                    20
                 ).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
@@ -314,8 +322,8 @@ class SearchScreenViewModel @Inject constructor(
                                         cooked = fullRecipe.cooked
                                     )
                                 },
-                                response.data.startDocument,
-                                response.data.endDocument
+                                if (refreshFlag) 0 else response.data.currentOffset,
+                                response.data.hasMore
                             )
                         }
 
@@ -345,6 +353,6 @@ class SearchScreenViewModel @Inject constructor(
 
     companion object {
         private const val LIMIT = 20
-        private const val FAVOURITES = "Favourites"
+        private const val FAVOURITES = "Избранное"
     }
 }

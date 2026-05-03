@@ -22,7 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -67,11 +68,17 @@ fun HomeScreen(
             )
         }
     ) { padding ->
-        LaunchedEffect(key1 = Unit) {
-            viewModel.checkUserChanged()
-        }
+        val loading by viewModel.loading.collectAsState()
+        val errorMessage by viewModel.errorMessage.collectAsState()
+        val largeCardData by viewModel.largeCardData.collectAsState()
+        val favouriteRecipeIds by viewModel.favouriteRecipeIds.collectAsState()
+        val favouritesCollectionId by viewModel.favouritesCollectionId.collectAsState()
+        val cardsDataOfRow1 by viewModel.cardsDataOfRow1.collectAsState()
+        val cardsDataOfRow2 by viewModel.cardsDataOfRow2.collectAsState()
+        val cardsDataOfRow3 by viewModel.cardsDataOfRow3.collectAsState()
+        val cardsDataOfRow4 by viewModel.cardsDataOfRow4.collectAsState()
 
-        if (viewModel.loading.value)
+        if (loading)
             Box(
                 modifier = Modifier
                     .background(colorResource(R.color.pale_cyan))
@@ -80,7 +87,7 @@ fun HomeScreen(
                 SearchCard(navigateToRoute)
                 LoadingCircular()
             }
-        else if (viewModel.errorMessage.value != null)
+        else if (errorMessage != null)
             Box(
                 modifier = Modifier
                     .background(colorResource(R.color.pale_cyan))
@@ -103,22 +110,28 @@ fun HomeScreen(
                     .verticalScroll(rememberScrollState())
                     .background(colorResource(R.color.pale_cyan))
                     .padding(padding)
+                    .testTag("home_screen_content")
             ) {
                 SearchCard(navigateToRoute)
 
                 LargeCard(
-                    viewModel = viewModel,
-                    cardData = viewModel.largeCardData.value,
+                    cardData = largeCardData,
+                    inFavourites = largeCardData.recipeId in favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
+                    addToFavourites = viewModel::addRecipeToUserCollection,
+                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     navigateToRoute = navigateToRoute,
-                    userFavourites = viewModel.favouriteRecipeIds.value
                 )
 
                 var columnWidthDp by remember { mutableStateOf(0.dp) }
                 val localDensity = LocalDensity.current
                 CardsRow(
-                    viewModel = viewModel,
                     title = stringResource(R.string.title2),
-                    cards = viewModel.cardsDataOfRow1.value,
+                    cards = cardsDataOfRow1,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
+                    addToFavourites = viewModel::addRecipeToUserCollection,
+                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
                     navigateToRoute = navigateToRoute,
                     modifier = Modifier
@@ -126,38 +139,42 @@ fun HomeScreen(
                         .onGloballyPositioned { coordinates ->
                             columnWidthDp = with(localDensity) { coordinates.size.width.toDp() }
                         },
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value
                 )
 
                 CardsRow(
-                    viewModel = viewModel,
                     title = stringResource(R.string.title3),
-                    cards = viewModel.cardsDataOfRow2.value,
+                    cards = cardsDataOfRow2,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
+                    addToFavourites = viewModel::addRecipeToUserCollection,
+                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
                     navigateToRoute = navigateToRoute,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value
                 )
 
                 CardsRow(
-                    viewModel = viewModel,
                     title = stringResource(R.string.title4),
-                    cards = viewModel.cardsDataOfRow3.value,
+                    cards = cardsDataOfRow3,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
+                    addToFavourites = viewModel::addRecipeToUserCollection,
+                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
                     navigateToRoute = navigateToRoute,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value
                 )
 
                 CardsRow(
-                    viewModel = viewModel,
                     title = stringResource(R.string.title5),
-                    cards = viewModel.cardsDataOfRow4.value,
+                    cards = cardsDataOfRow4,
+                    favouriteRecipeIds = favouriteRecipeIds,
+                    favouritesCollectionId = favouritesCollectionId,
+                    addToFavourites = viewModel::addRecipeToUserCollection,
+                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
                     columnWidthDp = columnWidthDp,
                     navigateToRoute = navigateToRoute,
-                    favouriteRecipeIds = viewModel.favouriteRecipeIds.value
                 )
 
                 Spacer(modifier = Modifier.size(12.dp))
-
             }
     }
 }
@@ -173,6 +190,7 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
             ),
             modifier = Modifier
                 .height(52.dp)
+                .testTag("home_search_card")
                 .fillMaxWidth()
                 .shadow(12.dp, RoundedCornerShape(24.dp)),
             onClick = {
@@ -199,7 +217,6 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
                         modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                     )
                 }
-
             }
         }
     }
@@ -207,9 +224,11 @@ fun SearchCard(navigateToRoute: (String) -> Unit, modifier: Modifier = Modifier)
 
 @Composable
 fun LargeCard(
-    viewModel: HomeScreenViewModel,
     cardData: RecipeCard,
-    userFavourites: List<String>,
+    inFavourites: Boolean,
+    favouritesCollectionId: String?,
+    addToFavourites: (String, RecipeCard) -> Unit,
+    removeFromFavourites: (String, RecipeCard) -> Unit,
     navigateToRoute: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -221,10 +240,10 @@ fun LargeCard(
         BoldText(text = stringResource(R.string.title1), fontSize = ExtraLargeText)
         DishCard(
             recipeCard = cardData,
-            inFavourites = cardData.recipeId in userFavourites,
-            favouritesCollectionId = viewModel.favouritesCollectionId.value,
-            addToFavourites = viewModel::addRecipeToUserCollection,
-            removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+            inFavourites = inFavourites,
+            favouritesCollectionId = favouritesCollectionId,
+            addToFavourites = addToFavourites,
+            removeFromFavourites = removeFromFavourites,
             navigateToRoute = navigateToRoute,
             largeCard = true,
             modifier = Modifier.fillMaxWidth(0.7f)
@@ -234,13 +253,15 @@ fun LargeCard(
 
 @Composable
 fun CardsRow(
-    viewModel: HomeScreenViewModel,
     title: String,
     cards: List<RecipeCard>,
     favouriteRecipeIds: List<String>,
+    favouritesCollectionId: String?,
+    addToFavourites: (String, RecipeCard) -> Unit,
+    removeFromFavourites: (String, RecipeCard) -> Unit,
     columnWidthDp: Dp,
     navigateToRoute: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -253,15 +274,16 @@ fun CardsRow(
         )
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(12.dp, 0.dp)
+            contentPadding = PaddingValues(12.dp, 0.dp),
+            modifier = Modifier.testTag("home_recipes_row_$title")
         ) {
             items(cards) { cardData ->
                 DishCard(
                     recipeCard = cardData,
                     inFavourites = cardData.recipeId in favouriteRecipeIds,
-                    favouritesCollectionId = viewModel.favouritesCollectionId.value,
-                    addToFavourites = viewModel::addRecipeToUserCollection,
-                    removeFromFavourites = viewModel::removeRecipeFromUserCollection,
+                    favouritesCollectionId = favouritesCollectionId,
+                    addToFavourites = addToFavourites,
+                    removeFromFavourites = removeFromFavourites,
                     navigateToRoute = navigateToRoute,
                     modifier = Modifier.width((columnWidthDp - 44.dp) / 2)
                 )

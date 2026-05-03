@@ -2,60 +2,48 @@ package com.vk_edu.feed_and_eat
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
+import com.vk_edu.feed_and_eat.features.login.data.AuthRepoBackendImpl
+import com.vk_edu.feed_and_eat.features.login.domain.repository.AuthRepository
+import com.vk_edu.feed_and_eat.features.profile.data.UsersRepoBackendImpl
+import com.vk_edu.feed_and_eat.features.profile.domain.repository.UsersRepository
+import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoBackendImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
+import com.vk_edu.feed_and_eat.features.new_recipe.data.NewRecipeRepoBackendImpl
+import com.vk_edu.feed_and_eat.features.new_recipe.repository.NewRecipeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AuthProvider {
+object AppProviders {
+
     @Provides
     @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return Firebase.auth
-    }
-}
+    fun provideSharedPrefs(@ApplicationContext appContext: Context): SharedPreferences =
+        appContext.getSharedPreferences(PreferencesManager.PROJECT_PREFS, Context.MODE_PRIVATE)
 
-@Module
-@InstallIn(SingletonComponent::class)
-object FireStoreProvider {
     @Provides
     @Singleton
-    fun provideFireStore(): FirebaseFirestore {
-        return Firebase.firestore
-    }
-}
+    fun provideAuthRepository(backendImpl: AuthRepoBackendImpl): AuthRepository = backendImpl
 
-@Module
-@InstallIn(SingletonComponent::class)
-object CloudStorageProvider {
+
     @Provides
     @Singleton
-    fun provideCloudStorage(): FirebaseStorage {
-        return Firebase.storage
-    }
-}
+    fun provideUsersRepository(backendImpl: UsersRepoBackendImpl): UsersRepository = backendImpl
 
-
-@Module
-@InstallIn(SingletonComponent::class)
-object SharedPrefsProvider {
     @Provides
     @Singleton
-    fun provideSharedPrefs(@ApplicationContext appContext: Context): SharedPreferences {
-        return appContext.getSharedPreferences(
-            PreferencesManager.PROJECT_PREFS,
-            Context.MODE_PRIVATE
-        )
-    }
+    fun provideRecipesRepository(backendImpl: RecipesRepoBackendImpl): RecipesRepository = backendImpl
+    
+    @Provides
+    @Singleton
+    fun provideNewRecipeRepository(
+        recipesApi: RecipesApi,
+        @ApplicationContext context: Context
+    ): NewRecipeRepository = NewRecipeRepoBackendImpl(recipesApi, context)
 }

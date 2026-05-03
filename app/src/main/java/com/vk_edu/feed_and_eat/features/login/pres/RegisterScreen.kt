@@ -31,7 +31,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -69,6 +68,38 @@ fun RegisterScreen(
     val registerForm by viewModel.registerFormState
     val errorMsg by viewModel.errorMessage
 
+    RegisterScreenContent(
+        email = registerForm.email,
+        login = registerForm.login,
+        password = registerForm.password,
+        passwordControl = registerForm.passwordControl,
+        loading = viewModel.loading.value,
+        error = errorMsg,
+        onEmailChange = { viewModel.emailChanged(it); viewModel.clearError() },
+        onLoginChange = { viewModel.loginChanged(it); viewModel.clearError() },
+        onPassword1Change = { viewModel.password1Changed(it); viewModel.clearError() },
+        onPassword2Change = { viewModel.password2Changed(it); viewModel.clearError() },
+        onSignUpClick = { viewModel.registerUserWithEmail(navigateToRoute) },
+        onLoginClick = { navigateToRoute(Screen.LoginScreen.route) },
+    )
+}
+
+@Composable
+@OptIn(ExperimentalComposeUiApi::class)
+fun RegisterScreenContent(
+    email: String,
+    login: String,
+    password: String,
+    passwordControl: String,
+    loading: Boolean,
+    error: Exception?,
+    onEmailChange: (String) -> Unit,
+    onLoginChange: (String) -> Unit,
+    onPassword1Change: (String) -> Unit,
+    onPassword2Change: (String) -> Unit,
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit,
+) {
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
@@ -111,7 +142,7 @@ fun RegisterScreen(
                 Text(
                     text = stringResource(R.string.sign_up),
                     modifier = Modifier
-                        .padding(top = 100.dp, bottom = 16.dp)
+                        .padding(top = 50.dp, bottom = 16.dp)
                         .align(Alignment.Start),
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
@@ -125,46 +156,37 @@ fun RegisterScreen(
             ) {
 
                 EmailField(
-                    registerForm = registerForm,
-                    viewModel = viewModel,
-                    errorMsg = errorMsg
+                    email = email,
+                    onValueChange = onEmailChange,
+                    errorMsg = error
                 )
-
 
                 UsernameField(
-                    registerForm = registerForm,
-                    viewModel = viewModel,
-                    errorMsg = errorMsg
+                    loginValue = login,
+                    onValueChange = onLoginChange,
+                    errorMsg = error
                 )
-
 
                 PasswordField(
-                    registerForm = registerForm,
-                    viewModel = viewModel,
+                    password = password,
+                    onValueChange = onPassword1Change,
                     passwordVisible = passwordVisible,
-                    errorMsg = errorMsg
+                    errorMsg = error
                 )
 
-
                 PasswordControlField(
-                    registerForm = registerForm,
-                    viewModel = viewModel,
+                    passwordControl = passwordControl,
+                    onValueChange = onPassword2Change,
                     passwordVisible = passwordVisible,
                     keyboardController = keyboardController,
                     focusRequester = focusRequester,
-                    errorMsg = errorMsg
+                    errorMsg = error
                 )
-
 
                 SignUpButton(
-                    onClickFunc = {
-                        viewModel.registerUserWithEmail(
-                            navigateToRoute
-                        )
-                    },
-                    loadingState = viewModel.loading
+                    onClickFunc = onSignUpClick,
+                    loading = loading,
                 )
-
             }
         }
 
@@ -175,15 +197,14 @@ fun RegisterScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        LoginButton(modifier = modifier, navigateToRoute)
+        LoginButton(modifier = modifier, onClick = onLoginClick)
     }
 }
 
-
 @Composable
 private fun EmailField(
-    registerForm: RegisterForm,
-    viewModel: RegisterScreenViewModel,
+    email: String,
+    onValueChange: (String) -> Unit,
     errorMsg: Exception?
 ) {
     Box(
@@ -199,11 +220,8 @@ private fun EmailField(
 
     ) {
         TextField(
-            value = registerForm.email,
-            onValueChange = {
-                viewModel.emailChanged(it)
-                viewModel.clearError()
-            },
+            value = email,
+            onValueChange = onValueChange,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -234,11 +252,10 @@ private fun EmailField(
     }
 }
 
-
 @Composable
 private fun UsernameField(
-    registerForm: RegisterForm,
-    viewModel: RegisterScreenViewModel,
+    loginValue: String,
+    onValueChange: (String) -> Unit,
     errorMsg: Exception?
 ) {
     Box(
@@ -254,11 +271,8 @@ private fun UsernameField(
 
     ) {
         TextField(
-            value = registerForm.login,
-            onValueChange = {
-                viewModel.loginChanged(it)
-                viewModel.clearError()
-            },
+            value = loginValue,
+            onValueChange = onValueChange,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -291,8 +305,8 @@ private fun UsernameField(
 
 @Composable
 private fun PasswordField(
-    registerForm: RegisterForm,
-    viewModel: RegisterScreenViewModel,
+    password: String,
+    onValueChange: (String) -> Unit,
     passwordVisible: MutableState<Boolean>,
     errorMsg: Exception?
 ) {
@@ -309,11 +323,8 @@ private fun PasswordField(
 
     ) {
         TextField(
-            value = registerForm.password,
-            onValueChange = {
-                viewModel.password1Changed(it)
-                viewModel.clearError()
-            },
+            value = password,
+            onValueChange = onValueChange,
             visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -364,8 +375,8 @@ private fun PasswordField(
 
 @Composable
 private fun PasswordControlField(
-    registerForm: RegisterForm,
-    viewModel: RegisterScreenViewModel,
+    passwordControl: String,
+    onValueChange: (String) -> Unit,
     passwordVisible: MutableState<Boolean>,
     keyboardController: SoftwareKeyboardController?,
     focusRequester: FocusRequester,
@@ -385,11 +396,8 @@ private fun PasswordControlField(
 
     ) {
         TextField(
-            value = registerForm.passwordControl,
-            onValueChange = {
-                viewModel.password2Changed(it)
-                viewModel.clearError()
-            },
+            value = passwordControl,
+            onValueChange = onValueChange,
             visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -436,8 +444,6 @@ private fun PasswordControlField(
                         },
                         color = Color.Red
                     )
-                    viewModel.password1Changed("")
-                    viewModel.password2Changed("")
                 } else {
                     Text(
                         modifier = Modifier
@@ -469,8 +475,7 @@ private fun PasswordControlField(
 }
 
 @Composable
-private fun SignUpButton(onClickFunc: () -> Unit, loadingState: State<Boolean>) {
-    val loading by loadingState
+private fun SignUpButton(onClickFunc: () -> Unit, loading: Boolean) {
     Button(
         onClick = onClickFunc,
         shape = RoundedCornerShape(12.dp),
@@ -503,17 +508,16 @@ private fun SignUpButton(onClickFunc: () -> Unit, loadingState: State<Boolean>) 
                 )
             }
         }
-
     }
 }
 
 @Composable
 private fun LoginButton(
     modifier: Modifier,
-    navigateToRoute: (String) -> Unit,
+    onClick: () -> Unit,
 ) {
     Button(
-        onClick = { navigateToRoute(Screen.LoginScreen.route) },
+        onClick = onClick,
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

@@ -3,6 +3,7 @@ package com.vk_edu.feed_and_eat.features.navigation.data
 import android.content.Context
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.vk_edu.feed_and_eat.features.navigation.pres.Screen
 import com.vk_edu.feed_and_eat.features.profile.pres.ProfileScreen
 import com.vk_edu.feed_and_eat.features.recipe.pres.preview.RecipeScreen
 import com.vk_edu.feed_and_eat.features.search.pres.SearchScreen
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -37,9 +39,19 @@ fun NavGraph(
     val navNumber = stringResource(id = R.string.nav_number)
     val recipe = stringResource(id = R.string.recipe)
 
-    val navigateToRoute: (String) -> Unit = {route ->
+    // Реактивная навигация на LoginScreen при истечении токена
+    LaunchedEffect(Unit) {
+        viewModel.logoutEvent.collectLatest {
+            navController.navigate(Screen.LoginScreen.route) {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
+    val navigateToRoute: (String) -> Unit = { route ->
         navController.navigate(route) {
-            if (route.substring(0, 6) != recipe){
+            if (route.substring(0, 6) != recipe) {
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                     inclusive = true
@@ -50,13 +62,13 @@ fun NavGraph(
         }
     }
 
-    val navigateNoState: (String) -> Unit = {route ->
+    val navigateNoState: (String) -> Unit = { route ->
         navController.navigate(route)
     }
 
     val navigateBack = {
         val previous = navController.previousBackStackEntry?.destination?.route
-        navController.navigate(previous ?: BottomScreen.HomeScreen.route){
+        navController.navigate(previous ?: BottomScreen.HomeScreen.route) {
             launchSingleTop = true
             restoreState = true
         }
@@ -64,7 +76,7 @@ fun NavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = viewModel.getStartDestination(),
+        startDestination = viewModel.startDestination.value,
         modifier = Modifier.padding(0.dp)
     ) {
         composable(BottomScreen.HomeScreen.route) {
@@ -84,7 +96,6 @@ fun NavGraph(
             viewModel.changeBottomDestination(BottomScreen.CollectionOverviewScreen.route)
             CollectionScreen(
                 navigateToRoute = navigateToRoute,
-                navigateBack = navigateBack,
                 navigateNoState = navigateNoState,
             )
         }
@@ -116,10 +127,10 @@ fun NavGraph(
         composable(
             route = Screen.RecipeScreen.route + Screen.Id.route + Screen.Number.route,
             arguments = listOf(
-                navArgument(navId){ type = NavType.StringType},
-                navArgument(navNumber){ type = NavType.IntType }
+                navArgument(navId) { type = NavType.StringType },
+                navArgument(navNumber) { type = NavType.IntType }
             )
-        ){entry ->
+        ) { entry ->
             val id = entry.arguments?.getString(navId)
             val number = entry.arguments?.getInt(navNumber)
             val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
@@ -134,8 +145,8 @@ fun NavGraph(
         }
         composable(
             route = Screen.RecipeScreen.route + Screen.Id.route,
-            arguments = listOf(navArgument(navId){ type = NavType.StringType })
-        ) {entry ->
+            arguments = listOf(navArgument(navId) { type = NavType.StringType })
+        ) { entry ->
             val id = entry.arguments?.getString(navId)
             val destination = navController.previousBackStackEntry?.destination?.route ?: BottomScreen.HomeScreen.route
             RecipeScreen(

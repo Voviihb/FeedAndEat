@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,12 +70,39 @@ fun LoginScreen(
     val loginForm by viewModel.loginFormState
     val errorMsg by viewModel.errorMessage
 
+    LoginScreenContent(
+        email = loginForm.email,
+        password = loginForm.password,
+        loading = viewModel.loading.value,
+        error = errorMsg,
+        onEmailChange = { viewModel.emailChanged(it); viewModel.clearError() },
+        onPasswordChange = { viewModel.passwordChanged(it); viewModel.clearError() },
+        onLoginClick = { viewModel.loginWithEmail(navigateToRoute) },
+        onNoAuthClick = { viewModel.signInAnonymously(navigateToRoute) },
+        onRegisterClick = { navigateToRoute(Screen.RegisterScreen.route) },
+    )
+}
+
+@Composable
+@OptIn(ExperimentalComposeUiApi::class)
+fun LoginScreenContent(
+    email: String,
+    password: String,
+    loading: Boolean,
+    error: Exception?,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onNoAuthClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+) {
     val focusRequester = FocusRequester.createRefs().component1()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .testTag("login_screen")
             .paint(
                 painterResource(id = R.drawable.background_login),
                 contentScale = ContentScale.FillBounds
@@ -110,7 +138,7 @@ fun LoginScreen(
                 Text(
                     text = stringResource(id = R.string.log_in),
                     modifier = Modifier
-                        .padding(top = 100.dp, bottom = 16.dp)
+                        .padding(top = 50.dp, bottom = 16.dp)
                         .align(Alignment.Start),
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
@@ -124,21 +152,21 @@ fun LoginScreen(
             ) {
 
                 EmailField(
-                    loginForm = loginForm,
-                    viewModel = viewModel,
+                    email = email,
+                    onValueChange = onEmailChange,
                     focusRequester = focusRequester,
-                    errorMsg = errorMsg
+                    errorMsg = error
                 )
 
                 PasswordField(
-                    loginForm = loginForm,
-                    viewModel = viewModel,
+                    password = password,
+                    onValueChange = onPasswordChange,
                     focusRequester = focusRequester,
-                    errorMsg = errorMsg,
+                    errorMsg = error,
                     keyboardController = keyboardController
                 )
 
-                LoginButton(viewModel = viewModel, navigateToRoute)
+                LoginButton(loading = loading, onClick = onLoginClick)
 
                 Text(
                     text = stringResource(R.string.or_login),
@@ -147,7 +175,7 @@ fun LoginScreen(
                     color = colorResource(id = R.color.white)
                 )
 
-                NoAuthLoginButton(viewModel = viewModel, navigateToRoute)
+                NoAuthLoginButton(onClick = onNoAuthClick)
 
             }
         }
@@ -159,19 +187,15 @@ fun LoginScreen(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(topStart = 12.dp)
             )
-        RegisterButton(
-            viewModel = viewModel,
-            modifier = modifier
-        ) { navigateToRoute(Screen.RegisterScreen.route) }
+        RegisterButton(modifier = modifier, onClick = onRegisterClick)
 
     }
-
 }
 
 @Composable
 private fun EmailField(
-    loginForm: LoginForm,
-    viewModel: LoginScreenViewModel,
+    email: String,
+    onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
     errorMsg: Exception?
 ) {
@@ -188,11 +212,8 @@ private fun EmailField(
 
     ) {
         TextField(
-            value = loginForm.email,
-            onValueChange = {
-                viewModel.emailChanged(it)
-                viewModel.clearError()
-            },
+            value = email,
+            onValueChange = onValueChange,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -209,7 +230,9 @@ private fun EmailField(
             },
             isError = errorMsg != null,
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("login_email_field"),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White,
@@ -228,8 +251,8 @@ private fun EmailField(
 
 @Composable
 private fun PasswordField(
-    loginForm: LoginForm,
-    viewModel: LoginScreenViewModel,
+    password: String,
+    onValueChange: (String) -> Unit,
     focusRequester: FocusRequester,
     errorMsg: Exception?,
     keyboardController: SoftwareKeyboardController?,
@@ -249,11 +272,8 @@ private fun PasswordField(
 
     ) {
         TextField(
-            value = loginForm.password,
-            onValueChange = {
-                viewModel.passwordChanged(it)
-                viewModel.clearError()
-            },
+            value = password,
+            onValueChange = onValueChange,
             visualTransformation = if (passwordVisible) VisualTransformation.None
             else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
@@ -276,11 +296,11 @@ private fun PasswordField(
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp),
+                            .padding(bottom = 4.dp)
+                            .testTag("login_error_text"),
                         text = errorMsg.message ?: stringResource(R.string.exception_occured),
                         color = Color.Red
                     )
-                    viewModel.passwordChanged("")
                 } else {
                     Text(
                         modifier = Modifier
@@ -311,7 +331,8 @@ private fun PasswordField(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .testTag("login_password_field"),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White,
@@ -328,13 +349,9 @@ private fun PasswordField(
 }
 
 @Composable
-private fun LoginButton(
-    viewModel: LoginScreenViewModel,
-    navigateToRoute: (String) -> Unit
-) {
-    val loading by viewModel.loading
+private fun LoginButton(loading: Boolean, onClick: () -> Unit) {
     Button(
-        onClick = { viewModel.loginWithEmail(navigateToRoute) },
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -349,6 +366,7 @@ private fun LoginButton(
                 colorResource(id = R.color.white),
                 shape = RoundedCornerShape(12.dp)
             )
+            .testTag("login_button")
     ) {
         Column(
             modifier = Modifier
@@ -369,12 +387,9 @@ private fun LoginButton(
 }
 
 @Composable
-private fun NoAuthLoginButton(
-    viewModel: LoginScreenViewModel,
-    navigateToRoute: (String) -> Unit
-) {
+private fun NoAuthLoginButton(onClick: () -> Unit) {
     Button(
-        onClick = { viewModel.signInAnonymously(navigateToRoute) },
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),
@@ -395,13 +410,9 @@ private fun NoAuthLoginButton(
 }
 
 @Composable
-private fun RegisterButton(
-    viewModel: LoginScreenViewModel,
-    modifier: Modifier,
-    navigateToRoute: (String) -> Unit,
-) {
+private fun RegisterButton(modifier: Modifier, onClick: () -> Unit) {
     Button(
-        onClick = { navigateToRoute(Screen.RegisterScreen.route) },
+        onClick = onClick,
         shape = RoundedCornerShape(topStart = 12.dp),
         colors = ButtonColors(
             containerColor = colorResource(id = R.color.purple_fae),

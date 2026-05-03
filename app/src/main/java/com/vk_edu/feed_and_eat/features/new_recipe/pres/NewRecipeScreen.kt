@@ -85,8 +85,6 @@ import com.vk_edu.feed_and_eat.ui.theme.SmallestText
 
 @Composable
 fun NewRecipeScreen(
-    navigateToRoute: (String) -> Unit,
-    navigateBack: () -> Unit,
     collectionId: String,
     navigateToCollection: (String) -> Unit,
     viewModel: NewRecipeScreenViewModel = hiltViewModel()

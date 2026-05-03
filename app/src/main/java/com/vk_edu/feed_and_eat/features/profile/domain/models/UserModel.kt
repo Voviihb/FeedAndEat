@@ -4,6 +4,8 @@ import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataM
 
 data class UserModel(
     val userId: String = "",
+    val email: String = "",
+    val username: String = "",
     val avatarUrl: String? = null,
     val aboutMeData: String? = null,
     val collectionsIdList: List<CollectionDataModel> = listOf(),

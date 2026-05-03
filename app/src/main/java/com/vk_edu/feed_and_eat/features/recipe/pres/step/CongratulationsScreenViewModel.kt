@@ -4,19 +4,18 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vk_edu.feed_and_eat.features.dishes.data.RecipesRepoImpl
+import com.vk_edu.feed_and_eat.features.dishes.domain.repository.RecipesRepository
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Recipe
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Review
-import com.vk_edu.feed_and_eat.features.login.data.AuthRepoImpl
 import com.vk_edu.feed_and_eat.features.login.domain.models.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CongratulationsScreenViewModel @Inject constructor(
-    private val _authRepo: AuthRepoImpl,
-    private val _recipesRepo: RecipesRepoImpl
+    private val _recipesRepo: RecipesRepository
 ) : ViewModel() {
     private val _reviewState = mutableStateOf(Review("", 0.0))
     val reviewState: State<Review> = _reviewState
@@ -27,12 +26,13 @@ class CongratulationsScreenViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<Exception?>(null)
     val errorMessage: State<Exception?> = _errorMessage
 
-    private var isReviewUpdated = false
-    private var currentReview: Review? = Review("", 0.0)
-
+    private var currentReview: Review? = null
+    private var loadReviewJob: Job? = null
 
     fun saveReview(recipe: Recipe) {
         viewModelScope.launch {
+            // Ждём завершения загрузки существующего отзыва, если она ещё идёт
+            loadReviewJob?.join()
             try {
                 if (recipe.id != null) {
                     if (currentReview == null) {
@@ -42,10 +42,7 @@ class CongratulationsScreenViewModel @Inject constructor(
                                     is Response.Loading -> _loading.value = true
                                     is Response.Success -> {
                                         currentReview = _reviewState.value
-                                        isReviewUpdated = true
-                                        /* TODO add success flow */
                                     }
-
                                     is Response.Failure -> {
                                         onError(response.e)
                                     }
@@ -56,25 +53,19 @@ class CongratulationsScreenViewModel @Inject constructor(
                             id = recipe.id,
                             oldReview = currentReview!!,
                             newReview = _reviewState.value
-                        )
-                            .collect { response ->
-                                when (response) {
-                                    is Response.Loading -> _loading.value = true
-                                    is Response.Success -> {
-                                        currentReview = _reviewState.value
-                                        isReviewUpdated = true
-                                        /* TODO add success flow */
-                                    }
-
-                                    is Response.Failure -> {
-                                        onError(response.e)
-                                    }
+                        ).collect { response ->
+                            when (response) {
+                                is Response.Loading -> _loading.value = true
+                                is Response.Success -> {
+                                    currentReview = _reviewState.value
+                                }
+                                is Response.Failure -> {
+                                    onError(response.e)
                                 }
                             }
+                        }
                     }
                 }
-
-
             } catch (e: Exception) {
                 onError(e)
             }
@@ -82,16 +73,34 @@ class CongratulationsScreenViewModel @Inject constructor(
         }
     }
 
-    fun loadOldReview(recipe: Recipe): Review? {
-        val user = _authRepo.getUserId()
-        if (recipe.id != null && user != null) {
-            authorChanged(user)
-            currentReview =
-                recipe.reviews?.filter { it.author == user }?.getOrNull(0)
-            if (currentReview != null)
-                _reviewState.value = currentReview as Review
+    fun loadOldReview(recipe: Recipe) {
+        if (recipe.id != null) {
+            // Загружаем свой отзыв с сервера (аутентификация через Bearer token)
+            loadReviewJob = viewModelScope.launch {
+                try {
+                    _recipesRepo.loadMyReviewOnRecipe(recipe.id).collect { response ->
+                        when (response) {
+                            is Response.Loading -> _loading.value = true
+                            is Response.Success -> {
+                                if (response.data != null) {
+                                    currentReview = response.data
+                                    _reviewState.value = response.data
+                                } else {
+                                    currentReview = null
+                                }
+                            }
+                            is Response.Failure -> {
+                                // Нет отзыва — это нормально
+                                currentReview = null
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    currentReview = null
+                }
+                _loading.value = false
+            }
         }
-        return currentReview
     }
 
     fun incrementCookedField(recipe: Recipe) {
@@ -102,10 +111,7 @@ class CongratulationsScreenViewModel @Inject constructor(
                         .collect { response ->
                             when (response) {
                                 is Response.Loading -> _loading.value = true
-                                is Response.Success -> {
-                                    /* TODO add success flow */
-                                }
-
+                                is Response.Success -> { /* счётчик обновлён */ }
                                 is Response.Failure -> onError(response.e)
                             }
                         }
@@ -114,19 +120,12 @@ class CongratulationsScreenViewModel @Inject constructor(
                 onError(e)
             }
             _loading.value = false
-
         }
     }
 
     fun markChanged(value: Float) {
         _reviewState.value = _reviewState.value.copy(
             mark = value.toDouble()
-        )
-    }
-
-    private fun authorChanged(value: String) {
-        _reviewState.value = _reviewState.value.copy(
-            author = value
         )
     }
 
