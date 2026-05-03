@@ -4,7 +4,8 @@
 
 <p align="center">
    <img alt="Android version" src="https://img.shields.io/badge/Android-8.0%2B-brightgreen?style=flat&logo=android">
-   <img alt="App version" src="https://img.shields.io/badge/App_version-v1.1_(Alpha)-8A2BE2?style=flat">
+   <img alt="App version" src="https://img.shields.io/badge/App_version-v1.2_(Alpha)-8A2BE2?style=flat">
+   <a href="https://www.rustore.ru/catalog/app/com.vk_edu.feed_and_eat?utm_source=rustore_share&utm_medium=com.vk_edu.feed_and_eat"><img alt="RuStore" src="https://img.shields.io/badge/RuStore-Скачать-0077FF?style=flat&logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSIzIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik00IDRoOHY4SDR6IiBmaWxsPSIjMDA3N0ZGIi8+PC9zdmc+&logoColor=white"></a>
 
 </p>
 
