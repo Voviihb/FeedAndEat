@@ -138,7 +138,7 @@ fun LoginScreenContent(
                 Text(
                     text = stringResource(id = R.string.log_in),
                     modifier = Modifier
-                        .padding(top = 100.dp, bottom = 16.dp)
+                        .padding(top = 50.dp, bottom = 16.dp)
                         .align(Alignment.Start),
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,

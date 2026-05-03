@@ -2,6 +2,7 @@ package com.vk_edu.feed_and_eat.local
 
 import com.vk_edu.feed_and_eat.features.collection.domain.models.CollectionDataModel
 import com.vk_edu.feed_and_eat.features.network.api.CollectionsApi
+import com.vk_edu.feed_and_eat.network.TokenStorage
 import com.vk_edu.feed_and_eat.network.api.RecipesApi
 import com.vk_edu.feed_and_eat.network.dto.ReviewCreateDto
 import retrofit2.HttpException
@@ -9,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,6 +21,7 @@ class CollectionSyncManager @Inject constructor(
     private val recipesApi: RecipesApi,
     private val localDataSource: LocalCollectionsDataSource,
     private val networkMonitor: NetworkMonitor,
+    private val tokenStorage: TokenStorage,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -32,8 +35,12 @@ class CollectionSyncManager @Inject constructor(
         }
     }
 
+    private suspend fun isAuthorized(): Boolean =
+        tokenStorage.accessToken.first() != null
+
     suspend fun syncAllIfOnline() {
         if (!networkMonitor.isOnlineNow()) return
+        if (!isAuthorized()) return
         syncPendingOperations()
         syncPendingRecipeOperations()
         refreshCollectionsAndRecipesFromRemote()
@@ -41,6 +48,7 @@ class CollectionSyncManager @Inject constructor(
 
     suspend fun refreshCollectionsAndRecipesFromRemote() {
         if (!networkMonitor.isOnlineNow()) return
+        if (!isAuthorized()) return
 
         val collections = collectionsApi.getMyCollections()
         val localCollections = collections.map {
