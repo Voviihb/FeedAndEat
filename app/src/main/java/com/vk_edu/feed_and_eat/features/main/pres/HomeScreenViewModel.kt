@@ -249,8 +249,10 @@ class HomeScreenViewModel @Inject constructor(
                             }
 
                             is Response.Failure -> {
-                                android.util.Log.e("HomeViewModel", "Failed to load collections", response.e)
-                                onError(response.e)
+                                // 401 при анонимном входе — нормальная ситуация,
+                                // коллекции недоступны без авторизации.
+                                // Не вызываем onError(), чтобы не ломать экран.
+                                android.util.Log.w("HomeViewModel", "Failed to load collections (not authorized?)", response.e)
                             }
                         }
                     }

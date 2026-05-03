@@ -108,8 +108,9 @@ class RecipesScreenViewModel @Inject constructor(
                         }
 
                         is Response.Failure -> {
-                            android.util.Log.e("RecipeViewModel", "Failed to load collections", response.e)
-                            onCollectionError(response.e)
+                            // 401 при анонимном входе — нормальная ситуация.
+                            // Не вызываем onCollectionError(), чтобы не ломать экран рецепта.
+                            android.util.Log.w("RecipeViewModel", "Failed to load collections (not authorized?)", response.e)
                         }
                     }
                 }
@@ -234,8 +235,9 @@ class RecipesScreenViewModel @Inject constructor(
                         }
 
                         is Response.Failure -> {
-                            android.util.Log.e("RecipeViewModel", "Failed to get user collections", response.e)
-                            onError(response.e)
+                            // 401 при анонимном входе — нормальная ситуация.
+                            // Не вызываем onError(), чтобы не ломать экран рецепта.
+                            android.util.Log.w("RecipeViewModel", "Failed to get user collections (not authorized?)", response.e)
                         }
                     }
                 }

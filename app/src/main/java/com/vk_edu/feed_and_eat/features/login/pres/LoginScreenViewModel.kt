@@ -53,7 +53,7 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     fun signInAnonymously(navigateToRoute: (String) -> Unit) {
-        // Анонимный вход не поддерживается в backend-версии
+        navigateToRoute(BottomScreen.HomeScreen.route)
     }
 
 

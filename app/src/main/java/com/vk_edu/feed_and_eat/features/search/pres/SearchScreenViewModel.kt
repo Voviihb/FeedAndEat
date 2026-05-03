@@ -197,8 +197,9 @@ class SearchScreenViewModel @Inject constructor(
                             }
 
                             is Response.Failure -> {
-                                android.util.Log.e("SearchViewModel", "Failed to load collections", response.e)
-                                onError(response.e)
+                                // 401 при анонимном входе — нормальная ситуация.
+                                // Не вызываем onError(), чтобы не ломать экран поиска.
+                                android.util.Log.w("SearchViewModel", "Failed to load collections (not authorized?)", response.e)
                             }
                         }
                     }
