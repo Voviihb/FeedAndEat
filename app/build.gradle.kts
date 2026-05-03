@@ -16,8 +16,8 @@ android {
         applicationId = "com.vk_edu.feed_and_eat"
         minSdk = 26
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "com.vk_edu.feed_and_eat.HiltTestRunner"
         vectorDrawables {

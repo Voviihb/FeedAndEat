@@ -1,5 +1,6 @@
 package com.vk_edu.feed_and_eat.local
 
+import android.net.Uri
 import com.vk_edu.feed_and_eat.BuildConfig
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Ingredient
 import com.vk_edu.feed_and_eat.features.dishes.domain.models.Instruction
@@ -20,11 +21,18 @@ object LocalRecipeMapper {
 
     private fun makeFullUrl(relativeUrl: String?): String? {
         if (relativeUrl == null) return null
-        return if (relativeUrl.startsWith("http")) {
+        val base = BuildConfig.API_BASE_URL.trimEnd('/')
+        val url = if (!relativeUrl.startsWith("http")) {
+            // Относительный путь — на нашем сервере
+            "$base$relativeUrl"
+        } else if (relativeUrl.startsWith(base)) {
+            // Уже абсолютный URL нашего сервера — не трогаем
             relativeUrl
         } else {
-            BuildConfig.API_BASE_URL.trimEnd('/') + relativeUrl
+            // Внешний URL (например img.spoonacular.com) — проксируем через наш сервер,
+            "$base/image-proxy?url=${Uri.encode(relativeUrl)}"
         }
+        return url
     }
 
     fun toEntity(dto: RecipeDto, now: Long = System.currentTimeMillis()): CachedRecipeEntity =
